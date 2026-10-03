@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resilient AI Weather</title>
+    <style>
+        :root {
+            --bg-color: #f4f4f9;
+            --text-color: #333;
+            --primary: #007bff;
+            --danger-bg: #dc3545;
+            --danger-text: #fff;
+            --warning-bg: #ffc107;
+            --warning-text: #333;
+            --card-bg: #fff;
+        }
+        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg-color); color: var(--text-color); margin: 0; padding: 20px; transition: all 0.3s ease; }
+        .container { max-width: 600px; margin: auto; }
+        .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
+        input { flex: 1; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 4px; }
+        button { padding: 10px 20px; background: var(--primary); color: white; border: none; border-radius: 4px; cursor: pointer; }
+        .card { background: var(--card-bg); padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 15px; }
+        .alert-banner { padding: 15px; border-radius: 8px; margin-bottom: 20px; display: none; font-weight: bold; }
+        
+        /* Generative UI Modes */
+        body.anomaly-SEVERE { --bg-color: #2b0000; --text-color: #ffcccc; --card-bg: #4a0000; }
+        .anomaly-SEVERE .alert-banner { display: block; background: var(--danger-bg); color: var(--danger-text); }
+        .anomaly-SEVERE .standard-ui { opacity: 0.5; } /* De-emphasize non-essential UI */
+        
+        body.anomaly-WARNING .alert-banner { display: block; background: var(--warning-bg); color: var(--warning-text); }
+        
+        .loading { font-style: italic; color: #666; display: none; margin-bottom: 15px; }
+        .tag { font-size: 12px; padding: 3px 6px; border-radius: 4px; background: #ddd; color: #333; margin-bottom: 10px; display: inline-block;}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="alertBanner" class="alert-banner"></div>
+        
+        <div class="search-box">
+            <input type="text" id="cityInput" placeholder="Enter city name..." autocomplete="off">
+            <button onclick="handleSearch()">Search</button>
+        </div>
+        
+        <div id="loading" class="loading">Syncing fresh data in background...</div>
+        <div id="error" class="loading" style="color:red; font-style: normal;"></div>
+        
+        <div id="weatherContent" class="standard-ui" style="display: none;">
+            <div class="card">
+                <div id="dataSource" class="tag"></div>
+                <h2 id="cityName"></h2>
+                <h1 id="temperature"></h1>
+                <p id="aiSynthesis" style="font-size: 1.1em; line-height: 1.5; font-weight: 500;"></p>
+            </div>
+            
+            <div class="card">
+                <h3>5-Day Forecast</h3>
+                <div id="forecastList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. Predictive Prefetching (Edge Heuristics) ---
+        function runPrefetchHeuristics() {
+            const history = JSON.parse(localStorage.getItem('weatherSearchHistory') || '{}');
+            let topCity = null;
+            let maxCount = 0;
+            for (const [city, count] of Object.entries(history)) {
+                if (count > maxCount) { maxCount = count; topCity = city; }
+            }
+            
+            if (topCity) {
+                console.log(`[Edge Heuristic] Prefetching probable target: ${topCity}`);
+                document.getElementById('cityInput').value = topCity;
+                fetchWeatherData(topCity, true); // true = isPrefetch background fetch
+            }
+        }
+
+        function updateSearchHistory(city) {
+            const history = JSON.parse(localStorage.getItem('weatherSearchHistory') || '{}');
+            history[city] = (history[city] || 0) + 1;
+            localStorage.setItem('weatherSearchHistory', JSON.stringify(history));
+        }
+
+        // --- 2. Stale-While-Revalidate & UI Updates ---
+        async function handleSearch() {
+            const city = document.getElementById('cityInput').value;
+            if (!city) return;
+            updateSearchHistory(city);
+            await fetchWeatherData(city, false);
+        }
+
+        async function fetchWeatherData(city, isPrefetch) {
+            const loadingEl = document.getElementById('loading');
+            const errorEl = document.getElementById('error');
+            const cacheKey = `weather_cache_${city.toLowerCase()}`;
+            
+            errorEl.style.display = 'none';
+            
+            // Stale-While-Revalidate: Instantly load from local storage
+            const staleData = localStorage.getItem(cacheKey);
+            if (staleData) {
+                console.log("Serving stale data instantly.");
+                renderUI(JSON.parse(staleData), "Edge Cache (Stale)");
+            }
+
+            if (!isPrefetch) loadingEl.style.display = 'block';
+
+            try {
+                // Background revalidate hitting Python Backend (which enforces Circuit Breaker & DB Cache)
+                const response = await fetch(`/api/weather?city=${encodeURIComponent(city)}`);
+                const data = await response.json();
+                
+                if (!response.ok) throw new Error(data.error || 'Server error');
+                
+                // Update local edge cache and swap UI
+                localStorage.setItem(cacheKey, JSON.stringify(data));
+                renderUI(data, data.source === 'cache' ? "Backend DB (Offline Fallback)" : "Live Validated API");
+            } catch (err) {
+                console.error(err);
+                if (!staleData) {
+                    errorEl.textContent = `Service Error: ${err.message}`;
+                    errorEl.style.display = 'block';
+                    document.getElementById('weatherContent').style.display = 'none';
+                }
+            } finally {
+                loadingEl.style.display = 'none';
+            }
+        }
+
+        // --- 3. Generative UI Rendering ---
+        function renderUI(payload, sourceLabel) {
+            const content = document.getElementById('weatherContent');
+            const alertBanner = document.getElementById('alertBanner');
+            
+            document.getElementById('dataSource').textContent = `Source: ${sourceLabel}`;
+            document.getElementById('cityName').textContent = `${payload.data.city}, ${payload.data.country}`;
+            document.getElementById('temperature').textContent = `${payload.data.current.temperature_2m}°C`;
+            
+            // AI Synthesis text
+            document.getElementById('aiSynthesis').textContent = payload.ai_context.synthetic_impact_statement;
+            
+            // Generative UI: Alter CSS state based on AI anomaly detection
+            document.body.className = '';
+            alertBanner.style.display = 'none';
+            
+            const anomaly = payload.ai_context.anomaly_level;
+            if (anomaly === 'SEVERE' || anomaly === 'WARNING') {
+                document.body.classList.add(`anomaly-${anomaly}`);
+                alertBanner.textContent = `🚨 ${anomaly} WEATHER DETECTED: ${payload.ai_context.anomaly_reason}`;
+                alertBanner.style.display = 'block';
+            }
+            
+            // Render forecast
+            const forecastHtml = payload.data.daily.time.map((date, i) => `
+                <div style="display:flex; justify-content:space-between; padding: 8px 0; border-bottom: 1px solid #eee;">
+                    <span>${new Date(date).toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'})}</span>
+                    <span>H: ${payload.data.daily.temperature_2m_max[i]}°C L: ${payload.data.daily.temperature_2m_min[i]}°C</span>
+                </div>
+            `).join('');
+            document.getElementById('forecastList').innerHTML = forecastHtml;
+            
+            content.style.display = 'block';
+        }
+
+        // Initialize edge heuristics on load
+        window.onload = runPrefetchHeuristics;
+    </script>
+</body>
+</html>

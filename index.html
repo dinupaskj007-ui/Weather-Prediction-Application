@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SL Weather & Disaster Risk (Mock)</title>
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --text-color: #212529;
+            --primary: #007bff;
+            --danger-bg: #dc3545;
+            --danger-text: #fff;
+            --warning-bg: #ffc107;
+            --warning-text: #000;
+            --card-bg: #fff;
+            --border-radius: 12px;
+        }
+        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg-color); color: var(--text-color); margin: 0; padding: 20px; transition: all 0.4s ease; }
+        .container { max-width: 650px; margin: auto; }
+        
+        .header { text-align: center; margin-bottom: 20px; }
+        .dev-badge { background: #6c757d; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; vertical-align: middle; margin-left: 10px; }
+        
+        .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
+        input { flex: 1; padding: 12px; font-size: 16px; border: 1px solid #ccc; border-radius: var(--border-radius); outline: none; transition: border 0.3s; }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,123,255,0.25); }
+        button { padding: 12px 24px; font-size: 16px; background: var(--primary); color: white; border: none; border-radius: var(--border-radius); cursor: pointer; transition: transform 0.1s; }
+        button:active { transform: scale(0.98); }
+        
+        .card { background: var(--card-bg); padding: 25px; border-radius: var(--border-radius); box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; transition: all 0.3s ease; }
+        
+        /* Generative UI Modes */
+        .alert-banner { padding: 15px 20px; border-radius: var(--border-radius); margin-bottom: 20px; display: none; font-weight: bold; animation: slideDown 0.3s ease-out; }
+        .emergency-details { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.3); font-size: 0.95em; line-height: 1.5; }
+        .hotlines { margin-top: 10px; font-size: 1.1em; }
+        
+        /* DISASTER MODE */
+        body.anomaly-EMERGENCY { --bg-color: #1a0000; --text-color: #ffcccc; --card-bg: #4a0000; }
+        .anomaly-EMERGENCY .alert-banner { display: block; background: var(--danger-bg); color: var(--danger-text); border: 2px solid #ff4d4d; }
+        .anomaly-EMERGENCY .standard-ui { display: none !important; } /* Force hide non-essential UI */
+        .anomaly-EMERGENCY .emergency-details { display: block; }
+        
+        body.anomaly-WARNING { --bg-color: #332600; --text-color: #ffe699; --card-bg: #664d00; }
+        .anomaly-WARNING .alert-banner { display: block; background: var(--warning-bg); color: var(--warning-text); border: 2px solid #e0a800; }
+        .anomaly-WARNING .standard-ui { opacity: 0.5; filter: grayscale(80%); } /* De-emphasize */
+
+        .loading { display: none; text-align: center; color: #666; margin-bottom: 20px; font-style: italic; }
+        .tag { font-size: 12px; padding: 4px 8px; border-radius: 6px; background: #e9ecef; color: #495057; margin-bottom: 15px; display: inline-block; font-weight: 600;}
+        .anomaly-EMERGENCY .tag { background: #330000; color: #ffcccc; }
+        
+        .forecast-row { display:flex; justify-content:space-between; padding: 12px 0; border-bottom: 1px solid rgba(128,128,128,0.2); }
+        .forecast-row:last-child { border-bottom: none; padding-bottom: 0; }
+        
+        @keyframes slideDown {
+            from { transform: translateY(-10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2 style="margin-bottom: 5px;">SL Weather & Disaster Risk <span class="dev-badge">Mock Mode</span></h2>
+            <p style="color: #666; font-size: 14px; margin-top: 5px;">
+                Test Sri Lankan microclimates:<br>
+                Search <b>"Colombo"</b> (Yala Monsoon), <b>"Galle"</b> (Rough Seas), or <b>"Ratnapura"</b> (Disaster Mode).
+            </p>
+        </div>
+
+        <div class="search-box">
+            <input type="text" id="cityInput" placeholder="Enter SL district (e.g., Ratnapura, Galle)" autocomplete="off" onkeypress="if(event.key === 'Enter') handleSearch()">
+            <button onclick="handleSearch()">Search</button>
+        </div>
+        
+        <div id="loading" class="loading">Aggregating DMC & Meteo Data...</div>
+        <div id="error" class="loading" style="color:var(--danger-bg); font-style: normal;"></div>
+        
+        <!-- DISASTER MODE BANNER -->
+        <div id="alertBanner" class="alert-banner">
+            <div id="alertTitle" style="font-size: 1.2em; display: flex; align-items: center; gap: 8px;"></div>
+            <div id="alertImpact" style="margin-top: 10px; font-weight: normal;"></div>
+            
+            <div class="emergency-details">
+                <strong style="display: block; margin-bottom: 5px;">Evacuation Guidelines:</strong>
+                <span id="evacGuidelines"></span>
+                <div class="hotlines">
+                    <strong>Emergency Hotlines:</strong> <span id="hotlinesList"></span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- STANDARD UI -->
+        <div id="weatherContent" class="standard-ui card" style="display: none;">
+            <div id="dataSource" class="tag"></div>
+            <h2 id="cityName" style="margin-top: 0;"></h2>
+            <h1 id="temperature" style="font-size: 3rem; margin: 10px 0;"></h1>
+            <p id="aiSynthesis" style="font-size: 1.15em; line-height: 1.6; font-weight: 500;"></p>
+            
+            <div style="margin-top: 30px;">
+                <h3 style="margin-top: 0; font-size: 1em; color: gray; text-transform: uppercase;">Next 3 Days</h3>
+                <div id="forecastList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Mock Multi-Source Data Fusion & Monsoon AI Synthesis ---
+        const MOCK_DB = {
+            "colombo": {
+                status: "success",
+                source: "Dept of Meteorology API",
+                data: { city: "Colombo", current: { temperature_2m: 29.5 }, daily: { time: ["Today", "Tomorrow"], max: [31], min: [26] } },
+                ai_context: {
+                    is_emergency: false,
+                    anomaly_level: "NORMAL",
+                    anomaly_reason: "Typical Yala Monsoon conditions",
+                    synthetic_impact_statement: "[Yala Monsoon Context] High humidity today with expected sudden afternoon thundershowers. Intermittent lightning risk. Carry an umbrella if commuting after 2 PM."
+                }
+            },
+            "galle": {
+                status: "success",
+                source: "Meteo Marine Advisory / Global API Fusion",
+                data: { city: "Galle", current: { temperature_2m: 28.0 }, daily: { time: ["Today", "Tomorrow"], max: [30], min: [25] } },
+                ai_context: {
+                    is_emergency: false,
+                    anomaly_level: "WARNING",
+                    anomaly_reason: "Coastal Rough Sea Advisory",
+                    synthetic_impact_statement: "අධික සුළං සහ රළු මුහුද (High winds and rough seas). Caution advised for multi-day fishing boats and coastal communities."
+                }
+            },
+            "ratnapura": {
+                status: "success",
+                source: "DMC RSS Feed Override",
+                data: { city: "Ratnapura", current: { temperature_2m: 25.5 }, daily: { time: ["Today", "Tomorrow"], max: [27], min: [24] } },
+                ai_context: {
+                    is_emergency: true,
+                    anomaly_level: "EMERGENCY",
+                    anomaly_reason: "DMC Red Alert: Imminent Landslide Risk",
+                    synthetic_impact_statement: "නිරන්තර අධික වර්ෂාව හේතුවෙන් නායයෑමේ දැඩි අවදානමක් පවතී. (Continuous heavy rain has created a severe landslide risk.)",
+                    evacuation_guidelines: "NBRO warning active. Evacuate unstable slopes immediately to designated safe zones. Do not attempt to cross flooded roads.",
+                    hotlines: ["DMC: 117", "Police: 119", "Ambulance: 1990"]
+                }
+            }
+        };
+
+        async function handleSearch() {
+            const city = document.getElementById('cityInput').value.trim();
+            if (!city) return;
+            const loadingEl = document.getElementById('loading');
+            
+            loadingEl.style.display = 'block';
+            document.body.className = '';
+            document.getElementById('weatherContent').style.display = 'none';
+            document.getElementById('alertBanner').style.display = 'none';
+
+            // Simulate Data Aggregation Latency
+            setTimeout(() => {
+                const normalized = city.toLowerCase();
+                let payload = MOCK_DB[normalized] || MOCK_DB["colombo"]; // default to colombo structure
+                if (!MOCK_DB[normalized]) { payload.data.city = city; payload.ai_context.anomaly_level = "NORMAL"; payload.ai_context.is_emergency = false; }
+                
+                renderUI(payload);
+                loadingEl.style.display = 'none';
+            }, 800);
+        }
+
+        function renderUI(payload) {
+            const anomaly = payload.ai_context.anomaly_level;
+            const isEmergency = payload.ai_context.is_emergency;
+            
+            // Apply Generative UI State
+            document.body.className = '';
+            if (anomaly !== 'NORMAL') {
+                document.body.classList.add(`anomaly-${anomaly}`);
+                const banner = document.getElementById('alertBanner');
+                document.getElementById('alertTitle').innerHTML = anomaly === 'EMERGENCY' ? '🚨 ' + payload.ai_context.anomaly_reason : '⚠️ ' + payload.ai_context.anomaly_reason;
+                document.getElementById('alertImpact').textContent = payload.ai_context.synthetic_impact_statement;
+                
+                if (isEmergency) {
+                    document.getElementById('evacGuidelines').textContent = payload.ai_context.evacuation_guidelines;
+                    document.getElementById('hotlinesList').textContent = payload.ai_context.hotlines.join(' | ');
+                }
+                banner.style.display = 'block';
+            }
+
+            // In an emergency, the standard UI is physically hidden by CSS (`display: none !important`),
+            // representing true "Disaster Mode" where trivial data is suppressed.
+            document.getElementById('dataSource').textContent = `Local Authority: ${payload.source}`;
+            document.getElementById('cityName').textContent = payload.data.city;
+            document.getElementById('temperature').textContent = `${payload.data.current.temperature_2m}°C`;
+            document.getElementById('aiSynthesis').textContent = payload.ai_context.synthetic_impact_statement;
+            
+            const forecastHtml = payload.data.daily.time.map((date, i) => `
+                <div class="forecast-row">
+                    <strong>${date}</strong>
+                    <span>H: ${payload.data.daily.max[i]}° | L: ${payload.data.daily.min[i]}°</span>
+                </div>
+            `).join('');
+            document.getElementById('forecastList').innerHTML = forecastHtml;
+            
+            document.getElementById('weatherContent').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
