@@ -1,0 +1,6 @@
+Flask==3.0.*
+requests==2.31.*
+pydantic==2.6.*
+tenacity==8.2.*
+pybreaker==1.2.*
+google-genai==2.28.*
