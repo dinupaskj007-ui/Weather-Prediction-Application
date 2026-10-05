@@ -26,7 +26,7 @@
             color: var(--text-main);
         }
 
-        /* Mobile Device Container (for desktop preview simulation) */
+        /* Mobile Device Container */
         .app-container {
             width: 100%;
             max-width: 414px;
@@ -48,11 +48,11 @@
             }
         }
 
-        /* Status Bar Simulation */
+        /* Status Bar */
         .status-bar {
             display: flex;
             justify-content: space-between;
-            padding: 20px 25px;
+            padding: 20px 25px 10px;
             font-size: 13px;
             font-weight: 600;
             z-index: 10;
@@ -60,7 +60,7 @@
         
         .status-location {
             font-weight: 400;
-            opacity: 0.8;
+            opacity: 0;
             font-size: 13px;
             transition: opacity 0.3s;
         }
@@ -70,8 +70,9 @@
             display: none;
             flex: 1;
             flex-direction: column;
-            padding: 20px;
-            animation: fadeIn 0.5s ease-out;
+            padding: 20px 25px;
+            animation: fadeIn 0.4s ease-out;
+            overflow-y: auto;
         }
 
         .screen.active {
@@ -93,7 +94,6 @@
             width: 200px;
             height: 200px;
             margin-bottom: 30px;
-            /* Placeholder for the photorealistic 3D asset */
             background: url('https://cdn-icons-png.flaticon.com/512/3222/3222801.png') no-repeat center;
             background-size: contain;
             filter: drop-shadow(0px 20px 20px rgba(0,0,0,0.4));
@@ -139,11 +139,167 @@
             transform: scale(0.95);
         }
 
+        /* --- SCREEN 2: COLOMBO DASHBOARD --- */
+        .s2-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .location-header {
+            margin-top: 10px;
+            margin-bottom: 25px;
+        }
+
+        .location-header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .location-header .season-tag {
+            color: #ffc107;
+            font-size: 12px;
+            font-weight: 700;
+            margin-top: 6px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: inline-block;
+        }
+
+        .main-weather-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 0 10px;
+        }
+
+        .main-temp {
+            font-size: 80px;
+            font-weight: 700;
+            line-height: 1;
+            letter-spacing: -2px;
+        }
+
+        .main-temp-unit {
+            font-size: 32px;
+            vertical-align: super;
+            font-weight: 400;
+            margin-left: 2px;
+        }
+
+        .weather-asset-large {
+            width: 140px;
+            height: 140px;
+            /* Placeholder for Fierce 3D Thunderstorm */
+            background: url('https://cdn-icons-png.flaticon.com/512/3222/3222794.png') no-repeat center;
+            background-size: contain;
+            filter: drop-shadow(0px 15px 25px rgba(0,0,0,0.5));
+            animation: float-intense 3s ease-in-out infinite;
+        }
+
+        .ai-summary-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-left: 4px solid #a855f7;
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 35px;
+            font-size: 14px;
+            line-height: 1.6;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .ai-summary-title {
+            font-weight: 700;
+            color: #ec4899;
+            margin-bottom: 6px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .hourly-section h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--text-muted);
+        }
+
+        .hourly-scroll {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 15px;
+            /* Hide scrollbar */
+            -ms-overflow-style: none;
+            scrollbar-width: none; 
+        }
+        
+        .hourly-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .hourly-pill {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 40px;
+            padding: 18px 12px;
+            min-width: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s;
+        }
+
+        .hourly-pill.active {
+            background: linear-gradient(180deg, rgba(168, 85, 247, 0.5) 0%, rgba(236, 72, 153, 0.5) 100%);
+            border: 1px solid rgba(236, 72, 153, 0.6);
+            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.2);
+        }
+
+        .hourly-time {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        
+        .hourly-pill.active .hourly-time {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .hourly-icon {
+            width: 32px;
+            height: 32px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .hourly-temp {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
         /* Animations */
         @keyframes float {
             0% { transform: translateY(0px); }
             50% { transform: translateY(-15px); }
             100% { transform: translateY(0px); }
+        }
+        
+        @keyframes float-intense {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(-2deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
         }
 
         @keyframes pulse {
@@ -153,7 +309,7 @@
         }
         
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
@@ -171,23 +327,66 @@
         <!-- SCREEN 1: ONBOARDING -->
         <div id="screen1" class="screen active">
             <div class="s1-content">
-                <!-- 3D Cloud/Moon Placeholder -->
                 <div class="hero-asset"></div>
-                
                 <div class="hero-text">
                     DISCOVER CLIMATE PRECISION,
                     <strong>SRI LANKA.</strong>
                 </div>
-
                 <button class="btn-check-now" onclick="goToScreen2()">Check now</button>
             </div>
         </div>
 
-        <!-- SCREEN 2: COLOMBO DASHBOARD (Placeholder for next step) -->
+        <!-- SCREEN 2: COLOMBO DASHBOARD -->
         <div id="screen2" class="screen">
-            <div class="s1-content">
-                <h1 style="margin-bottom: 10px;">Colombo Dashboard</h1>
-                <p style="color: var(--text-muted);">Waiting for Screen 2 instructions...</p>
+            <div class="s2-content">
+                
+                <div class="location-header">
+                    <h1>Colombo, Western Province</h1>
+                    <div class="season-tag">Yala Monsoon Season</div>
+                </div>
+
+                <div class="main-weather-card">
+                    <div class="main-temp">28<span class="main-temp-unit">°C</span></div>
+                    <div class="weather-asset-large"></div>
+                </div>
+
+                <div class="ai-summary-card">
+                    <div class="ai-summary-title">✨ AI Summary</div>
+                    Expect severe afternoon monsoon rain. Lightning risk high between 2 PM and 4 PM. Humidity makes it feel like 34°C.
+                </div>
+
+                <div class="hourly-section">
+                    <h3>Hourly Forecast</h3>
+                    <div class="hourly-scroll">
+                        <!-- Active Hour -->
+                        <div class="hourly-pill active">
+                            <span class="hourly-time">Now</span>
+                            <div class="hourly-icon" style="background-image: url('https://cdn-icons-png.flaticon.com/512/3222/3222794.png');"></div>
+                            <span class="hourly-temp">28°</span>
+                        </div>
+                        <div class="hourly-pill">
+                            <span class="hourly-time">3 PM</span>
+                            <div class="hourly-icon" style="background-image: url('https://cdn-icons-png.flaticon.com/512/3222/3222794.png');"></div>
+                            <span class="hourly-temp">27°</span>
+                        </div>
+                        <div class="hourly-pill">
+                            <span class="hourly-time">4 PM</span>
+                            <div class="hourly-icon" style="background-image: url('https://cdn-icons-png.flaticon.com/512/3222/3222794.png');"></div>
+                            <span class="hourly-temp">26°</span>
+                        </div>
+                        <div class="hourly-pill">
+                            <span class="hourly-time">5 PM</span>
+                            <div class="hourly-icon" style="background-image: url('https://cdn-icons-png.flaticon.com/512/3222/3222800.png');"></div>
+                            <span class="hourly-temp">26°</span>
+                        </div>
+                        <div class="hourly-pill">
+                            <span class="hourly-time">6 PM</span>
+                            <div class="hourly-icon" style="background-image: url('https://cdn-icons-png.flaticon.com/512/3222/3222800.png');"></div>
+                            <span class="hourly-temp">25°</span>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
@@ -200,7 +399,7 @@
             // Show screen 2
             document.getElementById('screen2').classList.add('active');
             
-            // Update status bar location contextually
+            // Update status bar location 
             document.getElementById('statusBarLocation').textContent = "Colombo";
             document.getElementById('statusBarLocation').style.opacity = '1';
         }
