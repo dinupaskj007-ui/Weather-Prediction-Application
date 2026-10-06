@@ -68,13 +68,9 @@
         .location-header .season-tag { color: #d97706; font-size: 13px; font-weight: 700; margin-top: 8px; text-transform: uppercase; letter-spacing: 1px; display: inline-block; }
         body:not(.light-theme) .location-header .season-tag { color: #ffc107; }
 
-        /* Header Actions (Toggle + Profile) */
         .header-actions { display: flex; gap: 12px; align-items: center; flex-shrink: 0; margin-left: 10px; }
-
         .theme-toggle-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--card-bg); border: 1px solid var(--card-border); display: flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s; }
         .theme-toggle-btn:active { transform: scale(0.9); }
-
-        /* Smaller Profile Button */
         .profile-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--btn-gradient); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; color: white; border: 2px solid rgba(255, 255, 255, 0.4); cursor: pointer; box-shadow: 0 4px 10px rgba(168, 85, 247, 0.3); transition: transform 0.2s; }
         .profile-btn:active { transform: scale(0.9); }
 
@@ -89,7 +85,6 @@
         .hourly-section h3 { font-size: 17px; font-weight: 600; margin-bottom: 18px; color: var(--text-muted); }
         .hourly-scroll { display: flex; gap: 14px; overflow-x: auto; padding-bottom: 15px; -ms-overflow-style: none; scrollbar-width: none; }
         .hourly-scroll::-webkit-scrollbar { display: none; }
-        
         .hourly-pill { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 40px; padding: 20px 14px; min-width: 55px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
         .hourly-pill.active { background: linear-gradient(180deg, rgba(168, 85, 247, 0.5) 0%, rgba(236, 72, 153, 0.5) 100%); border: 1px solid rgba(236, 72, 153, 0.6); box-shadow: 0 4px 12px rgba(236, 72, 153, 0.2); }
         .hourly-time { font-size: 13px; color: var(--text-muted); }
@@ -97,7 +92,23 @@
         .hourly-icon { width: 36px; height: 36px; background-size: contain; background-repeat: no-repeat; background-position: center; }
         .hourly-temp { font-weight: 600; font-size: 17px; }
 
-        .btn-view-stats { background: rgba(168, 85, 247, 0.15); color: #c026d3; border: 1px solid rgba(236, 72, 153, 0.4); border-radius: 30px; padding: 15px 0; width: 100%; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 10px; transition: all 0.2s; text-transform: uppercase; letter-spacing: 1px; }
+        /* --- COMMUNITY LIVE REPORTS --- */
+        .community-section { margin-top: 15px; margin-bottom: 15px; }
+        .community-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .community-header h3 { margin: 0; font-size: 16px; font-weight: 600; color: var(--text-main); }
+        .live-dot { color: #ef4444; animation: blink 1.5s infinite; }
+        .btn-report { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.5); border-radius: 20px; padding: 6px 12px; font-size: 12px; font-weight: 700; cursor: pointer; transition: background 0.2s; text-transform: uppercase; }
+        .btn-report:active { background: rgba(239, 68, 68, 0.2); }
+        body.light-theme .btn-report { color: #dc2626; border-color: rgba(220, 38, 38, 0.4); }
+
+        .report-list { display: flex; flex-direction: column; gap: 10px; }
+        .report-card { background: var(--card-bg); border: 1px solid var(--card-border); border-left: 3px solid #ef4444; border-radius: 10px; padding: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .report-meta { font-size: 11px; color: var(--text-muted); margin-bottom: 6px; }
+        .report-user { font-weight: 700; color: var(--text-main); }
+        .report-text { font-size: 13px; line-height: 1.5; color: var(--text-main); }
+        .verified-badge { color: #3b82f6; font-size: 10px; margin-left: 2px; }
+
+        .btn-view-stats { background: rgba(168, 85, 247, 0.15); color: #c026d3; border: 1px solid rgba(236, 72, 153, 0.4); border-radius: 30px; padding: 15px 0; width: 100%; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 15px; margin-bottom: 20px; transition: all 0.2s; text-transform: uppercase; letter-spacing: 1px; }
         body:not(.light-theme) .btn-view-stats { color: #f9a8d4; }
 
         /* --- SCREEN 3: RISK METRICS --- */
@@ -107,22 +118,19 @@
 
         .dmc-alert-banner { background: rgba(220, 53, 69, 0.15); border: 2px solid rgba(220, 53, 69, 0.8); border-radius: 16px; padding: 22px; margin-bottom: 35px; display: flex; flex-direction: column; gap: 18px; box-shadow: 0 10px 25px rgba(220, 53, 69, 0.1); animation: pulse-danger 2s infinite; }
         body.light-theme .dmc-alert-banner { background: rgba(220, 53, 69, 0.05); }
-        
         .alert-logos { display: flex; gap: 12px; }
         .logo-circle { width: 44px; height: 44px; border-radius: 50%; background: #fff; color: #dc3545; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px; border: 2px solid #dc3545; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         .alert-text { color: #ffcccc; font-size: 15px; line-height: 1.6; }
         body.light-theme .alert-text { color: #991b1b; }
-        
         .alert-text strong { color: #ff4d4d; display: block; margin-bottom: 8px; font-size: 17px; text-transform: uppercase; letter-spacing: 1px; }
         body.light-theme .alert-text strong { color: #dc2626; }
 
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
         .stat-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 22px 18px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         .risk-card { background: linear-gradient(135deg, rgba(220,53,69,0.15) 0%, rgba(139,0,0,0.1) 100%); border-color: rgba(220, 53, 69, 0.4); }
         .stat-title { font-size: 13px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
         .risk-card .stat-title { color: #ef4444; }
         body:not(.light-theme) .risk-card .stat-title { color: #ffb3b3; }
-        
         .stat-value { font-size: 32px; font-weight: 700; letter-spacing: -1px; }
         .stat-desc { font-size: 13px; font-weight: 600; color: var(--text-muted); margin-top: auto; }
         .text-danger { color: #ef4444 !important; }
@@ -133,6 +141,7 @@
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(236, 72, 153, 0); } 100% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0); } }
         @keyframes pulse-danger { 0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.3); } 70% { box-shadow: 0 0 0 15px rgba(220, 53, 69, 0); } 100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.2; } 100% { opacity: 1; } }
     </style>
 </head>
 <body>
@@ -198,7 +207,6 @@
                         <div class="season-tag" id="dashboardSeasonTag">Yala Monsoon Season</div>
                     </div>
                     
-                    <!-- Header Actions: Theme Toggle & Profile -->
                     <div class="header-actions">
                         <div class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()">☀️</div>
                         <div class="profile-btn" id="profileBtn" onclick="alert('Profile settings coming soon!')">U</div>
@@ -232,6 +240,24 @@
                             <span class="hourly-time">4 PM</span>
                             <div class="hourly-icon" style="background-image: url('https://cdn-icons-png.flaticon.com/512/3222/3222794.png');"></div>
                             <span class="hourly-temp">26°</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COMMUNITY REPORTS -->
+                <div class="community-section">
+                    <div class="community-header">
+                        <h3>Community Reports <span class="live-dot">●</span></h3>
+                        <button class="btn-report" onclick="alert('Reporting feature coming soon!')">+ Report</button>
+                    </div>
+                    <div class="report-list">
+                        <div class="report-card">
+                            <div class="report-meta"><span class="report-user">Saman D.</span> <span class="verified-badge">✔</span> • 5 mins ago</div>
+                            <div class="report-text">Severe flash flooding starting on Baseline Road. Avoid the area if driving.</div>
+                        </div>
+                        <div class="report-card" style="border-left-color: #f59e0b;">
+                            <div class="report-meta"><span class="report-user">Nimali P.</span> • 15 mins ago</div>
+                            <div class="report-text">Power lines down near the main junction due to high winds.</div>
                         </div>
                     </div>
                 </div>
@@ -294,15 +320,10 @@
             const body = document.body;
             const btn = document.getElementById('themeToggleBtn');
             const isLight = body.classList.toggle('light-theme');
-            
-            // Save preference
             localStorage.setItem('sl_weather_theme', isLight ? 'light' : 'dark');
-            
-            // Update Icon
             btn.textContent = isLight ? '🌙' : '☀️';
         }
 
-        // Apply theme on load
         function applySavedTheme() {
             const savedTheme = localStorage.getItem('sl_weather_theme');
             const btn = document.getElementById('themeToggleBtn');
@@ -314,7 +335,6 @@
                 btn.textContent = '☀️';
             }
         }
-
 
         // --- SL Data Map ---
         const slData = {
@@ -400,10 +420,7 @@
             const dist = localStorage.getItem('sl_weather_district') || "Colombo";
             const prov = localStorage.getItem('sl_weather_province') || "Western";
             
-            // Update Profile Initials
             document.getElementById('profileBtn').textContent = name.charAt(0).toUpperCase();
-            
-            // Update Dashboard Context
             document.getElementById('dashboardLocationHeader').textContent = `${dist}, ${prov} Province`;
             document.getElementById('dmcAlertLocation').textContent = dist;
             
@@ -430,7 +447,6 @@
             updateStatus('Risk Metrics');
         }
         
-        // Auto-apply on load
         window.onload = function() {
             applySavedTheme();
             if(localStorage.getItem('sl_weather_username')) {
