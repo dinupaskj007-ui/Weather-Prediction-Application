@@ -5,322 +5,134 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SL Weather - Precision</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
         
         :root {
+            /* DARK THEME (DEFAULT) */
             --bg-gradient: linear-gradient(180deg, #4b4b7c 0%, #1c1c38 100%);
             --btn-gradient: linear-gradient(90deg, #a855f7 0%, #ec4899 100%);
             --text-main: #FFFFFF;
             --text-muted: rgba(255, 255, 255, 0.6);
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --input-bg: rgba(255, 255, 255, 0.1);
+            --body-bg: #0f0f1a;
+            --ai-card-bg: rgba(255, 255, 255, 0.08);
         }
 
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', sans-serif;
-            background-color: #0f0f1a;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            color: var(--text-main);
+        body.light-theme {
+            /* LIGHT THEME OVERRIDES */
+            --bg-gradient: linear-gradient(180deg, #dbeafe 0%, #f3f4f6 100%);
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --card-bg: rgba(255, 255, 255, 0.7);
+            --card-border: rgba(0, 0, 0, 0.05);
+            --input-bg: rgba(255, 255, 255, 0.9);
+            --body-bg: #e5e7eb;
+            --ai-card-bg: rgba(255, 255, 255, 0.6);
         }
 
-        /* Mobile Device Container (Responsive & iPhone 15 Ratio Simulator) */
-        .app-container {
-            width: 100%;
-            height: 100vh;
-            max-width: 100%;
-            background: var(--bg-gradient);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
+        body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background-color: var(--body-bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; color: var(--text-main); transition: background-color 0.3s ease; }
 
-        /* When viewed on Desktop, simulate iPhone 15 size */
-        @media (min-width: 500px) {
-            .app-container {
-                max-width: 393px; /* iPhone 15 width */
-                height: 852px;    /* iPhone 15 height */
-                max-height: 90vh; /* Prevent overflowing small laptop screens */
-                border-radius: 45px;
-                border: 12px solid #000;
-                box-shadow: 0 0 40px rgba(0,0,0,0.6);
-            }
-        }
+        .app-container { width: 100%; height: 100vh; max-width: 100%; background: var(--bg-gradient); position: relative; overflow: hidden; display: flex; flex-direction: column; transition: background 0.3s ease; }
+        @media (min-width: 500px) { .app-container { max-width: 393px; height: 852px; max-height: 90vh; border-radius: 45px; border: 12px solid #000; box-shadow: 0 0 40px rgba(0,0,0,0.4); } }
 
-        /* Status Bar */
-        .status-bar {
-            display: flex;
-            justify-content: space-between;
-            padding: 20px 25px 10px;
-            font-size: 14px;
-            font-weight: 600;
-            z-index: 10;
-        }
+        .status-bar { display: flex; justify-content: space-between; padding: 20px 25px 10px; font-size: 14px; font-weight: 600; z-index: 10; }
+        .status-location { font-weight: 400; opacity: 0; font-size: 14px; transition: opacity 0.3s; }
+
+        .screen { display: none; flex: 1; flex-direction: column; padding: 20px 25px; animation: fadeIn 0.4s ease-out; overflow-y: auto; -ms-overflow-style: none; scrollbar-width: none; }
+        .screen::-webkit-scrollbar { display: none; }
+        .screen.active { display: flex; }
+
+        /* --- SCREEN 1 & LOGIN --- */
+        .s1-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; margin-top: -30px; }
+        .hero-asset { width: 220px; height: 220px; margin-bottom: 35px; background: url('https://cdn-icons-png.flaticon.com/512/3222/3222801.png') no-repeat center; background-size: contain; filter: drop-shadow(0px 20px 20px rgba(0,0,0,0.2)); animation: float 4s ease-in-out infinite; }
+        .hero-text { font-size: 18px; font-weight: 300; line-height: 1.5; color: var(--text-muted); margin-bottom: 40px; padding: 0 20px; }
+        .hero-text strong { color: var(--text-main); font-weight: 700; display: block; margin-top: 10px; font-size: 22px; letter-spacing: 1px; }
+
+        .btn-check-now { background: var(--btn-gradient); color: white; border: none; border-radius: 30px; padding: 20px 0; width: 80%; font-size: 18px; font-weight: 600; cursor: pointer; box-shadow: 0 10px 25px rgba(168, 85, 247, 0.4); transition: transform 0.2s; animation: pulse 2.5s infinite; margin-bottom: 20px; }
         
-        .status-location {
-            font-weight: 400;
-            opacity: 0;
-            font-size: 14px;
-            transition: opacity 0.3s;
-        }
+        .input-group { width: 85%; margin-bottom: 15px; text-align: left; }
+        .input-label { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+        .form-input { width: 100%; padding: 16px; background: var(--input-bg); border: 1px solid var(--card-border); border-radius: 12px; color: var(--text-main); font-size: 16px; outline: none; box-sizing: border-box; font-family: 'Inter', sans-serif; transition: border 0.3s, background 0.3s; }
+        .form-input::placeholder { color: var(--text-muted); }
+        .form-input:focus { border-color: #ec4899; }
+        select.form-input { appearance: none; background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%22//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23a855f7%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 15px top 50%; background-size: 12px auto; }
+        select.form-input option { background: var(--body-bg); color: var(--text-main); }
 
-        /* Screens */
-        .screen {
-            display: none;
-            flex: 1;
-            flex-direction: column;
-            padding: 20px 25px;
-            animation: fadeIn 0.4s ease-out;
-            overflow-y: auto;
-            
-            /* Hide vertical scrollbar but keep functionality */
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
-        }
+        /* --- SCREEN 2 --- */
+        .s2-content { flex: 1; display: flex; flex-direction: column; width: 100%; }
         
-        .screen::-webkit-scrollbar {
-            display: none; /* Chrome, Safari and Opera */
-        }
+        .header-top-row { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 15px; margin-bottom: 30px; }
+        .location-header h1 { margin: 0; font-size: 28px; font-weight: 600; letter-spacing: 0.5px; line-height: 1.2; }
+        .location-header .season-tag { color: #d97706; font-size: 13px; font-weight: 700; margin-top: 8px; text-transform: uppercase; letter-spacing: 1px; display: inline-block; }
+        body:not(.light-theme) .location-header .season-tag { color: #ffc107; }
 
-        .screen.active {
-            display: flex;
-        }
+        /* Header Actions (Toggle + Profile) */
+        .header-actions { display: flex; gap: 12px; align-items: center; flex-shrink: 0; margin-left: 10px; }
 
-        /* --- SCREEN 1: ONBOARDING --- */
-        .s1-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            margin-top: -30px; 
-        }
+        .theme-toggle-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--card-bg); border: 1px solid var(--card-border); display: flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s; }
+        .theme-toggle-btn:active { transform: scale(0.9); }
 
-        .hero-asset {
-            width: 220px;
-            height: 220px;
-            margin-bottom: 35px;
-            background: url('https://cdn-icons-png.flaticon.com/512/3222/3222801.png') no-repeat center;
-            background-size: contain;
-            filter: drop-shadow(0px 20px 20px rgba(0,0,0,0.4));
-            animation: float 4s ease-in-out infinite;
-        }
+        /* Smaller Profile Button */
+        .profile-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--btn-gradient); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; color: white; border: 2px solid rgba(255, 255, 255, 0.4); cursor: pointer; box-shadow: 0 4px 10px rgba(168, 85, 247, 0.3); transition: transform 0.2s; }
+        .profile-btn:active { transform: scale(0.9); }
 
-        .hero-text {
-            font-size: 18px;
-            font-weight: 300;
-            line-height: 1.5;
-            color: var(--text-muted);
-            margin-bottom: 70px;
-            padding: 0 20px;
-        }
+        .main-weather-card { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; padding: 0 10px; }
+        .main-temp { font-size: 88px; font-weight: 700; line-height: 1; letter-spacing: -3px; }
+        .main-temp-unit { font-size: 36px; vertical-align: super; font-weight: 400; margin-left: 2px; }
+        .weather-asset-large { width: 140px; height: 140px; background: url('https://cdn-icons-png.flaticon.com/512/3222/3222794.png') no-repeat center; background-size: contain; filter: drop-shadow(0px 15px 25px rgba(0,0,0,0.3)); animation: float-intense 3s ease-in-out infinite; }
 
-        .hero-text strong {
-            color: var(--text-main);
-            font-weight: 700;
-            display: block;
-            margin-top: 10px;
-            font-size: 22px;
-            letter-spacing: 1px;
-        }
+        .ai-summary-card { background: var(--ai-card-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-left: 4px solid #a855f7; padding: 18px 22px; border-radius: 14px; margin-bottom: 30px; font-size: 15px; line-height: 1.6; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-right: 1px solid var(--card-border); border-top: 1px solid var(--card-border); border-bottom: 1px solid var(--card-border); }
+        .ai-summary-title { font-weight: 700; color: #ec4899; margin-bottom: 8px; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 6px; }
 
-        .btn-check-now {
-            background: var(--btn-gradient);
-            color: white;
-            border: none;
-            border-radius: 30px;
-            padding: 20px 0;
-            width: 80%;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 10px 25px rgba(168, 85, 247, 0.4);
-            transition: transform 0.2s;
-            animation: pulse 2.5s infinite;
-            margin-bottom: 20px;
-            letter-spacing: 0.5px;
-        }
-
-        .btn-check-now:active {
-            transform: scale(0.95);
-        }
-
-        /* --- SCREEN 2: COLOMBO DASHBOARD --- */
-        .s2-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-        }
-
-        .location-header {
-            margin-top: 15px;
-            margin-bottom: 30px;
-        }
-
-        .location-header h1 {
-            margin: 0;
-            font-size: 32px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
-
-        .location-header .season-tag {
-            color: #ffc107;
-            font-size: 13px;
-            font-weight: 700;
-            margin-top: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            display: inline-block;
-        }
-
-        .main-weather-card {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 25px;
-            padding: 0 10px;
-        }
-
-        .main-temp {
-            font-size: 88px;
-            font-weight: 700;
-            line-height: 1;
-            letter-spacing: -3px;
-        }
-
-        .main-temp-unit {
-            font-size: 36px;
-            vertical-align: super;
-            font-weight: 400;
-            margin-left: 2px;
-        }
-
-        .weather-asset-large {
-            width: 150px;
-            height: 150px;
-            background: url('https://cdn-icons-png.flaticon.com/512/3222/3222794.png') no-repeat center;
-            background-size: contain;
-            filter: drop-shadow(0px 15px 25px rgba(0,0,0,0.5));
-            animation: float-intense 3s ease-in-out infinite;
-        }
-
-        .ai-summary-card {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-left: 4px solid #a855f7;
-            padding: 18px 22px;
-            border-radius: 14px;
-            margin-bottom: 40px;
-            font-size: 15px;
-            line-height: 1.6;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
+        .hourly-section h3 { font-size: 17px; font-weight: 600; margin-bottom: 18px; color: var(--text-muted); }
+        .hourly-scroll { display: flex; gap: 14px; overflow-x: auto; padding-bottom: 15px; -ms-overflow-style: none; scrollbar-width: none; }
+        .hourly-scroll::-webkit-scrollbar { display: none; }
         
-        .ai-summary-title {
-            font-weight: 700;
-            color: #ec4899;
-            margin-bottom: 8px;
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
+        .hourly-pill { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 40px; padding: 20px 14px; min-width: 55px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+        .hourly-pill.active { background: linear-gradient(180deg, rgba(168, 85, 247, 0.5) 0%, rgba(236, 72, 153, 0.5) 100%); border: 1px solid rgba(236, 72, 153, 0.6); box-shadow: 0 4px 12px rgba(236, 72, 153, 0.2); }
+        .hourly-time { font-size: 13px; color: var(--text-muted); }
+        .hourly-pill.active .hourly-time { color: var(--text-main); font-weight: 600; }
+        .hourly-icon { width: 36px; height: 36px; background-size: contain; background-repeat: no-repeat; background-position: center; }
+        .hourly-temp { font-weight: 600; font-size: 17px; }
 
-        .hourly-section h3 {
-            font-size: 17px;
-            font-weight: 600;
-            margin-bottom: 18px;
-            color: var(--text-muted);
-        }
+        .btn-view-stats { background: rgba(168, 85, 247, 0.15); color: #c026d3; border: 1px solid rgba(236, 72, 153, 0.4); border-radius: 30px; padding: 15px 0; width: 100%; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 10px; transition: all 0.2s; text-transform: uppercase; letter-spacing: 1px; }
+        body:not(.light-theme) .btn-view-stats { color: #f9a8d4; }
 
-        .hourly-scroll {
-            display: flex;
-            gap: 14px;
-            overflow-x: auto;
-            padding-bottom: 15px;
-            /* Hide horizontal scrollbar */
-            -ms-overflow-style: none;
-            scrollbar-width: none; 
-        }
+        /* --- SCREEN 3: RISK METRICS --- */
+        .nav-header { display: flex; align-items: center; margin-top: 10px; margin-bottom: 30px; }
+        .back-btn { background: none; border: none; color: var(--text-muted); font-size: 16px; cursor: pointer; padding: 0; margin-right: 20px; font-weight: 600; transition: color 0.2s; }
+        .nav-header h2 { margin: 0; font-size: 24px; font-weight: 600; letter-spacing: 0.5px; }
+
+        .dmc-alert-banner { background: rgba(220, 53, 69, 0.15); border: 2px solid rgba(220, 53, 69, 0.8); border-radius: 16px; padding: 22px; margin-bottom: 35px; display: flex; flex-direction: column; gap: 18px; box-shadow: 0 10px 25px rgba(220, 53, 69, 0.1); animation: pulse-danger 2s infinite; }
+        body.light-theme .dmc-alert-banner { background: rgba(220, 53, 69, 0.05); }
         
-        .hourly-scroll::-webkit-scrollbar {
-            display: none;
-        }
-
-        .hourly-pill {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 40px;
-            padding: 20px 14px;
-            min-width: 55px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-            transition: all 0.2s;
-        }
-
-        .hourly-pill.active {
-            background: linear-gradient(180deg, rgba(168, 85, 247, 0.5) 0%, rgba(236, 72, 153, 0.5) 100%);
-            border: 1px solid rgba(236, 72, 153, 0.6);
-            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.2);
-        }
-
-        .hourly-time {
-            font-size: 13px;
-            color: var(--text-muted);
-        }
+        .alert-logos { display: flex; gap: 12px; }
+        .logo-circle { width: 44px; height: 44px; border-radius: 50%; background: #fff; color: #dc3545; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px; border: 2px solid #dc3545; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .alert-text { color: #ffcccc; font-size: 15px; line-height: 1.6; }
+        body.light-theme .alert-text { color: #991b1b; }
         
-        .hourly-pill.active .hourly-time {
-            color: var(--text-main);
-            font-weight: 600;
-        }
+        .alert-text strong { color: #ff4d4d; display: block; margin-bottom: 8px; font-size: 17px; text-transform: uppercase; letter-spacing: 1px; }
+        body.light-theme .alert-text strong { color: #dc2626; }
 
-        .hourly-icon {
-            width: 36px;
-            height: 36px;
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-        }
-
-        .hourly-temp {
-            font-weight: 600;
-            font-size: 17px;
-        }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .stat-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 22px 18px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .risk-card { background: linear-gradient(135deg, rgba(220,53,69,0.15) 0%, rgba(139,0,0,0.1) 100%); border-color: rgba(220, 53, 69, 0.4); }
+        .stat-title { font-size: 13px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .risk-card .stat-title { color: #ef4444; }
+        body:not(.light-theme) .risk-card .stat-title { color: #ffb3b3; }
+        
+        .stat-value { font-size: 32px; font-weight: 700; letter-spacing: -1px; }
+        .stat-desc { font-size: 13px; font-weight: 600; color: var(--text-muted); margin-top: auto; }
+        .text-danger { color: #ef4444 !important; }
 
         /* Animations */
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-15px); }
-            100% { transform: translateY(0px); }
-        }
-        
-        @keyframes float-intense {
-            0% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-10px) rotate(-2deg); }
-            100% { transform: translateY(0px) rotate(0deg); }
-        }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.4); }
-            70% { box-shadow: 0 0 0 15px rgba(236, 72, 153, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0); }
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-15px); } 100% { transform: translateY(0px); } }
+        @keyframes float-intense { 0% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-10px) rotate(-2deg); } 100% { transform: translateY(0px) rotate(0deg); } }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(236, 72, 153, 0); } 100% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0); } }
+        @keyframes pulse-danger { 0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.3); } 70% { box-shadow: 0 0 0 15px rgba(220, 53, 69, 0); } 100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -341,7 +153,38 @@
                     DISCOVER CLIMATE PRECISION,
                     <strong>SRI LANKA.</strong>
                 </div>
-                <button class="btn-check-now" onclick="goToScreen2()">Check now</button>
+                <button class="btn-check-now" onclick="handleInitialCheck()">Check now</button>
+            </div>
+        </div>
+
+        <!-- SCREEN 1.5: SETUP / LOGIN -->
+        <div id="loginScreen" class="screen">
+            <div class="s1-content">
+                <div class="hero-text" style="margin-bottom: 25px;">
+                    Personalize your alerts.<br>
+                    <strong>WHERE ARE YOU?</strong>
+                </div>
+                
+                <div class="input-group">
+                    <span class="input-label">First Name</span>
+                    <input type="text" id="userNameInput" class="form-input" placeholder="e.g. Kasun" autocomplete="off">
+                </div>
+                
+                <div class="input-group">
+                    <span class="input-label">Province</span>
+                    <select id="provinceSelect" class="form-input" onchange="updateDistricts()">
+                        <option value="" disabled selected>Select Province</option>
+                    </select>
+                </div>
+                
+                <div class="input-group" style="margin-bottom: 35px;">
+                    <span class="input-label">District</span>
+                    <select id="districtSelect" class="form-input" disabled>
+                        <option value="" disabled selected>Select District</option>
+                    </select>
+                </div>
+                
+                <button class="btn-check-now" onclick="saveDataAndProceed()" style="animation: none;">Continue</button>
             </div>
         </div>
 
@@ -349,9 +192,17 @@
         <div id="screen2" class="screen">
             <div class="s2-content">
                 
-                <div class="location-header">
-                    <h1>Colombo, Western Province</h1>
-                    <div class="season-tag">Yala Monsoon Season</div>
+                <div class="header-top-row">
+                    <div class="location-header" style="margin: 0;">
+                        <h1 id="dashboardLocationHeader">Colombo, Western Province</h1>
+                        <div class="season-tag" id="dashboardSeasonTag">Yala Monsoon Season</div>
+                    </div>
+                    
+                    <!-- Header Actions: Theme Toggle & Profile -->
+                    <div class="header-actions">
+                        <div class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()">☀️</div>
+                        <div class="profile-btn" id="profileBtn" onclick="alert('Profile settings coming soon!')">U</div>
+                    </div>
                 </div>
 
                 <div class="main-weather-card">
@@ -361,13 +212,12 @@
 
                 <div class="ai-summary-card">
                     <div class="ai-summary-title">✨ AI Summary</div>
-                    Expect severe afternoon monsoon rain. Lightning risk high between 2 PM and 4 PM. Humidity makes it feel like 34°C.
+                    <span id="aiSummaryText">Expect severe afternoon monsoon rain. Lightning risk high between 2 PM and 4 PM. Humidity makes it feel like 34°C.</span>
                 </div>
 
                 <div class="hourly-section">
                     <h3>Hourly Forecast</h3>
                     <div class="hourly-scroll">
-                        <!-- Active Hour -->
                         <div class="hourly-pill active">
                             <span class="hourly-time">Now</span>
                             <div class="hourly-icon" style="background-image: url('https://cdn-icons-png.flaticon.com/512/3222/3222794.png');"></div>
@@ -383,16 +233,54 @@
                             <div class="hourly-icon" style="background-image: url('https://cdn-icons-png.flaticon.com/512/3222/3222794.png');"></div>
                             <span class="hourly-temp">26°</span>
                         </div>
-                        <div class="hourly-pill">
-                            <span class="hourly-time">5 PM</span>
-                            <div class="hourly-icon" style="background-image: url('https://cdn-icons-png.flaticon.com/512/3222/3222800.png');"></div>
-                            <span class="hourly-temp">26°</span>
-                        </div>
-                        <div class="hourly-pill">
-                            <span class="hourly-time">6 PM</span>
-                            <div class="hourly-icon" style="background-image: url('https://cdn-icons-png.flaticon.com/512/3222/3222800.png');"></div>
-                            <span class="hourly-temp">25°</span>
-                        </div>
+                    </div>
+                </div>
+
+                <button class="btn-view-stats" onclick="goToScreen3()">View Full Risk Report</button>
+            </div>
+        </div>
+
+        <!-- SCREEN 3: RISK METRICS -->
+        <div id="screen3" class="screen">
+            <div class="s3-content">
+                
+                <div class="nav-header">
+                    <button onclick="goToScreen2()" class="back-btn">← Back</button>
+                    <h2>Risk Analysis</h2>
+                </div>
+
+                <div class="dmc-alert-banner">
+                    <div class="alert-logos">
+                        <div class="logo-circle">DMC</div>
+                        <div class="logo-circle">MET</div>
+                    </div>
+                    <div class="alert-text">
+                        <strong>URGENT DMC ALERT:</strong> 
+                        <span id="dmcAlertLocation">Colombo</span> District, Severe Lightning & High Wave risk. Avoid outdoor activity and small boats.
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card risk-card">
+                        <div class="stat-title">Lightning Prob.</div>
+                        <div class="stat-value text-danger">90%</div>
+                        <div class="stat-desc text-danger">RED ALERT</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-title">Humidity</div>
+                        <div class="stat-value">88%</div>
+                        <div class="stat-desc">Very High</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Wind Speed</div>
+                        <div class="stat-value">45<span style="font-size: 16px;"> km/h</span></div>
+                        <div class="stat-desc">Gusting to 60</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">UV Index</div>
+                        <div class="stat-value">2</div>
+                        <div class="stat-desc">Low</div>
                     </div>
                 </div>
 
@@ -401,13 +289,154 @@
     </div>
 
     <script>
-        function goToScreen2() {
-            document.getElementById('screen1').classList.remove('active');
-            document.getElementById('screen2').classList.add('active');
+        // --- Theme Logic ---
+        function toggleTheme() {
+            const body = document.body;
+            const btn = document.getElementById('themeToggleBtn');
+            const isLight = body.classList.toggle('light-theme');
             
-            document.getElementById('statusBarLocation').textContent = "Colombo";
+            // Save preference
+            localStorage.setItem('sl_weather_theme', isLight ? 'light' : 'dark');
+            
+            // Update Icon
+            btn.textContent = isLight ? '🌙' : '☀️';
+        }
+
+        // Apply theme on load
+        function applySavedTheme() {
+            const savedTheme = localStorage.getItem('sl_weather_theme');
+            const btn = document.getElementById('themeToggleBtn');
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-theme');
+                btn.textContent = '🌙';
+            } else {
+                document.body.classList.remove('light-theme');
+                btn.textContent = '☀️';
+            }
+        }
+
+
+        // --- SL Data Map ---
+        const slData = {
+            "Western": ["Colombo", "Gampaha", "Kalutara"],
+            "Central": ["Kandy", "Matale", "Nuwara Eliya"],
+            "Southern": ["Galle", "Matara", "Hambantota"],
+            "Northern": ["Jaffna", "Kilinochchi", "Mannar", "Vavuniya", "Mullaitivu"],
+            "Eastern": ["Batticaloa", "Ampara", "Trincomalee"],
+            "North Western": ["Kurunegala", "Puttalam"],
+            "North Central": ["Anuradhapura", "Polonnaruwa"],
+            "Uva": ["Badulla", "Moneragala"],
+            "Sabaragamuwa": ["Ratnapura", "Kegalle"]
+        };
+
+        const provSelect = document.getElementById('provinceSelect');
+        const distSelect = document.getElementById('districtSelect');
+
+        Object.keys(slData).forEach(prov => {
+            let opt = document.createElement('option');
+            opt.value = prov;
+            opt.textContent = prov + " Province";
+            provSelect.appendChild(opt);
+        });
+
+        function updateDistricts() {
+            const selectedProv = provSelect.value;
+            distSelect.innerHTML = '<option value="" disabled selected>Select District</option>';
+            if(selectedProv) {
+                distSelect.disabled = false;
+                slData[selectedProv].forEach(dist => {
+                    let opt = document.createElement('option');
+                    opt.value = dist;
+                    opt.textContent = dist;
+                    distSelect.appendChild(opt);
+                });
+            } else {
+                distSelect.disabled = true;
+            }
+        }
+
+        // --- Navigation Logic ---
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function updateStatus(locationName) {
+            document.getElementById('statusBarLocation').textContent = locationName;
             document.getElementById('statusBarLocation').style.opacity = '1';
         }
+
+        function handleInitialCheck() {
+            const savedName = localStorage.getItem('sl_weather_username');
+            if (savedName) {
+                applyUserData();
+                goToScreen2();
+            } else {
+                showScreen('loginScreen');
+                updateStatus('Setup');
+                setTimeout(() => document.getElementById('userNameInput').focus(), 400);
+            }
+        }
+
+        function saveDataAndProceed() {
+            const name = document.getElementById('userNameInput').value.trim();
+            const prov = provSelect.value;
+            const dist = distSelect.value;
+            
+            if (name && prov && dist) {
+                localStorage.setItem('sl_weather_username', name);
+                localStorage.setItem('sl_weather_province', prov);
+                localStorage.setItem('sl_weather_district', dist);
+                
+                applyUserData();
+                goToScreen2();
+            } else {
+                alert("Please fill in all details so we can tailor your alerts.");
+            }
+        }
+
+        function applyUserData() {
+            const name = localStorage.getItem('sl_weather_username') || "User";
+            const dist = localStorage.getItem('sl_weather_district') || "Colombo";
+            const prov = localStorage.getItem('sl_weather_province') || "Western";
+            
+            // Update Profile Initials
+            document.getElementById('profileBtn').textContent = name.charAt(0).toUpperCase();
+            
+            // Update Dashboard Context
+            document.getElementById('dashboardLocationHeader').textContent = `${dist}, ${prov} Province`;
+            document.getElementById('dmcAlertLocation').textContent = dist;
+            
+            if(prov === "Central" || prov === "Sabaragamuwa") {
+                document.getElementById('dashboardSeasonTag').textContent = "High Landslide Risk";
+                document.getElementById('aiSummaryText').textContent = `Hi ${name}, continuous heavy rain reported in ${dist}. Landslide risk is elevated. Avoid unstable slopes tonight.`;
+            } else if (prov === "Southern" || prov === "Eastern") {
+                document.getElementById('dashboardSeasonTag').textContent = "Coastal Advisory";
+                document.getElementById('aiSummaryText').textContent = `Hi ${name}, rough seas and high winds expected off the ${dist} coast today.`;
+            } else {
+                document.getElementById('dashboardSeasonTag').textContent = "Yala Monsoon Season";
+                document.getElementById('aiSummaryText').textContent = `Hi ${name}, expect severe afternoon monsoon rain. Lightning risk high between 2 PM and 4 PM. Humidity makes it feel like 34°C.`;
+            }
+        }
+
+        function goToScreen2() {
+            showScreen('screen2');
+            const dist = localStorage.getItem('sl_weather_district') || "Colombo";
+            updateStatus(dist);
+        }
+
+        function goToScreen3() {
+            showScreen('screen3');
+            updateStatus('Risk Metrics');
+        }
+        
+        // Auto-apply on load
+        window.onload = function() {
+            applySavedTheme();
+            if(localStorage.getItem('sl_weather_username')) {
+                applyUserData();
+            }
+        };
     </script>
 </body>
 </html>
