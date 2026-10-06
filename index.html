@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SL Weather - Precision</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
         
         :root {
             --bg-gradient: linear-gradient(180deg, #4b4b7c 0%, #1c1c38 100%);
@@ -26,7 +26,7 @@
             color: var(--text-main);
         }
 
-        /* Mobile Device Container (Responsive & iPhone 15 Ratio Simulator) */
+        /* Mobile Device Container */
         .app-container {
             width: 100%;
             height: 100vh;
@@ -38,12 +38,11 @@
             flex-direction: column;
         }
 
-        /* When viewed on Desktop, simulate iPhone 15 size */
         @media (min-width: 500px) {
             .app-container {
-                max-width: 393px; /* iPhone 15 width */
-                height: 852px;    /* iPhone 15 height */
-                max-height: 90vh; /* Prevent overflowing small laptop screens */
+                max-width: 393px;
+                height: 852px;
+                max-height: 90vh;
                 border-radius: 45px;
                 border: 12px solid #000;
                 box-shadow: 0 0 40px rgba(0,0,0,0.6);
@@ -75,21 +74,19 @@
             padding: 20px 25px;
             animation: fadeIn 0.4s ease-out;
             overflow-y: auto;
-            
-            /* Hide vertical scrollbar but keep functionality */
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
+            -ms-overflow-style: none;
+            scrollbar-width: none; 
         }
         
         .screen::-webkit-scrollbar {
-            display: none; /* Chrome, Safari and Opera */
+            display: none;
         }
 
         .screen.active {
             display: flex;
         }
 
-        /* --- SCREEN 1: ONBOARDING --- */
+        /* --- SCREEN 1 --- */
         .s1-content {
             flex: 1;
             display: flex;
@@ -142,14 +139,9 @@
             transition: transform 0.2s;
             animation: pulse 2.5s infinite;
             margin-bottom: 20px;
-            letter-spacing: 0.5px;
         }
 
-        .btn-check-now:active {
-            transform: scale(0.95);
-        }
-
-        /* --- SCREEN 2: COLOMBO DASHBOARD --- */
+        /* --- SCREEN 2 --- */
         .s2-content {
             flex: 1;
             display: flex;
@@ -157,170 +149,117 @@
             width: 100%;
         }
 
-        .location-header {
-            margin-top: 15px;
-            margin-bottom: 30px;
-        }
+        .location-header { margin-top: 15px; margin-bottom: 30px; }
+        .location-header h1 { margin: 0; font-size: 32px; font-weight: 600; letter-spacing: 0.5px; }
+        .location-header .season-tag { color: #ffc107; font-size: 13px; font-weight: 700; margin-top: 8px; text-transform: uppercase; letter-spacing: 1px; display: inline-block; }
 
-        .location-header h1 {
-            margin: 0;
-            font-size: 32px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
+        .main-weather-card { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; padding: 0 10px; }
+        .main-temp { font-size: 88px; font-weight: 700; line-height: 1; letter-spacing: -3px; }
+        .main-temp-unit { font-size: 36px; vertical-align: super; font-weight: 400; margin-left: 2px; }
+        .weather-asset-large { width: 150px; height: 150px; background: url('https://cdn-icons-png.flaticon.com/512/3222/3222794.png') no-repeat center; background-size: contain; filter: drop-shadow(0px 15px 25px rgba(0,0,0,0.5)); animation: float-intense 3s ease-in-out infinite; }
 
-        .location-header .season-tag {
-            color: #ffc107;
-            font-size: 13px;
-            font-weight: 700;
-            margin-top: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            display: inline-block;
-        }
+        .ai-summary-card { background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(10px); border-left: 4px solid #a855f7; padding: 18px 22px; border-radius: 14px; margin-bottom: 30px; font-size: 15px; line-height: 1.6; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .ai-summary-title { font-weight: 700; color: #ec4899; margin-bottom: 8px; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 6px; }
 
-        .main-weather-card {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 25px;
-            padding: 0 10px;
-        }
+        .hourly-section h3 { font-size: 17px; font-weight: 600; margin-bottom: 18px; color: var(--text-muted); }
+        .hourly-scroll { display: flex; gap: 14px; overflow-x: auto; padding-bottom: 15px; -ms-overflow-style: none; scrollbar-width: none; }
+        .hourly-scroll::-webkit-scrollbar { display: none; }
+        
+        .hourly-pill { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 40px; padding: 20px 14px; min-width: 55px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+        .hourly-pill.active { background: linear-gradient(180deg, rgba(168, 85, 247, 0.5) 0%, rgba(236, 72, 153, 0.5) 100%); border: 1px solid rgba(236, 72, 153, 0.6); box-shadow: 0 4px 12px rgba(236, 72, 153, 0.2); }
+        .hourly-time { font-size: 13px; color: var(--text-muted); }
+        .hourly-pill.active .hourly-time { color: var(--text-main); font-weight: 600; }
+        .hourly-icon { width: 36px; height: 36px; background-size: contain; background-repeat: no-repeat; background-position: center; }
+        .hourly-temp { font-weight: 600; font-size: 17px; }
 
-        .main-temp {
-            font-size: 88px;
-            font-weight: 700;
-            line-height: 1;
-            letter-spacing: -3px;
-        }
-
-        .main-temp-unit {
-            font-size: 36px;
-            vertical-align: super;
-            font-weight: 400;
-            margin-left: 2px;
-        }
-
-        .weather-asset-large {
-            width: 150px;
-            height: 150px;
-            background: url('https://cdn-icons-png.flaticon.com/512/3222/3222794.png') no-repeat center;
-            background-size: contain;
-            filter: drop-shadow(0px 15px 25px rgba(0,0,0,0.5));
-            animation: float-intense 3s ease-in-out infinite;
-        }
-
-        .ai-summary-card {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-left: 4px solid #a855f7;
-            padding: 18px 22px;
-            border-radius: 14px;
-            margin-bottom: 40px;
+        .btn-view-stats {
+            background: rgba(168, 85, 247, 0.15);
+            color: #f9a8d4;
+            border: 1px solid rgba(236, 72, 153, 0.4);
+            border-radius: 30px;
+            padding: 15px 0;
+            width: 100%;
             font-size: 15px;
-            line-height: 1.6;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        
-        .ai-summary-title {
-            font-weight: 700;
-            color: #ec4899;
-            margin-bottom: 8px;
-            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.2s;
             text-transform: uppercase;
             letter-spacing: 1px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
         }
+        .btn-view-stats:active { background: rgba(168, 85, 247, 0.3); }
 
-        .hourly-section h3 {
-            font-size: 17px;
-            font-weight: 600;
-            margin-bottom: 18px;
-            color: var(--text-muted);
-        }
+        /* --- SCREEN 3: RISK METRICS --- */
+        .nav-header { display: flex; align-items: center; margin-top: 10px; margin-bottom: 30px; }
+        .back-btn { background: none; border: none; color: var(--text-muted); font-size: 16px; cursor: pointer; padding: 0; margin-right: 20px; font-weight: 600; transition: color 0.2s; }
+        .back-btn:active { color: white; }
+        .nav-header h2 { margin: 0; font-size: 24px; font-weight: 600; letter-spacing: 0.5px; }
 
-        .hourly-scroll {
-            display: flex;
-            gap: 14px;
-            overflow-x: auto;
-            padding-bottom: 15px;
-            /* Hide horizontal scrollbar */
-            -ms-overflow-style: none;
-            scrollbar-width: none; 
-        }
-        
-        .hourly-scroll::-webkit-scrollbar {
-            display: none;
-        }
-
-        .hourly-pill {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 40px;
-            padding: 20px 14px;
-            min-width: 55px;
+        .dmc-alert-banner {
+            background: rgba(220, 53, 69, 0.15);
+            border: 2px solid rgba(220, 53, 69, 0.8);
+            border-radius: 16px;
+            padding: 22px;
+            margin-bottom: 35px;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            gap: 12px;
-            transition: all 0.2s;
+            gap: 18px;
+            box-shadow: 0 10px 25px rgba(220, 53, 69, 0.15);
+            animation: pulse-danger 2s infinite;
         }
 
-        .hourly-pill.active {
-            background: linear-gradient(180deg, rgba(168, 85, 247, 0.5) 0%, rgba(236, 72, 153, 0.5) 100%);
-            border: 1px solid rgba(236, 72, 153, 0.6);
-            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.2);
-        }
-
-        .hourly-time {
-            font-size: 13px;
-            color: var(--text-muted);
-        }
+        .alert-logos { display: flex; gap: 12px; }
         
-        .hourly-pill.active .hourly-time {
-            color: var(--text-main);
-            font-weight: 600;
+        .logo-circle {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #fff;
+            color: #dc3545;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 12px;
+            border: 2px solid #dc3545;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
-        .hourly-icon {
-            width: 36px;
-            height: 36px;
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
+        .alert-text { color: #ffcccc; font-size: 15px; line-height: 1.6; }
+        .alert-text strong { color: #ff4d4d; display: block; margin-bottom: 8px; font-size: 17px; text-transform: uppercase; letter-spacing: 1px; }
+
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 22px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
-        .hourly-temp {
-            font-weight: 600;
-            font-size: 17px;
+        .risk-card {
+            background: linear-gradient(135deg, rgba(220,53,69,0.15) 0%, rgba(139,0,0,0.3) 100%);
+            border-color: rgba(220, 53, 69, 0.6);
         }
+
+        .stat-title { font-size: 13px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .risk-card .stat-title { color: #ffb3b3; }
+        
+        .stat-value { font-size: 32px; font-weight: 700; letter-spacing: -1px; }
+        .stat-desc { font-size: 13px; font-weight: 600; color: var(--text-muted); margin-top: auto; }
+        
+        .text-danger { color: #ff4d4d !important; }
 
         /* Animations */
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-15px); }
-            100% { transform: translateY(0px); }
-        }
-        
-        @keyframes float-intense {
-            0% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-10px) rotate(-2deg); }
-            100% { transform: translateY(0px) rotate(0deg); }
-        }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.4); }
-            70% { box-shadow: 0 0 0 15px rgba(236, 72, 153, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0); }
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-15px); } 100% { transform: translateY(0px); } }
+        @keyframes float-intense { 0% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-10px) rotate(-2deg); } 100% { transform: translateY(0px) rotate(0deg); } }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(236, 72, 153, 0); } 100% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0); } }
+        @keyframes pulse-danger { 0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(220, 53, 69, 0); } 100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -367,7 +306,6 @@
                 <div class="hourly-section">
                     <h3>Hourly Forecast</h3>
                     <div class="hourly-scroll">
-                        <!-- Active Hour -->
                         <div class="hourly-pill active">
                             <span class="hourly-time">Now</span>
                             <div class="hourly-icon" style="background-image: url('https://cdn-icons-png.flaticon.com/512/3222/3222794.png');"></div>
@@ -388,11 +326,59 @@
                             <div class="hourly-icon" style="background-image: url('https://cdn-icons-png.flaticon.com/512/3222/3222800.png');"></div>
                             <span class="hourly-temp">26°</span>
                         </div>
-                        <div class="hourly-pill">
-                            <span class="hourly-time">6 PM</span>
-                            <div class="hourly-icon" style="background-image: url('https://cdn-icons-png.flaticon.com/512/3222/3222800.png');"></div>
-                            <span class="hourly-temp">25°</span>
-                        </div>
+                    </div>
+                </div>
+
+                <button class="btn-view-stats" onclick="goToScreen3()">View Full Risk Report</button>
+            </div>
+        </div>
+
+        <!-- SCREEN 3: RISK METRICS -->
+        <div id="screen3" class="screen">
+            <div class="s3-content">
+                
+                <div class="nav-header">
+                    <button onclick="goToScreen2()" class="back-btn">← Back</button>
+                    <h2>Risk Analysis</h2>
+                </div>
+
+                <!-- DMC/Met Dept Alert Banner -->
+                <div class="dmc-alert-banner">
+                    <div class="alert-logos">
+                        <!-- Simulated authoritative logos -->
+                        <div class="logo-circle">DMC</div>
+                        <div class="logo-circle">MET</div>
+                    </div>
+                    <div class="alert-text">
+                        <strong>URGENT DMC ALERT:</strong> 
+                        Colombo District, Severe Lightning & High Wave risk. Avoid outdoor activity and small boats.
+                    </div>
+                </div>
+
+                <!-- Statistical Grid -->
+                <div class="stats-grid">
+                    <!-- High Priority Safety Metric -->
+                    <div class="stat-card risk-card">
+                        <div class="stat-title">Lightning Prob.</div>
+                        <div class="stat-value text-danger">90%</div>
+                        <div class="stat-desc text-danger">RED ALERT</div>
+                    </div>
+                    
+                    <!-- Standard Metrics Pushed Lower -->
+                    <div class="stat-card">
+                        <div class="stat-title">Humidity</div>
+                        <div class="stat-value">88%</div>
+                        <div class="stat-desc">Very High</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Wind Speed</div>
+                        <div class="stat-value">45<span style="font-size: 16px;"> km/h</span></div>
+                        <div class="stat-desc">Gusting to 60</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">UV Index</div>
+                        <div class="stat-value">2</div>
+                        <div class="stat-desc">Low</div>
                     </div>
                 </div>
 
@@ -401,12 +387,21 @@
     </div>
 
     <script>
+        function hideAllScreens() {
+            document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+        }
+
         function goToScreen2() {
-            document.getElementById('screen1').classList.remove('active');
+            hideAllScreens();
             document.getElementById('screen2').classList.add('active');
-            
             document.getElementById('statusBarLocation').textContent = "Colombo";
             document.getElementById('statusBarLocation').style.opacity = '1';
+        }
+
+        function goToScreen3() {
+            hideAllScreens();
+            document.getElementById('screen3').classList.add('active');
+            document.getElementById('statusBarLocation').textContent = "Risk Metrics";
         }
     </script>
 </body>
