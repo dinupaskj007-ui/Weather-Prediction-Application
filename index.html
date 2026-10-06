@@ -68,9 +68,9 @@
         .location-header .season-tag { color: #d97706; font-size: 13px; font-weight: 700; margin-top: 8px; text-transform: uppercase; letter-spacing: 1px; display: inline-block; }
         body:not(.light-theme) .location-header .season-tag { color: #ffc107; }
 
-        .header-actions { display: flex; gap: 12px; align-items: center; flex-shrink: 0; margin-left: 10px; }
-        .theme-toggle-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--card-bg); border: 1px solid var(--card-border); display: flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s; }
-        .theme-toggle-btn:active { transform: scale(0.9); }
+        .header-actions { display: flex; gap: 10px; align-items: center; flex-shrink: 0; margin-left: 10px; }
+        .action-btn-circle { width: 36px; height: 36px; border-radius: 50%; background: var(--card-bg); border: 1px solid var(--card-border); display: flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s; }
+        .action-btn-circle:active { transform: scale(0.9); }
         .profile-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--btn-gradient); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; color: white; border: 2px solid rgba(255, 255, 255, 0.4); cursor: pointer; box-shadow: 0 4px 10px rgba(168, 85, 247, 0.3); transition: transform 0.2s; }
         .profile-btn:active { transform: scale(0.9); }
 
@@ -92,13 +92,11 @@
         .hourly-icon { width: 36px; height: 36px; background-size: contain; background-repeat: no-repeat; background-position: center; }
         .hourly-temp { font-weight: 600; font-size: 17px; }
 
-        /* --- COMMUNITY LIVE REPORTS --- */
         .community-section { margin-top: 15px; margin-bottom: 15px; }
         .community-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .community-header h3 { margin: 0; font-size: 16px; font-weight: 600; color: var(--text-main); }
         .live-dot { color: #ef4444; animation: blink 1.5s infinite; }
         .btn-report { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.5); border-radius: 20px; padding: 6px 12px; font-size: 12px; font-weight: 700; cursor: pointer; transition: background 0.2s; text-transform: uppercase; }
-        .btn-report:active { background: rgba(239, 68, 68, 0.2); }
         body.light-theme .btn-report { color: #dc2626; border-color: rgba(220, 38, 38, 0.4); }
 
         .report-list { display: flex; flex-direction: column; gap: 10px; }
@@ -134,6 +132,89 @@
         .stat-value { font-size: 32px; font-weight: 700; letter-spacing: -1px; }
         .stat-desc { font-size: 13px; font-weight: 600; color: var(--text-muted); margin-top: auto; }
         .text-danger { color: #ef4444 !important; }
+
+        /* --- SCREEN 4: LOCATIONS --- */
+        .search-section { margin-bottom: 30px; }
+        
+        .ai-predictions {
+            margin-bottom: 15px;
+            animation: fadeIn 0.3s ease-out;
+            padding-left: 2px;
+        }
+        .ai-label {
+            font-size: 11px;
+            font-weight: 800;
+            color: #ec4899;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: block;
+            margin-bottom: 10px;
+        }
+        .prediction-chips {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .prediction-chips::-webkit-scrollbar { display: none; }
+        .chip {
+            background: rgba(168, 85, 247, 0.1);
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            color: #d946ef;
+            padding: 10px 16px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .chip:active { background: rgba(168, 85, 247, 0.3); }
+
+        .search-input {
+            width: 100%;
+            padding: 18px 22px;
+            background: var(--input-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            color: var(--text-main);
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            box-sizing: border-box;
+            transition: border 0.3s, box-shadow 0.3s;
+        }
+        .search-input:focus { border-color: #a855f7; box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.2); }
+        .search-input::placeholder { color: var(--text-muted); }
+
+        .city-list { display: flex; flex-direction: column; gap: 16px; padding-bottom: 20px; }
+        .city-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+        }
+        .city-card:active { transform: scale(0.97); background: rgba(255,255,255,0.1); }
+        
+        .city-info h3 { margin: 0 0 8px 0; font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+        .city-condition { font-size: 14px; color: var(--text-muted); font-weight: 600; }
+        .city-temp { font-size: 42px; font-weight: 700; letter-spacing: -2px; }
+        
+        /* Card variations */
+        .city-card.warning-card { border-left: 4px solid #f59e0b; }
+        .city-card.rain-card { border-left: 4px solid #3b82f6; }
+        .city-card.mist-card { border-left: 4px solid #9ca3af; }
+        .city-card.heat-card { border-left: 4px solid #ef4444; }
 
         /* Animations */
         @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-15px); } 100% { transform: translateY(0px); } }
@@ -208,7 +289,8 @@
                     </div>
                     
                     <div class="header-actions">
-                        <div class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()">☀️</div>
+                        <div class="action-btn-circle" onclick="goToScreen4()">🔍</div>
+                        <div class="action-btn-circle" id="themeToggleBtn" onclick="toggleTheme()">☀️</div>
                         <div class="profile-btn" id="profileBtn" onclick="alert('Profile settings coming soon!')">U</div>
                     </div>
                 </div>
@@ -312,6 +394,68 @@
 
             </div>
         </div>
+        
+        <!-- SCREEN 4: LOCATIONS & AI SEARCH -->
+        <div id="screen4" class="screen">
+            <div class="s4-content">
+                
+                <div class="nav-header">
+                    <button onclick="goToScreen2()" class="back-btn">← Back</button>
+                    <h2>Locations</h2>
+                </div>
+
+                <div class="search-section">
+                    <!-- AI Predictions (Predictive Prefetching) -->
+                    <div id="aiPredictions" class="ai-predictions" style="display: none;">
+                        <span class="ai-label">✨ AI PREDICTS:</span>
+                        <div class="prediction-chips">
+                            <span class="chip" onclick="fillSearch('Kandy')">🎯 Kandy (Morning Routine)</span>
+                            <span class="chip" onclick="fillSearch('Galle')">🌊 Galle (Weekend Trip)</span>
+                        </div>
+                    </div>
+                    
+                    <input type="text" id="searchInput" class="search-input" placeholder="Search for a city, airport, or district..." onfocus="showAIPredictions()" onblur="hideAIPredictions()">
+                </div>
+
+                <div class="city-list">
+                    <!-- Specific Microclimate Cards -->
+                    
+                    <div class="city-card mist-card">
+                        <div class="city-info">
+                            <h3>Nuwara Eliya</h3>
+                            <span class="city-condition">Dense Mist & Cold</span>
+                        </div>
+                        <div class="city-temp">14°</div>
+                    </div>
+                    
+                    <div class="city-card rain-card">
+                        <div class="city-info">
+                            <h3>Kandy</h3>
+                            <span class="city-condition">Light Rain</span>
+                        </div>
+                        <div class="city-temp">22°</div>
+                    </div>
+                    
+                    <div class="city-card warning-card">
+                        <div class="city-info">
+                            <h3>Galle</h3>
+                            <span class="city-condition">Sun & Thundershowers</span>
+                        </div>
+                        <div class="city-temp">29°</div>
+                    </div>
+                    
+                    <div class="city-card heat-card">
+                        <div class="city-info">
+                            <h3>Jaffna</h3>
+                            <span class="city-condition">Clear Sky (High UV)</span>
+                        </div>
+                        <div class="city-temp">33°</div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script>
@@ -445,6 +589,28 @@
         function goToScreen3() {
             showScreen('screen3');
             updateStatus('Risk Metrics');
+        }
+        
+        function goToScreen4() {
+            showScreen('screen4');
+            updateStatus('Locations');
+        }
+
+        // --- AI Search Logic ---
+        function showAIPredictions() {
+            document.getElementById('aiPredictions').style.display = 'block';
+        }
+
+        function hideAIPredictions() {
+            // Slight delay so the user can actually click the chips before they disappear on blur
+            setTimeout(() => {
+                document.getElementById('aiPredictions').style.display = 'none';
+            }, 200);
+        }
+
+        function fillSearch(city) {
+            document.getElementById('searchInput').value = city;
+            document.getElementById('searchInput').focus();
         }
         
         window.onload = function() {
