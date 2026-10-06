@@ -26,7 +26,6 @@
             color: var(--text-main);
         }
 
-        /* Mobile Device Container */
         .app-container {
             width: 100%;
             height: 100vh;
@@ -49,7 +48,6 @@
             }
         }
 
-        /* Status Bar */
         .status-bar {
             display: flex;
             justify-content: space-between;
@@ -66,7 +64,6 @@
             transition: opacity 0.3s;
         }
 
-        /* Screens */
         .screen {
             display: none;
             flex: 1;
@@ -78,52 +75,14 @@
             scrollbar-width: none; 
         }
         
-        .screen::-webkit-scrollbar {
-            display: none;
-        }
+        .screen::-webkit-scrollbar { display: none; }
+        .screen.active { display: flex; }
 
-        .screen.active {
-            display: flex;
-        }
-
-        /* --- SCREEN 1 --- */
-        .s1-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            margin-top: -30px; 
-        }
-
-        .hero-asset {
-            width: 220px;
-            height: 220px;
-            margin-bottom: 35px;
-            background: url('https://cdn-icons-png.flaticon.com/512/3222/3222801.png') no-repeat center;
-            background-size: contain;
-            filter: drop-shadow(0px 20px 20px rgba(0,0,0,0.4));
-            animation: float 4s ease-in-out infinite;
-        }
-
-        .hero-text {
-            font-size: 18px;
-            font-weight: 300;
-            line-height: 1.5;
-            color: var(--text-muted);
-            margin-bottom: 70px;
-            padding: 0 20px;
-        }
-
-        .hero-text strong {
-            color: var(--text-main);
-            font-weight: 700;
-            display: block;
-            margin-top: 10px;
-            font-size: 22px;
-            letter-spacing: 1px;
-        }
+        /* --- SCREEN 1 & LOGIN --- */
+        .s1-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; margin-top: -30px; }
+        .hero-asset { width: 220px; height: 220px; margin-bottom: 35px; background: url('https://cdn-icons-png.flaticon.com/512/3222/3222801.png') no-repeat center; background-size: contain; filter: drop-shadow(0px 20px 20px rgba(0,0,0,0.4)); animation: float 4s ease-in-out infinite; }
+        .hero-text { font-size: 18px; font-weight: 300; line-height: 1.5; color: var(--text-muted); margin-bottom: 70px; padding: 0 20px; }
+        .hero-text strong { color: var(--text-main); font-weight: 700; display: block; margin-top: 10px; font-size: 22px; letter-spacing: 1px; }
 
         .btn-check-now {
             background: var(--btn-gradient);
@@ -140,18 +99,20 @@
             animation: pulse 2.5s infinite;
             margin-bottom: 20px;
         }
+        
+        .input-group { width: 80%; margin-bottom: 40px; }
+        .name-input { width: 100%; padding: 18px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 16px; color: white; font-size: 18px; outline: none; box-sizing: border-box; text-align: center; font-family: 'Inter', sans-serif; transition: border 0.3s; }
+        .name-input::placeholder { color: rgba(255, 255, 255, 0.4); }
+        .name-input:focus { border-color: #ec4899; }
 
         /* --- SCREEN 2 --- */
-        .s2-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-        }
-
-        .location-header { margin-top: 15px; margin-bottom: 30px; }
-        .location-header h1 { margin: 0; font-size: 32px; font-weight: 600; letter-spacing: 0.5px; }
+        .s2-content { flex: 1; display: flex; flex-direction: column; width: 100%; }
+        
+        .header-top-row { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 15px; margin-bottom: 30px; }
+        .location-header h1 { margin: 0; font-size: 30px; font-weight: 600; letter-spacing: 0.5px; line-height: 1.2; }
         .location-header .season-tag { color: #ffc107; font-size: 13px; font-weight: 700; margin-top: 8px; text-transform: uppercase; letter-spacing: 1px; display: inline-block; }
+
+        .profile-btn { width: 44px; height: 44px; border-radius: 50%; background: var(--btn-gradient); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; color: white; border: 2px solid rgba(255, 255, 255, 0.2); cursor: pointer; box-shadow: 0 4px 15px rgba(168, 85, 247, 0.3); flex-shrink: 0; margin-left: 15px; }
 
         .main-weather-card { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; padding: 0 10px; }
         .main-temp { font-size: 88px; font-weight: 700; line-height: 1; letter-spacing: -3px; }
@@ -172,86 +133,26 @@
         .hourly-icon { width: 36px; height: 36px; background-size: contain; background-repeat: no-repeat; background-position: center; }
         .hourly-temp { font-weight: 600; font-size: 17px; }
 
-        .btn-view-stats {
-            background: rgba(168, 85, 247, 0.15);
-            color: #f9a8d4;
-            border: 1px solid rgba(236, 72, 153, 0.4);
-            border-radius: 30px;
-            padding: 15px 0;
-            width: 100%;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: all 0.2s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .btn-view-stats:active { background: rgba(168, 85, 247, 0.3); }
+        .btn-view-stats { background: rgba(168, 85, 247, 0.15); color: #f9a8d4; border: 1px solid rgba(236, 72, 153, 0.4); border-radius: 30px; padding: 15px 0; width: 100%; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 10px; transition: all 0.2s; text-transform: uppercase; letter-spacing: 1px; }
 
         /* --- SCREEN 3: RISK METRICS --- */
         .nav-header { display: flex; align-items: center; margin-top: 10px; margin-bottom: 30px; }
         .back-btn { background: none; border: none; color: var(--text-muted); font-size: 16px; cursor: pointer; padding: 0; margin-right: 20px; font-weight: 600; transition: color 0.2s; }
-        .back-btn:active { color: white; }
         .nav-header h2 { margin: 0; font-size: 24px; font-weight: 600; letter-spacing: 0.5px; }
 
-        .dmc-alert-banner {
-            background: rgba(220, 53, 69, 0.15);
-            border: 2px solid rgba(220, 53, 69, 0.8);
-            border-radius: 16px;
-            padding: 22px;
-            margin-bottom: 35px;
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-            box-shadow: 0 10px 25px rgba(220, 53, 69, 0.15);
-            animation: pulse-danger 2s infinite;
-        }
-
+        .dmc-alert-banner { background: rgba(220, 53, 69, 0.15); border: 2px solid rgba(220, 53, 69, 0.8); border-radius: 16px; padding: 22px; margin-bottom: 35px; display: flex; flex-direction: column; gap: 18px; box-shadow: 0 10px 25px rgba(220, 53, 69, 0.15); animation: pulse-danger 2s infinite; }
         .alert-logos { display: flex; gap: 12px; }
-        
-        .logo-circle {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: #fff;
-            color: #dc3545;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 12px;
-            border: 2px solid #dc3545;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-
+        .logo-circle { width: 44px; height: 44px; border-radius: 50%; background: #fff; color: #dc3545; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px; border: 2px solid #dc3545; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         .alert-text { color: #ffcccc; font-size: 15px; line-height: 1.6; }
         .alert-text strong { color: #ff4d4d; display: block; margin-bottom: 8px; font-size: 17px; text-transform: uppercase; letter-spacing: 1px; }
 
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-
-        .stat-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 22px 18px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        .risk-card {
-            background: linear-gradient(135deg, rgba(220,53,69,0.15) 0%, rgba(139,0,0,0.3) 100%);
-            border-color: rgba(220, 53, 69, 0.6);
-        }
-
+        .stat-card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 22px 18px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .risk-card { background: linear-gradient(135deg, rgba(220,53,69,0.15) 0%, rgba(139,0,0,0.3) 100%); border-color: rgba(220, 53, 69, 0.6); }
         .stat-title { font-size: 13px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
         .risk-card .stat-title { color: #ffb3b3; }
-        
         .stat-value { font-size: 32px; font-weight: 700; letter-spacing: -1px; }
         .stat-desc { font-size: 13px; font-weight: 600; color: var(--text-muted); margin-top: auto; }
-        
         .text-danger { color: #ff4d4d !important; }
 
         /* Animations */
@@ -280,7 +181,23 @@
                     DISCOVER CLIMATE PRECISION,
                     <strong>SRI LANKA.</strong>
                 </div>
-                <button class="btn-check-now" onclick="goToScreen2()">Check now</button>
+                <button class="btn-check-now" onclick="handleInitialCheck()">Check now</button>
+            </div>
+        </div>
+
+        <!-- SCREEN 1.5: LOGIN -->
+        <div id="loginScreen" class="screen">
+            <div class="s1-content">
+                <div class="hero-text" style="margin-bottom: 40px;">
+                    Welcome to SL Weather.<br>
+                    <strong>WHAT IS YOUR NAME?</strong>
+                </div>
+                
+                <div class="input-group">
+                    <input type="text" id="userNameInput" class="name-input" placeholder="e.g. Kasun" autocomplete="off" onkeypress="if(event.key === 'Enter') saveNameAndProceed()">
+                </div>
+                
+                <button class="btn-check-now" onclick="saveNameAndProceed()" style="animation: none;">Continue</button>
             </div>
         </div>
 
@@ -288,9 +205,13 @@
         <div id="screen2" class="screen">
             <div class="s2-content">
                 
-                <div class="location-header">
-                    <h1>Colombo, Western Province</h1>
-                    <div class="season-tag">Yala Monsoon Season</div>
+                <div class="header-top-row">
+                    <div class="location-header" style="margin: 0;">
+                        <h1>Colombo, Western Province</h1>
+                        <div class="season-tag">Yala Monsoon Season</div>
+                    </div>
+                    <!-- User Profile Button -->
+                    <div class="profile-btn" id="profileBtn" onclick="alert('Profile settings coming soon!')">U</div>
                 </div>
 
                 <div class="main-weather-card">
@@ -321,11 +242,6 @@
                             <div class="hourly-icon" style="background-image: url('https://cdn-icons-png.flaticon.com/512/3222/3222794.png');"></div>
                             <span class="hourly-temp">26°</span>
                         </div>
-                        <div class="hourly-pill">
-                            <span class="hourly-time">5 PM</span>
-                            <div class="hourly-icon" style="background-image: url('https://cdn-icons-png.flaticon.com/512/3222/3222800.png');"></div>
-                            <span class="hourly-temp">26°</span>
-                        </div>
                     </div>
                 </div>
 
@@ -342,10 +258,8 @@
                     <h2>Risk Analysis</h2>
                 </div>
 
-                <!-- DMC/Met Dept Alert Banner -->
                 <div class="dmc-alert-banner">
                     <div class="alert-logos">
-                        <!-- Simulated authoritative logos -->
                         <div class="logo-circle">DMC</div>
                         <div class="logo-circle">MET</div>
                     </div>
@@ -355,16 +269,13 @@
                     </div>
                 </div>
 
-                <!-- Statistical Grid -->
                 <div class="stats-grid">
-                    <!-- High Priority Safety Metric -->
                     <div class="stat-card risk-card">
                         <div class="stat-title">Lightning Prob.</div>
                         <div class="stat-value text-danger">90%</div>
                         <div class="stat-desc text-danger">RED ALERT</div>
                     </div>
                     
-                    <!-- Standard Metrics Pushed Lower -->
                     <div class="stat-card">
                         <div class="stat-title">Humidity</div>
                         <div class="stat-value">88%</div>
@@ -387,22 +298,62 @@
     </div>
 
     <script>
-        function hideAllScreens() {
+        function showScreen(screenId) {
             document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
         }
 
-        function goToScreen2() {
-            hideAllScreens();
-            document.getElementById('screen2').classList.add('active');
-            document.getElementById('statusBarLocation').textContent = "Colombo";
+        function updateStatus(locationName) {
+            document.getElementById('statusBarLocation').textContent = locationName;
             document.getElementById('statusBarLocation').style.opacity = '1';
         }
 
-        function goToScreen3() {
-            hideAllScreens();
-            document.getElementById('screen3').classList.add('active');
-            document.getElementById('statusBarLocation').textContent = "Risk Metrics";
+        // Triggered by Screen 1 "Check now"
+        function handleInitialCheck() {
+            const savedName = localStorage.getItem('sl_weather_username');
+            
+            if (savedName) {
+                // Already logged in
+                document.getElementById('profileBtn').textContent = savedName.charAt(0).toUpperCase();
+                goToScreen2();
+            } else {
+                // New user flow
+                showScreen('loginScreen');
+                updateStatus('Setup');
+                setTimeout(() => document.getElementById('userNameInput').focus(), 400); // Auto-focus input
+            }
         }
+
+        function saveNameAndProceed() {
+            const nameInput = document.getElementById('userNameInput').value.trim();
+            if (nameInput) {
+                localStorage.setItem('sl_weather_username', nameInput);
+                document.getElementById('profileBtn').textContent = nameInput.charAt(0).toUpperCase();
+                goToScreen2();
+            } else {
+                // Highlight input if empty
+                document.getElementById('userNameInput').style.borderColor = '#dc3545';
+                setTimeout(() => document.getElementById('userNameInput').style.borderColor = '', 1000);
+            }
+        }
+
+        function goToScreen2() {
+            showScreen('screen2');
+            updateStatus('Colombo');
+        }
+
+        function goToScreen3() {
+            showScreen('screen3');
+            updateStatus('Risk Metrics');
+        }
+        
+        // Ensure UI stays synced if they refresh on Screen 2 and have data
+        window.onload = function() {
+            const savedName = localStorage.getItem('sl_weather_username');
+            if(savedName) {
+                document.getElementById('profileBtn').textContent = savedName.charAt(0).toUpperCase();
+            }
+        };
     </script>
 </body>
 </html>
