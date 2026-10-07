@@ -44,6 +44,17 @@
             --danger-text: #e11d48;
             --glass-blur: blur(30px);
         }
+        
+        body.disaster-mode {
+            --bg-gradient: linear-gradient(145deg, #450a0a 0%, #170f2a 100%);
+            --glass-border: rgba(225, 29, 72, 0.4);
+            --accent-1: #fb7185;
+            --accent-2: #f43f5e;
+        }
+        
+        body.disaster-mode.light-theme {
+            --bg-gradient: linear-gradient(145deg, #ffe4e6 0%, #ede9fe 100%);
+        }
 
         body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background-color: var(--body-bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; color: var(--text-main); transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
 
@@ -86,7 +97,7 @@
         select.form-input option { background: var(--body-bg); color: var(--text-main); }
 
         /* --- SCREEN 2 --- */
-        .s2-content { flex: 1; display: flex; flex-direction: column; width: 100%; }
+        .s2-content { flex: 1; display: flex; flex-direction: column; width: 100%; position: relative; }
         
         .header-top-row { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 15px; margin-bottom: 35px; }
         .location-header h1 { margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.5px; line-height: 1.15; }
@@ -107,6 +118,8 @@
 
         .ai-summary-card { padding: 22px 24px; margin-bottom: 35px; border-left: 4px solid var(--accent-2); font-size: 14px; line-height: 1.7; font-weight: 400; }
         .ai-summary-title { font-weight: 800; color: var(--accent-2); margin-bottom: 10px; font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; display: flex; align-items: center; gap: 8px; }
+        body.disaster-mode .ai-summary-card { border-left-color: var(--danger-text); }
+        body.disaster-mode .ai-summary-title { color: var(--danger-text); }
 
         .hourly-section h3 { font-size: 16px; font-weight: 600; margin-bottom: 16px; color: var(--text-main); letter-spacing: 0.5px; }
         .hourly-scroll { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 15px; -ms-overflow-style: none; scrollbar-width: none; }
@@ -181,8 +194,13 @@
         .city-card.rain-card { border-left: 4px solid var(--accent-1); }
         .city-card.mist-card { border-left: 4px solid var(--text-muted); }
         .city-card.heat-card { border-left: 4px solid var(--danger-text); }
+        
+        /* Loader Overlay */
+        #loadingOverlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(10px); z-index: 50; display: none; justify-content: center; align-items: center; flex-direction: column; color: white; font-weight: 600; border-radius: inherit; }
+        .spinner { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.2); border-top-color: var(--accent-1); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
 
-        /* Smooth Animations */
+        /* Animations */
+        @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes float-glacial { 0% { transform: translateY(0px); } 50% { transform: translateY(-12px); } 100% { transform: translateY(0px); } }
         @keyframes smoothReveal { 0% { opacity: 0; transform: translateY(15px); } 100% { opacity: 1; transform: translateY(0); } }
         @keyframes pulse-opacity { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
@@ -192,6 +210,12 @@
 <body>
 
     <div class="app-container">
+        <!-- Loader Overlay -->
+        <div id="loadingOverlay">
+            <div class="spinner"></div>
+            <div id="loadingText">Syncing with Meteorological Data...</div>
+        </div>
+        
         <!-- Mock Status Bar -->
         <div class="status-bar">
             <span>9:41</span>
@@ -258,15 +282,18 @@
                         <div class="profile-btn" id="profileBtn" onclick="alert('Profile settings coming soon!')">U</div>
                     </div>
                 </div>
+                
+                <!-- Injected via JS during Emergency -->
+                <div id="dashboardEmergencyBannerContainer"></div>
 
                 <div class="main-weather-card">
-                    <div class="main-temp">28<span class="main-temp-unit">°C</span></div>
+                    <div class="main-temp" id="mainTemp">--<span class="main-temp-unit">°C</span></div>
                     <div class="weather-asset-large"></div>
                 </div>
 
                 <div class="ai-summary-card glacier-panel">
                     <div class="ai-summary-title">✨ AI Summary</div>
-                    <span id="aiSummaryText">Expect severe afternoon monsoon rain. Lightning risk high between 2 PM and 4 PM. Humidity makes it feel like 34°C.</span>
+                    <span id="aiSummaryText">Loading precise localized predictions...</span>
                 </div>
 
                 <div class="hourly-section">
@@ -275,17 +302,17 @@
                         <div class="hourly-pill glacier-panel active">
                             <span class="hourly-time">Now</span>
                             <div class="hourly-icon" style="background-image: url('https://cdn-icons-png.flaticon.com/512/3222/3222794.png');"></div>
-                            <span class="hourly-temp">28°</span>
+                            <span class="hourly-temp" id="hourlyNow">--°</span>
                         </div>
                         <div class="hourly-pill glacier-panel">
                             <span class="hourly-time">3 PM</span>
                             <div class="hourly-icon" style="background-image: url('https://cdn-icons-png.flaticon.com/512/3222/3222794.png');"></div>
-                            <span class="hourly-temp">27°</span>
+                            <span class="hourly-temp" id="hourlyNext1">--°</span>
                         </div>
                         <div class="hourly-pill glacier-panel">
                             <span class="hourly-time">4 PM</span>
                             <div class="hourly-icon" style="background-image: url('https://cdn-icons-png.flaticon.com/512/3222/3222794.png');"></div>
-                            <span class="hourly-temp">26°</span>
+                            <span class="hourly-temp" id="hourlyNext2">--°</span>
                         </div>
                     </div>
                 </div>
@@ -300,10 +327,6 @@
                         <div class="report-card glacier-panel">
                             <div class="report-meta"><span class="report-user">Saman D.</span> <span class="verified-badge">✔</span> • 5 mins ago</div>
                             <div class="report-text">Severe flash flooding starting on Baseline Road. Avoid the area if driving.</div>
-                        </div>
-                        <div class="report-card glacier-panel" style="border-left-color: #f59e0b;">
-                            <div class="report-meta"><span class="report-user">Nimali P.</span> • 15 mins ago</div>
-                            <div class="report-text">Power lines down near the main junction due to high winds.</div>
                         </div>
                     </div>
                 </div>
@@ -321,37 +344,37 @@
                     <h2>Risk Analysis</h2>
                 </div>
 
-                <div class="dmc-alert-banner glacier-panel">
+                <div class="dmc-alert-banner glacier-panel" id="screen3DmcBanner">
                     <div class="alert-logos">
                         <div class="logo-circle">DMC</div>
                         <div class="logo-circle">MET</div>
                     </div>
                     <div class="alert-text">
-                        <strong>URGENT DMC ALERT:</strong> 
-                        <span id="dmcAlertLocation">Colombo</span> District, Severe Lightning & High Wave risk. Avoid outdoor activity and small boats.
+                        <strong id="dmcSeverityHeader">URGENT DMC ALERT:</strong> 
+                        <span id="dmcAlertText">Fetching latest alerts...</span>
                     </div>
                 </div>
 
                 <div class="stats-grid">
                     <div class="stat-card glacier-panel risk-card">
                         <div class="stat-title">Lightning Prob.</div>
-                        <div class="stat-value text-danger">90%</div>
+                        <div class="stat-value text-danger" id="lightningProb">90%</div>
                         <div class="stat-desc text-danger">RED ALERT</div>
                     </div>
                     
                     <div class="stat-card glacier-panel">
                         <div class="stat-title">Humidity</div>
-                        <div class="stat-value">88%</div>
+                        <div class="stat-value" id="humidityValue">--%</div>
                         <div class="stat-desc">Very High</div>
                     </div>
                     <div class="stat-card glacier-panel">
                         <div class="stat-title">Wind Speed</div>
-                        <div class="stat-value">45<span style="font-size: 16px;"> km/h</span></div>
-                        <div class="stat-desc">Gusting to 60</div>
+                        <div class="stat-value" id="windValue">--<span style="font-size: 16px;"> km/h</span></div>
+                        <div class="stat-desc">Gusting</div>
                     </div>
                     <div class="stat-card glacier-panel">
                         <div class="stat-title">UV Index</div>
-                        <div class="stat-value">2</div>
+                        <div class="stat-value" id="uvValue">--</div>
                         <div class="stat-desc">Low</div>
                     </div>
                 </div>
@@ -381,7 +404,7 @@
                 </div>
 
                 <div class="city-list">
-                    <div class="city-card glacier-panel mist-card">
+                    <div class="city-card glacier-panel mist-card" onclick="overrideLocation('Central', 'Nuwara Eliya')">
                         <div class="city-info">
                             <h3>Nuwara Eliya</h3>
                             <span class="city-condition">Dense Mist & Cold</span>
@@ -389,7 +412,7 @@
                         <div class="city-temp">14°</div>
                     </div>
                     
-                    <div class="city-card glacier-panel rain-card">
+                    <div class="city-card glacier-panel rain-card" onclick="overrideLocation('Central', 'Kandy')">
                         <div class="city-info">
                             <h3>Kandy</h3>
                             <span class="city-condition">Light Rain</span>
@@ -397,7 +420,7 @@
                         <div class="city-temp">22°</div>
                     </div>
                     
-                    <div class="city-card glacier-panel warning-card">
+                    <div class="city-card glacier-panel warning-card" onclick="overrideLocation('Southern', 'Galle')">
                         <div class="city-info">
                             <h3>Galle</h3>
                             <span class="city-condition">Sun & Thundershowers</span>
@@ -405,7 +428,7 @@
                         <div class="city-temp">29°</div>
                     </div>
                     
-                    <div class="city-card glacier-panel heat-card">
+                    <div class="city-card glacier-panel heat-card" onclick="overrideLocation('Northern', 'Jaffna')">
                         <div class="city-info">
                             <h3>Jaffna</h3>
                             <span class="city-condition">Clear Sky (High UV)</span>
@@ -484,7 +507,6 @@
             document.querySelectorAll('.screen').forEach(el => {
                 el.classList.remove('active');
             });
-            // Small delay to allow browser to calculate reflow for animation
             setTimeout(() => {
                 document.getElementById(screenId).classList.add('active');
             }, 50);
@@ -498,7 +520,6 @@
         function handleInitialCheck() {
             const savedName = localStorage.getItem('sl_weather_username');
             if (savedName) {
-                applyUserData();
                 goToScreen2();
             } else {
                 showScreen('loginScreen');
@@ -516,39 +537,97 @@
                 localStorage.setItem('sl_weather_username', name);
                 localStorage.setItem('sl_weather_province', prov);
                 localStorage.setItem('sl_weather_district', dist);
-                
-                applyUserData();
                 goToScreen2();
             } else {
                 alert("Please fill in all details so we can tailor your alerts.");
             }
         }
 
-        function applyUserData() {
+        // --- Backend API Integration ---
+        async function fetchWeatherData(province, district) {
+            const loader = document.getElementById('loadingOverlay');
+            loader.style.display = 'flex';
+            
+            try {
+                const response = await fetch(`/api/weather?province=${encodeURIComponent(province)}&district=${encodeURIComponent(district)}`);
+                const data = await response.json();
+                
+                if(data.error) {
+                    alert("Error: " + data.error);
+                    return;
+                }
+                
+                applyDataToUI(data);
+                
+            } catch (error) {
+                console.error("Failed to fetch weather:", error);
+                document.getElementById('aiSummaryText').textContent = "Failed to connect to AI Meteorological Service. Please check your network.";
+            } finally {
+                loader.style.display = 'none';
+            }
+        }
+        
+        function applyDataToUI(data) {
             const name = localStorage.getItem('sl_weather_username') || "User";
-            const dist = localStorage.getItem('sl_weather_district') || "Colombo";
-            const prov = localStorage.getItem('sl_weather_province') || "Western";
-            
             document.getElementById('profileBtn').textContent = name.charAt(0).toUpperCase();
-            document.getElementById('dashboardLocationHeader').textContent = `${dist}, ${prov} Province`;
-            document.getElementById('dmcAlertLocation').textContent = dist;
             
-            if(prov === "Central" || prov === "Sabaragamuwa") {
-                document.getElementById('dashboardSeasonTag').textContent = "High Landslide Risk";
-                document.getElementById('aiSummaryText').textContent = `Hi ${name}, continuous heavy rain reported in ${dist}. Landslide risk is elevated. Avoid unstable slopes tonight.`;
-            } else if (prov === "Southern" || prov === "Eastern") {
-                document.getElementById('dashboardSeasonTag').textContent = "Coastal Advisory";
-                document.getElementById('aiSummaryText').textContent = `Hi ${name}, rough seas and high winds expected off the ${dist} coast today.`;
+            const dist = data.location.district;
+            const prov = data.location.province;
+            
+            // 1. Dashboard Header
+            document.getElementById('dashboardLocationHeader').textContent = `${dist}, ${prov} Province`;
+            
+            // 2. Main Metrics
+            const temp = Math.round(data.metrics.temperature);
+            document.getElementById('mainTemp').innerHTML = `${temp}<span class="main-temp-unit">°C</span>`;
+            document.getElementById('hourlyNow').textContent = `${temp}°`;
+            document.getElementById('hourlyNext1').textContent = `${temp - 1}°`; // Mocking hourly fall
+            document.getElementById('hourlyNext2').textContent = `${temp - 2}°`;
+            
+            // 3. Stats Grid (Screen 3)
+            document.getElementById('humidityValue').textContent = `${data.metrics.humidity}%`;
+            document.getElementById('windValue').innerHTML = `${data.metrics.wind_speed}<span style="font-size: 16px;"> km/h</span>`;
+            document.getElementById('uvValue').textContent = data.metrics.uv_index;
+            
+            // 4. AI & Alerts
+            const ai = data.ai_insights;
+            const dmc = data.dmc_alert;
+            
+            document.getElementById('aiSummaryText').textContent = `Hi ${name}, ${ai.synthetic_impact_statement}`;
+            document.getElementById('dmcAlertText').textContent = dmc.message;
+            document.getElementById('dmcSeverityHeader').textContent = `[${dmc.source}] ${dmc.severity}:`;
+            
+            // 5. DISASTER MODE UI
+            if(ai.is_emergency) {
+                document.body.classList.add('disaster-mode');
+                document.getElementById('dashboardSeasonTag').textContent = dmc.threat_type;
+                document.getElementById('dashboardSeasonTag').style.color = 'var(--danger-text)';
+                document.getElementById('dashboardSeasonTag').style.borderColor = 'var(--danger-border)';
+                
+                // Clone DMC banner to dashboard
+                const bannerHtml = document.getElementById('screen3DmcBanner').outerHTML;
+                document.getElementById('dashboardEmergencyBannerContainer').innerHTML = bannerHtml;
             } else {
-                document.getElementById('dashboardSeasonTag').textContent = "Yala Monsoon Season";
-                document.getElementById('aiSummaryText').textContent = `Hi ${name}, expect severe afternoon monsoon rain. Lightning risk high between 2 PM and 4 PM. Humidity makes it feel like 34°C.`;
+                document.body.classList.remove('disaster-mode');
+                document.getElementById('dashboardSeasonTag').textContent = "Monsoon Active";
+                document.getElementById('dashboardSeasonTag').style.color = 'var(--accent-1)';
+                document.getElementById('dashboardSeasonTag').style.borderColor = 'rgba(34, 211, 238, 0.2)';
+                document.getElementById('dashboardEmergencyBannerContainer').innerHTML = '';
             }
         }
 
         function goToScreen2() {
             showScreen('screen2');
             const dist = localStorage.getItem('sl_weather_district') || "Colombo";
+            const prov = localStorage.getItem('sl_weather_province') || "Western";
             updateStatus(dist);
+            fetchWeatherData(prov, dist);
+        }
+        
+        function overrideLocation(prov, dist) {
+            localStorage.setItem('sl_weather_province', prov);
+            localStorage.setItem('sl_weather_district', dist);
+            goToScreen2();
         }
 
         function goToScreen3() {
@@ -562,26 +641,14 @@
         }
 
         // --- AI Search Logic ---
-        function showAIPredictions() {
-            document.getElementById('aiPredictions').style.display = 'block';
-        }
-
-        function hideAIPredictions() {
-            setTimeout(() => {
-                document.getElementById('aiPredictions').style.display = 'none';
-            }, 250);
-        }
-
-        function fillSearch(city) {
-            document.getElementById('searchInput').value = city;
-            document.getElementById('searchInput').focus();
-        }
+        function showAIPredictions() { document.getElementById('aiPredictions').style.display = 'block'; }
+        function hideAIPredictions() { setTimeout(() => { document.getElementById('aiPredictions').style.display = 'none'; }, 250); }
+        function fillSearch(city) { document.getElementById('searchInput').value = city; document.getElementById('searchInput').focus(); }
         
         window.onload = function() {
             applySavedTheme();
-            if(localStorage.getItem('sl_weather_username')) {
-                applyUserData();
-            }
+            // If they land directly on a cached session, we don't auto-fetch until they interact or we can fetch immediately.
+            // But Screen 1 is default. They click "Check now" to trigger fetch.
         };
     </script>
 </body>
