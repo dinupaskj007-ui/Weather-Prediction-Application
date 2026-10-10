@@ -8,52 +8,65 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         
         :root {
-            /* DARK THEME - GLACIER TWO-TONE (Icy Cyan + Deep Violet) */
-            --bg-gradient: linear-gradient(145deg, #091221 0%, #170f2a 100%);
-            --glass-bg: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
+            /* DARK THEME - Reference Style */
+            --bg-gradient: linear-gradient(160deg, #12132e 0%, #060714 100%);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --glass-highlight: inset 0 2px 0 rgba(255, 255, 255, 0.15);
+            --text-main: #FFFFFF;
+            --text-muted: rgba(255, 255, 255, 0.7);
+            
             --btn-gradient: linear-gradient(135deg, rgba(6, 182, 212, 0.85) 0%, rgba(139, 92, 246, 0.85) 100%);
             --btn-border: rgba(255, 255, 255, 0.15);
+            
             --body-bg: #020617;
             --accent-1: #22d3ee;
             --accent-2: #c084fc;
+            
+            --bottom-sheet-bg: #ffffff;
+            --bottom-sheet-text: #1f2937;
+            --bottom-sheet-muted: #6b7280;
+            --bottom-sheet-card: #f3f4f6;
+            
             --danger-bg: rgba(225, 29, 72, 0.12);
             --danger-border: rgba(225, 29, 72, 0.3);
             --danger-text: #fb7185;
-            --glass-blur: blur(24px);
+            --glass-blur: blur(25px);
         }
 
         body.light-theme {
-            /* LIGHT THEME - GLACIER TWO-TONE (Frost White + Pale Lavender) */
-            --bg-gradient: linear-gradient(145deg, #e0f2fe 0%, #ede9fe 100%);
-            --glass-bg: rgba(255, 255, 255, 0.5);
-            --glass-border: rgba(255, 255, 255, 0.8);
-            --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.9);
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --btn-gradient: linear-gradient(135deg, rgba(14, 165, 233, 0.9) 0%, rgba(124, 58, 237, 0.9) 100%);
-            --btn-border: rgba(255, 255, 255, 1);
-            --body-bg: #f1f5f9;
-            --accent-1: #0284c7;
-            --accent-2: #7c3aed;
+            /* LIGHT THEME - Reference Style (Vibrant Blue) */
+            --bg-gradient: linear-gradient(160deg, #5fb4f9 0%, #1573d6 100%);
+            --glass-bg: rgba(255, 255, 255, 0.2);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --glass-highlight: inset 0 2px 0 rgba(255, 255, 255, 0.3);
+            --text-main: #FFFFFF;
+            --text-muted: rgba(255, 255, 255, 0.85);
+            
+            --bottom-sheet-bg: #ffffff;
+            --bottom-sheet-text: #1f2937;
+            --bottom-sheet-muted: #6b7280;
+            --bottom-sheet-card: #f3f4f6;
+            
             --danger-bg: rgba(225, 29, 72, 0.08);
             --danger-border: rgba(225, 29, 72, 0.2);
             --danger-text: #e11d48;
-            --glass-blur: blur(30px);
         }
         
         body.disaster-mode {
-            --bg-gradient: linear-gradient(145deg, #450a0a 0%, #170f2a 100%);
-            --glass-border: rgba(225, 29, 72, 0.4);
+            --bg-gradient: linear-gradient(160deg, #4c0f16 0%, #170505 100%);
+            --glass-border: rgba(225, 29, 72, 0.5);
+            --glass-highlight: inset 0 2px 0 rgba(225, 29, 72, 0.3);
             --accent-1: #fb7185;
             --accent-2: #f43f5e;
+            --bottom-sheet-bg: #1f0b0e;
+            --bottom-sheet-text: #f8fafc;
+            --bottom-sheet-muted: #cbd5e1;
+            --bottom-sheet-card: rgba(255, 255, 255, 0.05);
         }
         
         body.disaster-mode.light-theme {
-            --bg-gradient: linear-gradient(145deg, #ffe4e6 0%, #ede9fe 100%);
+            --bg-gradient: linear-gradient(160deg, #fd5c63 0%, #b81d24 100%);
         }
 
         body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background-color: var(--body-bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; color: var(--text-main); transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
@@ -61,143 +74,123 @@
         .app-container { width: 100%; height: 100vh; max-width: 100%; background: var(--bg-gradient); position: relative; overflow: hidden; display: flex; flex-direction: column; transition: background 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
         @media (min-width: 500px) { .app-container { max-width: 393px; height: 852px; max-height: 90vh; border-radius: 45px; border: 12px solid #000; box-shadow: 0 0 50px rgba(0,0,0,0.5); } }
 
-        /* Glacier Glass Helper Class */
-        .glacier-panel {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05), var(--glass-highlight);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            border-radius: 20px;
-        }
-
-        .status-bar { display: flex; justify-content: space-between; padding: 20px 25px 10px; font-size: 14px; font-weight: 600; z-index: 10; }
-        .status-location { font-weight: 500; opacity: 0; font-size: 14px; transition: opacity 0.4s ease; }
+        .status-bar { display: flex; justify-content: space-between; padding: 15px 25px 5px; font-size: 13px; font-weight: 600; z-index: 10; color: var(--text-main); }
+        .status-location { font-weight: 500; opacity: 0; font-size: 13px; transition: opacity 0.4s ease; }
 
         /* Smooth Screen Transitions */
-        .screen { display: none; flex: 1; flex-direction: column; padding: 20px 25px; overflow-y: auto; -ms-overflow-style: none; scrollbar-width: none; opacity: 0; transform: translateY(15px); transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .screen { display: none; flex: 1; flex-direction: column; overflow-y: auto; overflow-x: hidden; -ms-overflow-style: none; scrollbar-width: none; opacity: 0; transform: translateY(15px); transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
         .screen::-webkit-scrollbar { display: none; }
         .screen.active { display: flex; opacity: 1; transform: translateY(0); animation: smoothReveal 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
 
-        /* --- SCREEN 1 & LOGIN --- */
-        .s1-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; margin-top: -40px; }
-        .hero-asset { width: 200px; height: 200px; margin-bottom: 45px; background: url('https://cdn-icons-png.flaticon.com/512/3222/3222801.png') no-repeat center; background-size: contain; filter: drop-shadow(0px 25px 30px rgba(0,0,0,0.25)); animation: float-glacial 5s ease-in-out infinite; }
-        .hero-text { font-size: 17px; font-weight: 400; line-height: 1.6; color: var(--text-muted); margin-bottom: 45px; padding: 0 20px; }
-        .hero-text strong { background: -webkit-linear-gradient(45deg, var(--accent-1), var(--accent-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; display: block; margin-top: 12px; font-size: 26px; letter-spacing: 1px; }
+        /* --- SCREEN 1 & LOGIN (Kept Similar but updated theme) --- */
+        .s1-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px 25px; margin-top: -40px; }
+        .hero-asset { width: 220px; height: 220px; margin-bottom: 30px; background: url('https://cdn-icons-png.flaticon.com/512/3222/3222801.png') no-repeat center; background-size: contain; filter: drop-shadow(0px 25px 30px rgba(0,0,0,0.3)); animation: float-glacial 5s ease-in-out infinite; }
+        .hero-text { font-size: 16px; font-weight: 400; line-height: 1.6; color: var(--text-muted); margin-bottom: 40px; padding: 0 10px; }
+        .hero-text strong { color: var(--text-main); font-weight: 800; display: block; margin-top: 10px; font-size: 26px; letter-spacing: 1px; }
 
-        .btn-primary { background: var(--btn-gradient); color: white; border: 1px solid var(--btn-border); border-radius: 30px; padding: 18px 0; width: 85%; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3), inset 0 1px 0 rgba(255,255,255,0.2); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); margin-bottom: 20px; letter-spacing: 0.5px; text-transform: uppercase; }
-        .btn-primary:active { transform: scale(0.96); box-shadow: 0 5px 15px rgba(139, 92, 246, 0.2); }
+        .glacier-panel { background: var(--glass-bg); border: 1px solid var(--glass-border); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), var(--glass-highlight); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-radius: 24px; }
+        .btn-primary { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: var(--text-main); backdrop-filter: blur(10px); border-radius: 30px; padding: 18px 0; width: 85%; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .btn-primary:active { transform: scale(0.96); background: rgba(255,255,255,0.25); }
         
         .input-group { width: 85%; margin-bottom: 18px; text-align: left; }
         .input-label { font-size: 11px; color: var(--text-muted); margin-bottom: 8px; display: block; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; padding-left: 4px; }
-        .form-input { width: 100%; padding: 16px 20px; color: var(--text-main); font-size: 15px; outline: none; box-sizing: border-box; font-family: 'Inter', sans-serif; transition: all 0.3s ease; }
-        .form-input::placeholder { color: var(--text-muted); opacity: 0.7; }
-        .form-input:focus { border-color: var(--accent-2); box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15); }
-        select.form-input { appearance: none; background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%22//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2394a3b8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 18px top 50%; background-size: 12px auto; }
-        select.form-input option { background: var(--body-bg); color: var(--text-main); }
+        .form-input { width: 100%; padding: 16px 20px; color: #fff; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); font-size: 15px; outline: none; box-sizing: border-box; font-family: 'Inter', sans-serif; transition: all 0.3s ease; border-radius: 16px; backdrop-filter: blur(10px); }
+        .form-input::placeholder { color: rgba(255,255,255,0.5); }
+        .form-input:focus { border-color: #fff; box-shadow: 0 0 0 2px rgba(255,255,255,0.2); }
+        select.form-input option { background: #12132e; color: #fff; }
 
-        /* --- SCREEN 2 --- */
+        /* --- SCREEN 2: REFERENCE UI DASHBOARD --- */
         .s2-content { flex: 1; display: flex; flex-direction: column; width: 100%; position: relative; }
         
-        .header-top-row { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 15px; margin-bottom: 35px; }
-        .location-header h1 { margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.5px; line-height: 1.15; }
-        .location-header .season-tag { color: var(--accent-1); font-size: 12px; font-weight: 700; margin-top: 10px; text-transform: uppercase; letter-spacing: 1.5px; display: inline-block; background: rgba(34, 211, 238, 0.1); padding: 4px 10px; border-radius: 12px; border: 1px solid rgba(34, 211, 238, 0.2); }
-        body:not(.light-theme) .location-header .season-tag { color: var(--accent-1); }
+        .top-nav-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 25px 25px; }
+        .nav-icon { font-size: 24px; font-weight: bold; cursor: pointer; color: var(--text-main); display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; transition: background 0.2s; }
+        .nav-icon:active { background: rgba(255,255,255,0.1); }
+        
+        /* Main Glass Card (Reference Style) */
+        .main-glass-card { margin: 15px 25px 30px; position: relative; padding: 70px 20px 25px; text-align: center; }
+        
+        .weather-asset-large { position: absolute; top: -70px; left: 50%; transform: translateX(-50%); width: 180px; height: 180px; background: url('https://cdn-icons-png.flaticon.com/512/3222/3222794.png') no-repeat center; background-size: contain; filter: drop-shadow(0px 20px 30px rgba(0,0,0,0.3)); animation: float-glacial 6s ease-in-out infinite; }
+        
+        .main-temp { font-size: 80px; font-weight: 600; line-height: 1; letter-spacing: -3px; color: var(--text-main); margin-bottom: 10px; display: flex; justify-content: center; align-items: flex-start; }
+        .main-temp-unit { font-size: 30px; font-weight: 500; margin-top: 10px; margin-left: 2px; }
+        .main-condition { font-size: 18px; font-weight: 500; color: var(--text-main); letter-spacing: 0.5px; margin-bottom: 25px; }
+        
+        .stats-grid-small { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .stat-pill-small { display: flex; align-items: center; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 12px; padding: 10px 12px; gap: 12px; text-align: left; }
+        .stat-pill-small .icon { font-size: 18px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
+        .stat-pill-small .stat-text { display: flex; flex-direction: column; }
+        .stat-pill-small .label { font-size: 10px; font-weight: 500; color: var(--text-muted); margin-bottom: 2px; }
+        .stat-pill-small .val { font-size: 13px; font-weight: 700; color: var(--text-main); }
+        
+        .location-pill { display: inline-flex; align-items: center; gap: 6px; background: rgba(255, 255, 255, 0.15); border-radius: 20px; padding: 8px 16px; font-size: 13px; font-weight: 600; color: var(--text-main); }
+        .location-pill .pin { font-size: 14px; }
 
-        .header-actions { display: flex; gap: 10px; align-items: center; flex-shrink: 0; margin-left: 15px; }
-        .action-btn-circle { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .action-btn-circle:hover { transform: translateY(-2px); }
-        .action-btn-circle:active { transform: scale(0.92); }
-        .profile-btn { width: 38px; height: 38px; border-radius: 50%; background: var(--btn-gradient); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: white; border: 1px solid var(--btn-border); cursor: pointer; box-shadow: 0 4px 12px rgba(139, 92, 246, 0.25); transition: all 0.3s ease; }
-        .profile-btn:active { transform: scale(0.92); }
-
-        .main-weather-card { display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; padding: 0 10px; }
-        .main-temp { font-size: 96px; font-weight: 800; line-height: 1; letter-spacing: -4px; background: -webkit-linear-gradient(90deg, var(--text-main), var(--text-muted)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .main-temp-unit { font-size: 32px; vertical-align: super; font-weight: 500; margin-left: 2px; -webkit-text-fill-color: var(--text-muted); }
-        .weather-asset-large { width: 130px; height: 130px; background: url('https://cdn-icons-png.flaticon.com/512/3222/3222794.png') no-repeat center; background-size: contain; filter: drop-shadow(0px 15px 25px rgba(0,0,0,0.2)); animation: float-glacial 6s ease-in-out infinite; }
-
-        .ai-summary-card { padding: 22px 24px; margin-bottom: 35px; border-left: 4px solid var(--accent-2); font-size: 14px; line-height: 1.7; font-weight: 400; }
-        .ai-summary-title { font-weight: 800; color: var(--accent-2); margin-bottom: 10px; font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; display: flex; align-items: center; gap: 8px; }
+        /* Bottom Sheet (Solid White panel containing Hourly, AI, Community) */
+        .bottom-sheet { background: var(--bottom-sheet-bg); color: var(--bottom-sheet-text); flex: 1; border-top-left-radius: 35px; border-top-right-radius: 35px; padding: 30px 25px; display: flex; flex-direction: column; box-shadow: 0 -10px 40px rgba(0,0,0,0.1); transition: background 0.5s, color 0.5s; }
+        
+        .hourly-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .hourly-header h3 { margin: 0; font-size: 16px; font-weight: 700; color: var(--bottom-sheet-text); }
+        
+        .hourly-scroll { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 15px; -ms-overflow-style: none; scrollbar-width: none; }
+        .hourly-scroll::-webkit-scrollbar { display: none; }
+        .hourly-item { display: flex; flex-direction: column; align-items: center; gap: 10px; min-width: 45px; }
+        .hourly-item .time { font-size: 13px; font-weight: 600; color: var(--bottom-sheet-muted); }
+        .hourly-item .icon { font-size: 24px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
+        .hourly-item .temp { font-size: 16px; font-weight: 700; color: var(--bottom-sheet-text); }
+        
+        /* Secondary sections inside Bottom Sheet */
+        .ai-summary-card { background: var(--bottom-sheet-card); border-left: 4px solid #8b5cf6; padding: 18px; border-radius: 16px; margin-top: 15px; font-size: 14px; line-height: 1.6; color: var(--bottom-sheet-text); }
+        .ai-summary-title { font-weight: 800; color: #8b5cf6; margin-bottom: 8px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+        
         body.disaster-mode .ai-summary-card { border-left-color: var(--danger-text); }
         body.disaster-mode .ai-summary-title { color: var(--danger-text); }
 
-        .hourly-section h3 { font-size: 16px; font-weight: 600; margin-bottom: 16px; color: var(--text-main); letter-spacing: 0.5px; }
-        .hourly-scroll { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 15px; -ms-overflow-style: none; scrollbar-width: none; }
-        .hourly-scroll::-webkit-scrollbar { display: none; }
-        .hourly-pill { padding: 18px 14px; min-width: 58px; display: flex; flex-direction: column; align-items: center; gap: 14px; border-radius: 40px; transition: all 0.3s ease; }
-        .hourly-pill.active { background: var(--btn-gradient); border: 1px solid var(--btn-border); box-shadow: 0 8px 20px rgba(139, 92, 246, 0.25); color: white; }
-        .hourly-time { font-size: 12px; font-weight: 600; color: var(--text-muted); }
-        .hourly-pill.active .hourly-time { color: rgba(255,255,255,0.9); }
-        .hourly-icon { width: 32px; height: 32px; background-size: contain; background-repeat: no-repeat; background-position: center; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
-        .hourly-temp { font-weight: 700; font-size: 16px; }
+        .community-header { display: flex; justify-content: space-between; align-items: center; margin-top: 25px; margin-bottom: 15px; }
+        .community-header h3 { margin: 0; font-size: 16px; font-weight: 700; color: var(--bottom-sheet-text); }
+        .live-dot { color: #ef4444; animation: pulse-opacity 1.5s infinite; font-size: 10px; margin-left: 4px; }
+        .btn-report { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 20px; padding: 6px 12px; font-size: 11px; font-weight: 700; cursor: pointer; text-transform: uppercase; }
 
-        .community-section { margin-top: 15px; margin-bottom: 15px; }
-        .community-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-        .community-header h3 { margin: 0; font-size: 15px; font-weight: 700; color: var(--text-main); letter-spacing: 0.5px; }
-        .live-dot { color: var(--danger-text); animation: pulse-opacity 1.5s ease-in-out infinite; font-size: 10px; vertical-align: middle; margin-left: 4px; }
-        .btn-report { background: var(--danger-bg); color: var(--danger-text); border: 1px solid var(--danger-border); border-radius: 20px; padding: 6px 14px; font-size: 11px; font-weight: 800; cursor: pointer; transition: all 0.2s; text-transform: uppercase; letter-spacing: 1px; }
-        .btn-report:active { transform: scale(0.95); }
+        .report-card { background: var(--bottom-sheet-card); border-left: 4px solid #ef4444; padding: 16px; border-radius: 12px; margin-bottom: 12px; }
+        .report-meta { font-size: 11px; color: var(--bottom-sheet-muted); margin-bottom: 6px; font-weight: 500; }
+        .report-user { font-weight: 700; color: var(--bottom-sheet-text); }
+        .report-text { font-size: 13px; line-height: 1.5; color: var(--bottom-sheet-text); }
 
-        .report-list { display: flex; flex-direction: column; gap: 12px; }
-        .report-card { padding: 16px; border-left: 4px solid var(--danger-text); }
-        .report-meta { font-size: 11px; color: var(--text-muted); margin-bottom: 8px; font-weight: 500; }
-        .report-user { font-weight: 700; color: var(--text-main); }
-        .report-text { font-size: 13px; line-height: 1.6; color: var(--text-main); font-weight: 400; }
-        .verified-badge { color: var(--accent-1); font-size: 10px; margin-left: 4px; }
+        .btn-view-stats { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; border: none; border-radius: 30px; padding: 16px 0; width: 100%; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 15px; transition: all 0.3s; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-view-stats:active { transform: scale(0.98); background: rgba(139, 92, 246, 0.2); }
 
-        .btn-view-stats { background: rgba(139, 92, 246, 0.1); color: var(--accent-2); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 30px; padding: 16px 0; width: 100%; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 20px; margin-bottom: 20px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); text-transform: uppercase; letter-spacing: 1.5px; }
-        .btn-view-stats:active { transform: scale(0.98); background: rgba(139, 92, 246, 0.15); }
-        body.light-theme .btn-view-stats { background: rgba(124, 58, 237, 0.05); border-color: rgba(124, 58, 237, 0.2); }
+        /* DMC Banner inside Dashboard (Disaster Mode) */
+        #dashboardEmergencyBannerContainer { padding: 0 25px; margin-bottom: 10px; }
+        .dmc-alert-banner { background: var(--danger-bg); border: 1px solid var(--danger-border); padding: 20px; border-radius: 16px; display: flex; flex-direction: column; gap: 15px; animation: pulse-danger-glow 3s infinite; }
+        .alert-logos { display: flex; gap: 10px; }
+        .logo-circle { width: 36px; height: 36px; border-radius: 50%; background: var(--danger-text); color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 10px; }
+        .alert-text { color: var(--text-main); font-size: 13px; line-height: 1.6; }
+        .alert-text strong { color: var(--danger-text); display: block; margin-bottom: 6px; font-size: 15px; text-transform: uppercase; }
+        body.disaster-mode .dmc-alert-banner .alert-text { color: var(--bottom-sheet-text); }
 
-        /* --- SCREEN 3: RISK METRICS --- */
-        .nav-header { display: flex; align-items: center; margin-top: 15px; margin-bottom: 35px; }
-        .back-btn { background: none; border: none; color: var(--text-muted); font-size: 15px; cursor: pointer; padding: 0; margin-right: 20px; font-weight: 600; transition: color 0.2s; }
-        .back-btn:hover { color: var(--text-main); }
-        .nav-header h2 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
-
-        .dmc-alert-banner { background: var(--danger-bg); border: 1px solid var(--danger-border); padding: 24px; margin-bottom: 35px; display: flex; flex-direction: column; gap: 18px; animation: pulse-danger-glow 3s infinite; }
-        .alert-logos { display: flex; gap: 12px; }
-        .logo-circle { width: 40px; height: 40px; border-radius: 50%; background: var(--danger-text); color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 11px; box-shadow: 0 4px 10px rgba(225, 29, 72, 0.2); }
-        .alert-text { color: var(--text-main); font-size: 14px; line-height: 1.7; }
-        .alert-text strong { color: var(--danger-text); display: block; margin-bottom: 8px; font-size: 16px; text-transform: uppercase; letter-spacing: 1px; }
-
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
-        .stat-card { padding: 24px 20px; display: flex; flex-direction: column; gap: 10px; transition: transform 0.3s ease; }
-        .stat-card:active { transform: scale(0.97); }
+        /* --- SCREEN 3: RISK METRICS (Kept but styled to match) --- */
+        .s3-content { padding: 20px 25px; }
+        .nav-header { display: flex; align-items: center; margin-bottom: 30px; }
+        .back-btn { background: none; border: none; color: var(--text-main); font-size: 24px; cursor: pointer; padding: 0; margin-right: 20px; line-height: 1; }
+        .nav-header h2 { margin: 0; font-size: 22px; font-weight: 700; color: var(--text-main); }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .stat-card { padding: 24px 20px; display: flex; flex-direction: column; gap: 10px; }
         .risk-card { border: 1px solid var(--danger-border); background: linear-gradient(145deg, var(--danger-bg), transparent); }
         .stat-title { font-size: 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
-        .risk-card .stat-title { color: var(--danger-text); }
-        .stat-value { font-size: 34px; font-weight: 800; letter-spacing: -1.5px; color: var(--text-main); }
+        .stat-value { font-size: 34px; font-weight: 800; color: var(--text-main); letter-spacing: -1px; }
         .stat-desc { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-top: auto; }
 
         /* --- SCREEN 4: LOCATIONS --- */
-        .search-section { margin-bottom: 35px; position: relative; }
-        
-        .ai-predictions { margin-bottom: 15px; animation: smoothReveal 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
-        .ai-label { font-size: 10px; font-weight: 800; color: var(--accent-2); text-transform: uppercase; letter-spacing: 1.5px; display: block; margin-bottom: 12px; padding-left: 2px; }
-        .prediction-chips { display: flex; gap: 10px; overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none; padding-bottom: 5px; }
-        .prediction-chips::-webkit-scrollbar { display: none; }
-        .chip { background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.25); color: var(--accent-2); padding: 10px 18px; border-radius: 30px; font-size: 12px; font-weight: 700; white-space: nowrap; cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; gap: 8px; }
-        .chip:active { transform: scale(0.95); background: rgba(139, 92, 246, 0.2); }
-
-        .search-input { width: 100%; padding: 18px 22px; font-size: 15px; border-radius: 20px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .search-input:focus { border-color: var(--accent-2); box-shadow: 0 0 20px rgba(139, 92, 246, 0.15); transform: translateY(-2px); }
-        
-        .city-list { display: flex; flex-direction: column; gap: 16px; padding-bottom: 25px; }
-        .city-card { padding: 24px; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .city-card:active { transform: scale(0.96); }
-        .city-info h3 { margin: 0 0 8px 0; font-size: 20px; font-weight: 700; letter-spacing: -0.5px; color: var(--text-main); }
+        .s4-content { padding: 20px 25px; }
+        .search-input { width: 100%; padding: 18px 22px; font-size: 15px; border-radius: 20px; color: var(--text-main); background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); outline: none; margin-bottom: 25px; backdrop-filter: blur(10px); }
+        .search-input::placeholder { color: rgba(255,255,255,0.6); }
+        .city-card { padding: 24px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; cursor: pointer; }
+        .city-info h3 { margin: 0 0 8px 0; font-size: 20px; font-weight: 700; color: var(--text-main); }
         .city-condition { font-size: 13px; color: var(--text-muted); font-weight: 500; }
-        .city-temp { font-size: 40px; font-weight: 800; letter-spacing: -2px; color: var(--text-main); }
-        
-        .city-card.warning-card { border-left: 4px solid #f59e0b; }
-        .city-card.rain-card { border-left: 4px solid var(--accent-1); }
-        .city-card.mist-card { border-left: 4px solid var(--text-muted); }
-        .city-card.heat-card { border-left: 4px solid var(--danger-text); }
-        
+        .city-temp { font-size: 40px; font-weight: 800; color: var(--text-main); letter-spacing: -2px; }
+
         /* Loader Overlay */
-        #loadingOverlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(10px); z-index: 50; display: none; justify-content: center; align-items: center; flex-direction: column; color: white; font-weight: 600; border-radius: inherit; }
-        .spinner { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.2); border-top-color: var(--accent-1); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
+        #loadingOverlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(10px); z-index: 50; display: none; justify-content: center; align-items: center; flex-direction: column; color: white; font-weight: 600; border-radius: inherit; }
+        .spinner { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
 
         /* Animations */
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -210,16 +203,13 @@
 <body>
 
     <div class="app-container">
-        <!-- Loader Overlay -->
         <div id="loadingOverlay">
             <div class="spinner"></div>
-            <div id="loadingText">Syncing with Meteorological Data...</div>
+            <div id="loadingText">Syncing Data...</div>
         </div>
         
-        <!-- Mock Status Bar -->
         <div class="status-bar">
             <span>9:41</span>
-            <span class="status-location" id="statusBarLocation">Sri Lanka</span>
             <span>📶 🔋</span>
         </div>
 
@@ -231,116 +221,135 @@
                     DISCOVER CLIMATE PRECISION,
                     <strong>SRI LANKA.</strong>
                 </div>
-                <button class="btn-primary glacier-panel" onclick="handleInitialCheck()">Check now</button>
+                <button class="btn-primary" onclick="handleInitialCheck()">Check now</button>
             </div>
         </div>
 
-        <!-- SCREEN 1.5: SETUP / LOGIN -->
+        <!-- SCREEN 1.5: SETUP -->
         <div id="loginScreen" class="screen">
             <div class="s1-content">
                 <div class="hero-text" style="margin-bottom: 25px;">
                     Personalize your alerts.<br>
                     <strong>WHERE ARE YOU?</strong>
                 </div>
-                
                 <div class="input-group">
                     <span class="input-label">First Name</span>
-                    <input type="text" id="userNameInput" class="form-input glacier-panel" placeholder="e.g. Kasun" autocomplete="off">
+                    <input type="text" id="userNameInput" class="form-input" placeholder="e.g. Kasun" autocomplete="off">
                 </div>
-                
                 <div class="input-group">
                     <span class="input-label">Province</span>
-                    <select id="provinceSelect" class="form-input glacier-panel" onchange="updateDistricts()">
+                    <select id="provinceSelect" class="form-input" onchange="updateDistricts()">
                         <option value="" disabled selected>Select Province</option>
                     </select>
                 </div>
-                
                 <div class="input-group" style="margin-bottom: 35px;">
                     <span class="input-label">District</span>
-                    <select id="districtSelect" class="form-input glacier-panel" disabled>
+                    <select id="districtSelect" class="form-input" disabled>
                         <option value="" disabled selected>Select District</option>
                     </select>
                 </div>
-                
-                <button class="btn-primary glacier-panel" onclick="saveDataAndProceed()">Continue</button>
+                <button class="btn-primary" onclick="saveDataAndProceed()">Continue</button>
             </div>
         </div>
 
-        <!-- SCREEN 2: COLOMBO DASHBOARD -->
-        <div id="screen2" class="screen">
+        <!-- SCREEN 2: MAIN DASHBOARD (Reference UI Style) -->
+        <div id="screen2" class="screen" style="padding: 0;">
             <div class="s2-content">
                 
-                <div class="header-top-row">
-                    <div class="location-header" style="margin: 0;">
-                        <h1 id="dashboardLocationHeader">Colombo, Western Province</h1>
-                        <div class="season-tag" id="dashboardSeasonTag">Yala Monsoon Season</div>
-                    </div>
-                    
-                    <div class="header-actions">
-                        <div class="action-btn-circle glacier-panel" onclick="goToScreen4()">🔍</div>
-                        <div class="action-btn-circle glacier-panel" id="themeToggleBtn" onclick="toggleTheme()">☀️</div>
-                        <div class="profile-btn" id="profileBtn" onclick="alert('Profile settings coming soon!')">U</div>
+                <div class="top-nav-row">
+                    <div class="nav-icon" onclick="alert('Menu')">⋮</div>
+                    <div style="display: flex; gap: 15px;">
+                        <div class="nav-icon" id="themeToggleBtn" onclick="toggleTheme()" style="font-size: 20px;">☀️</div>
+                        <div class="nav-icon" onclick="goToScreen4()">+</div>
                     </div>
                 </div>
                 
-                <!-- Injected via JS during Emergency -->
                 <div id="dashboardEmergencyBannerContainer"></div>
 
-                <div class="main-weather-card">
-                    <div class="main-temp" id="mainTemp">--<span class="main-temp-unit">°C</span></div>
+                <div class="main-glass-card glacier-panel">
                     <div class="weather-asset-large"></div>
-                </div>
-
-                <div class="ai-summary-card glacier-panel">
-                    <div class="ai-summary-title">✨ AI Summary</div>
-                    <span id="aiSummaryText">Loading precise localized predictions...</span>
-                </div>
-
-                <div class="hourly-section">
-                    <h3>Hourly Forecast</h3>
-                    <div class="hourly-scroll">
-                        <div class="hourly-pill glacier-panel active">
-                            <span class="hourly-time">Now</span>
-                            <div class="hourly-icon" style="background-image: url('https://cdn-icons-png.flaticon.com/512/3222/3222794.png');"></div>
-                            <span class="hourly-temp" id="hourlyNow">--°</span>
+                    
+                    <div class="main-temp" id="mainTemp">+--<span class="main-temp-unit">°</span></div>
+                    <div class="main-condition" id="mainCondition">Loading...</div>
+                    
+                    <div class="stats-grid-small">
+                        <div class="stat-pill-small">
+                            <span class="icon">☀️</span>
+                            <div class="stat-text"><span class="label">UV Index</span><span class="val" id="uvValueCard">--</span></div>
                         </div>
-                        <div class="hourly-pill glacier-panel">
-                            <span class="hourly-time">3 PM</span>
-                            <div class="hourly-icon" style="background-image: url('https://cdn-icons-png.flaticon.com/512/3222/3222794.png');"></div>
-                            <span class="hourly-temp" id="hourlyNext1">--°</span>
+                        <div class="stat-pill-small">
+                            <span class="icon">💨</span>
+                            <div class="stat-text"><span class="label">Wind</span><span class="val" id="windValueCard">-- km/h</span></div>
                         </div>
-                        <div class="hourly-pill glacier-panel">
-                            <span class="hourly-time">4 PM</span>
-                            <div class="hourly-icon" style="background-image: url('https://cdn-icons-png.flaticon.com/512/3222/3222794.png');"></div>
-                            <span class="hourly-temp" id="hourlyNext2">--°</span>
+                        <div class="stat-pill-small">
+                            <span class="icon">🌩️</span>
+                            <div class="stat-text"><span class="label">Weather Code</span><span class="val" id="weatherCodeCard">--</span></div>
                         </div>
+                        <div class="stat-pill-small">
+                            <span class="icon">💧</span>
+                            <div class="stat-text"><span class="label">Humidity</span><span class="val" id="humidityValueCard">--%</span></div>
+                        </div>
+                    </div>
+                    
+                    <div class="location-pill" style="margin-top: 15px;">
+                        <span class="pin">📍</span> <span id="dashboardLocationHeader">Colombo, Sri Lanka</span>
                     </div>
                 </div>
 
-                <!-- COMMUNITY REPORTS -->
-                <div class="community-section">
+                <div class="bottom-sheet">
+                    <div class="hourly-header">
+                        <h3>Today's Weather</h3>
+                        <span style="font-size: 13px; color: var(--bottom-sheet-muted);">Next 24h &rsaquo;</span>
+                    </div>
+                    
+                    <div class="hourly-scroll">
+                        <div class="hourly-item">
+                            <span class="time">Now</span>
+                            <span class="icon">⛅</span>
+                            <span class="temp" id="hourlyNow">--°</span>
+                        </div>
+                        <div class="hourly-item">
+                            <span class="time">15:00</span>
+                            <span class="icon">🌧️</span>
+                            <span class="temp" id="hourlyNext1">--°</span>
+                        </div>
+                        <div class="hourly-item">
+                            <span class="time">16:00</span>
+                            <span class="icon">🌩️</span>
+                            <span class="temp" id="hourlyNext2">--°</span>
+                        </div>
+                        <div class="hourly-item">
+                            <span class="time">17:00</span>
+                            <span class="icon">☁️</span>
+                            <span class="temp">--°</span>
+                        </div>
+                    </div>
+                    
+                    <div class="ai-summary-card">
+                        <div class="ai-summary-title">✨ AI Summary</div>
+                        <span id="aiSummaryText">Syncing local meteorological data...</span>
+                    </div>
+
                     <div class="community-header">
                         <h3>Community Reports <span class="live-dot">●</span></h3>
-                        <button class="btn-report glacier-panel" onclick="alert('Reporting feature coming soon!')">+ Report</button>
+                        <button class="btn-report" onclick="alert('Report UI')">+ Report</button>
                     </div>
-                    <div class="report-list">
-                        <div class="report-card glacier-panel">
-                            <div class="report-meta"><span class="report-user">Saman D.</span> <span class="verified-badge">✔</span> • 5 mins ago</div>
-                            <div class="report-text">Severe flash flooding starting on Baseline Road. Avoid the area if driving.</div>
-                        </div>
+                    
+                    <div class="report-card">
+                        <div class="report-meta"><span class="report-user">Saman D.</span> • 5 mins ago</div>
+                        <div class="report-text">Severe flash flooding starting on Baseline Road. Avoid area.</div>
                     </div>
+                    
+                    <button class="btn-view-stats" onclick="goToScreen3()">View Full Risk Report</button>
                 </div>
-
-                <button class="btn-view-stats glacier-panel" onclick="goToScreen3()">View Full Risk Report</button>
             </div>
         </div>
 
-        <!-- SCREEN 3: RISK METRICS -->
+        <!-- SCREEN 3: RISK METRICS (DMC) -->
         <div id="screen3" class="screen">
             <div class="s3-content">
-                
                 <div class="nav-header">
-                    <button onclick="goToScreen2()" class="back-btn">← Back</button>
+                    <button onclick="goToScreen2()" class="back-btn">‹</button>
                     <h2>Risk Analysis</h2>
                 </div>
 
@@ -361,77 +370,61 @@
                         <div class="stat-value text-danger" id="lightningProb">90%</div>
                         <div class="stat-desc text-danger">RED ALERT</div>
                     </div>
-                    
                     <div class="stat-card glacier-panel">
                         <div class="stat-title">Humidity</div>
-                        <div class="stat-value" id="humidityValue">--%</div>
+                        <div class="stat-value" id="humidityValueScreen3">--%</div>
                         <div class="stat-desc">Very High</div>
                     </div>
                     <div class="stat-card glacier-panel">
                         <div class="stat-title">Wind Speed</div>
-                        <div class="stat-value" id="windValue">--<span style="font-size: 16px;"> km/h</span></div>
-                        <div class="stat-desc">Gusting</div>
+                        <div class="stat-value" id="windValueScreen3">--</div>
+                        <div class="stat-desc">km/h</div>
                     </div>
                     <div class="stat-card glacier-panel">
                         <div class="stat-title">UV Index</div>
-                        <div class="stat-value" id="uvValue">--</div>
+                        <div class="stat-value" id="uvValueScreen3">--</div>
                         <div class="stat-desc">Low</div>
                     </div>
                 </div>
-
             </div>
         </div>
         
-        <!-- SCREEN 4: LOCATIONS & AI SEARCH -->
+        <!-- SCREEN 4: LOCATIONS -->
         <div id="screen4" class="screen">
             <div class="s4-content">
-                
                 <div class="nav-header">
-                    <button onclick="goToScreen2()" class="back-btn">← Back</button>
+                    <button onclick="goToScreen2()" class="back-btn">‹</button>
                     <h2>Locations</h2>
                 </div>
-
-                <div class="search-section">
-                    <div id="aiPredictions" class="ai-predictions" style="display: none;">
-                        <span class="ai-label">✨ AI PREDICTS:</span>
-                        <div class="prediction-chips">
-                            <span class="chip glacier-panel" onclick="fillSearch('Kandy')">🎯 Kandy (Morning Routine)</span>
-                            <span class="chip glacier-panel" onclick="fillSearch('Galle')">🌊 Galle (Weekend Trip)</span>
-                        </div>
-                    </div>
-                    
-                    <input type="text" id="searchInput" class="search-input glacier-panel" placeholder="Search for a city, airport, or district..." onfocus="showAIPredictions()" onblur="hideAIPredictions()">
-                </div>
+                
+                <input type="text" id="searchInput" class="search-input" placeholder="Search city or district...">
 
                 <div class="city-list">
-                    <div class="city-card glacier-panel mist-card" onclick="overrideLocation('Central', 'Nuwara Eliya')">
+                    <div class="city-card glacier-panel" style="border-left: 4px solid #9ca3af;" onclick="overrideLocation('Central', 'Nuwara Eliya')">
                         <div class="city-info">
                             <h3>Nuwara Eliya</h3>
-                            <span class="city-condition">Dense Mist & Cold</span>
+                            <span class="city-condition">Dense Mist</span>
                         </div>
                         <div class="city-temp">14°</div>
                     </div>
-                    
-                    <div class="city-card glacier-panel rain-card" onclick="overrideLocation('Central', 'Kandy')">
+                    <div class="city-card glacier-panel" style="border-left: 4px solid #3b82f6;" onclick="overrideLocation('Central', 'Kandy')">
                         <div class="city-info">
                             <h3>Kandy</h3>
                             <span class="city-condition">Light Rain</span>
                         </div>
                         <div class="city-temp">22°</div>
                     </div>
-                    
-                    <div class="city-card glacier-panel warning-card" onclick="overrideLocation('Southern', 'Galle')">
+                    <div class="city-card glacier-panel" style="border-left: 4px solid #f59e0b;" onclick="overrideLocation('Southern', 'Galle')">
                         <div class="city-info">
                             <h3>Galle</h3>
-                            <span class="city-condition">Sun & Thundershowers</span>
+                            <span class="city-condition">Thundershowers</span>
                         </div>
                         <div class="city-temp">29°</div>
                     </div>
-                    
-                    <div class="city-card glacier-panel heat-card" onclick="overrideLocation('Northern', 'Jaffna')">
+                    <div class="city-card glacier-panel" style="border-left: 4px solid #ef4444;" onclick="overrideLocation('Northern', 'Jaffna')">
                         <div class="city-info">
                             <h3>Jaffna</h3>
-                            <span class="city-condition">Clear Sky (High UV)</span>
+                            <span class="city-condition">Clear Sky</span>
                         </div>
                         <div class="city-temp">33°</div>
                     </div>
@@ -504,28 +497,14 @@
 
         // --- Navigation Logic ---
         function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(el => {
-                el.classList.remove('active');
-            });
-            setTimeout(() => {
-                document.getElementById(screenId).classList.add('active');
-            }, 50);
-        }
-
-        function updateStatus(locationName) {
-            document.getElementById('statusBarLocation').textContent = locationName;
-            document.getElementById('statusBarLocation').style.opacity = '1';
+            document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+            setTimeout(() => document.getElementById(screenId).classList.add('active'), 50);
         }
 
         function handleInitialCheck() {
             const savedName = localStorage.getItem('sl_weather_username');
-            if (savedName) {
-                goToScreen2();
-            } else {
-                showScreen('loginScreen');
-                updateStatus('Setup');
-                setTimeout(() => document.getElementById('userNameInput').focus(), 400);
-            }
+            if (savedName) goToScreen2();
+            else showScreen('loginScreen');
         }
 
         function saveDataAndProceed() {
@@ -539,11 +518,11 @@
                 localStorage.setItem('sl_weather_district', dist);
                 goToScreen2();
             } else {
-                alert("Please fill in all details so we can tailor your alerts.");
+                alert("Please fill in all details.");
             }
         }
 
-        // --- Backend API Integration ---
+        // --- API Integration ---
         async function fetchWeatherData(province, district) {
             const loader = document.getElementById('loadingOverlay');
             loader.style.display = 'flex';
@@ -556,40 +535,50 @@
                     alert("Error: " + data.error);
                     return;
                 }
-                
                 applyDataToUI(data);
                 
             } catch (error) {
                 console.error("Failed to fetch weather:", error);
-                document.getElementById('aiSummaryText').textContent = "Failed to connect to AI Meteorological Service. Please check your network.";
+                document.getElementById('aiSummaryText').textContent = "Failed to connect to backend.";
             } finally {
                 loader.style.display = 'none';
             }
         }
         
+        function mapCodeToText(code) {
+            if(code <= 3) return "Sunny with Cloud";
+            if(code <= 49) return "Very Cloudy / Fog";
+            if(code <= 69) return "It's Raining";
+            if(code <= 79) return "It's Snowing";
+            return "It's a Storm";
+        }
+
         function applyDataToUI(data) {
             const name = localStorage.getItem('sl_weather_username') || "User";
-            document.getElementById('profileBtn').textContent = name.charAt(0).toUpperCase();
-            
             const dist = data.location.district;
             const prov = data.location.province;
             
-            // 1. Dashboard Header
-            document.getElementById('dashboardLocationHeader').textContent = `${dist}, ${prov} Province`;
+            document.getElementById('dashboardLocationHeader').textContent = `${dist}, Sri Lanka`;
             
-            // 2. Main Metrics
+            // Stats
             const temp = Math.round(data.metrics.temperature);
-            document.getElementById('mainTemp').innerHTML = `${temp}<span class="main-temp-unit">°C</span>`;
+            const prefix = temp > 0 ? "+" : "";
+            document.getElementById('mainTemp').innerHTML = `${prefix}${temp}<span class="main-temp-unit">°</span>`;
+            document.getElementById('mainCondition').textContent = mapCodeToText(data.metrics.weather_code);
+            
+            document.getElementById('uvValueCard').textContent = `${data.metrics.uv_index || 0} of 10`;
+            document.getElementById('windValueCard').textContent = `${data.metrics.wind_speed} km/h`;
+            document.getElementById('weatherCodeCard').textContent = `${data.metrics.weather_code}`;
+            document.getElementById('humidityValueCard').textContent = `${data.metrics.humidity}%`;
+            
             document.getElementById('hourlyNow').textContent = `${temp}°`;
-            document.getElementById('hourlyNext1').textContent = `${temp - 1}°`; // Mocking hourly fall
+            document.getElementById('hourlyNext1').textContent = `${temp - 1}°`;
             document.getElementById('hourlyNext2').textContent = `${temp - 2}°`;
             
-            // 3. Stats Grid (Screen 3)
-            document.getElementById('humidityValue').textContent = `${data.metrics.humidity}%`;
-            document.getElementById('windValue').innerHTML = `${data.metrics.wind_speed}<span style="font-size: 16px;"> km/h</span>`;
-            document.getElementById('uvValue').textContent = data.metrics.uv_index;
+            document.getElementById('humidityValueScreen3').textContent = `${data.metrics.humidity}%`;
+            document.getElementById('windValueScreen3').textContent = `${data.metrics.wind_speed}`;
+            document.getElementById('uvValueScreen3').textContent = data.metrics.uv_index || 0;
             
-            // 4. AI & Alerts
             const ai = data.ai_insights;
             const dmc = data.dmc_alert;
             
@@ -597,21 +586,13 @@
             document.getElementById('dmcAlertText').textContent = dmc.message;
             document.getElementById('dmcSeverityHeader').textContent = `[${dmc.source}] ${dmc.severity}:`;
             
-            // 5. DISASTER MODE UI
+            // Disaster Mode Logic
             if(ai.is_emergency) {
                 document.body.classList.add('disaster-mode');
-                document.getElementById('dashboardSeasonTag').textContent = dmc.threat_type;
-                document.getElementById('dashboardSeasonTag').style.color = 'var(--danger-text)';
-                document.getElementById('dashboardSeasonTag').style.borderColor = 'var(--danger-border)';
-                
-                // Clone DMC banner to dashboard
                 const bannerHtml = document.getElementById('screen3DmcBanner').outerHTML;
                 document.getElementById('dashboardEmergencyBannerContainer').innerHTML = bannerHtml;
             } else {
                 document.body.classList.remove('disaster-mode');
-                document.getElementById('dashboardSeasonTag').textContent = "Monsoon Active";
-                document.getElementById('dashboardSeasonTag').style.color = 'var(--accent-1)';
-                document.getElementById('dashboardSeasonTag').style.borderColor = 'rgba(34, 211, 238, 0.2)';
                 document.getElementById('dashboardEmergencyBannerContainer').innerHTML = '';
             }
         }
@@ -620,7 +601,6 @@
             showScreen('screen2');
             const dist = localStorage.getItem('sl_weather_district') || "Colombo";
             const prov = localStorage.getItem('sl_weather_province') || "Western";
-            updateStatus(dist);
             fetchWeatherData(prov, dist);
         }
         
@@ -630,26 +610,10 @@
             goToScreen2();
         }
 
-        function goToScreen3() {
-            showScreen('screen3');
-            updateStatus('Risk Metrics');
-        }
+        function goToScreen3() { showScreen('screen3'); }
+        function goToScreen4() { showScreen('screen4'); }
         
-        function goToScreen4() {
-            showScreen('screen4');
-            updateStatus('Locations');
-        }
-
-        // --- AI Search Logic ---
-        function showAIPredictions() { document.getElementById('aiPredictions').style.display = 'block'; }
-        function hideAIPredictions() { setTimeout(() => { document.getElementById('aiPredictions').style.display = 'none'; }, 250); }
-        function fillSearch(city) { document.getElementById('searchInput').value = city; document.getElementById('searchInput').focus(); }
-        
-        window.onload = function() {
-            applySavedTheme();
-            // If they land directly on a cached session, we don't auto-fetch until they interact or we can fetch immediately.
-            // But Screen 1 is default. They click "Check now" to trigger fetch.
-        };
+        window.onload = function() { applySavedTheme(); };
     </script>
 </body>
 </html>
