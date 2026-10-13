@@ -1,0 +1,18 @@
+{
+  "name": "Sri Lanka Climate Precision",
+  "short_name": "SL Weather",
+  "description": "Sri Lanka Microclimate Weather & Disaster Early Warning System",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#060714",
+  "theme_color": "#12132e",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/static/icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

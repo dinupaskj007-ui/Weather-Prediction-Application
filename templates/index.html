@@ -3,6 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#12132e">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/static/icon.svg">
     <title>SL Weather - Precision</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
@@ -188,12 +194,31 @@
         .city-condition { font-size: 13px; color: var(--text-muted); font-weight: 500; }
         .city-temp { font-size: 40px; font-weight: 800; color: var(--text-main); letter-spacing: -2px; }
 
+        /* Mobile GPS Button */
+        .gps-pill-btn { background: rgba(34, 211, 238, 0.15); border: 1px solid rgba(34, 211, 238, 0.4); color: var(--accent-1); border-radius: 20px; padding: 6px 14px; font-size: 12px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s; }
+        .gps-pill-btn:active { transform: scale(0.95); background: rgba(34, 211, 238, 0.3); }
+
+        /* Mobile Report Modal */
+        .modal-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.65); backdrop-filter: blur(12px); z-index: 100; display: none; justify-content: center; align-items: flex-end; }
+        .modal-sheet { background: var(--bottom-sheet-bg); color: var(--bottom-sheet-text); width: 100%; border-top-left-radius: 30px; border-top-right-radius: 30px; padding: 25px; box-sizing: border-box; animation: slideUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); max-height: 85vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h3 { margin: 0; font-size: 18px; font-weight: 700; color: var(--bottom-sheet-text); }
+        .modal-close { font-size: 22px; cursor: pointer; color: var(--bottom-sheet-muted); background: none; border: none; padding: 0; }
+        .modal-form-group { margin-bottom: 14px; text-align: left; }
+        .modal-form-group label { display: block; font-size: 11px; font-weight: 700; color: var(--bottom-sheet-muted); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; }
+        .modal-input { width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.1); background: var(--bottom-sheet-card); color: var(--bottom-sheet-text); font-family: 'Inter', sans-serif; font-size: 14px; box-sizing: border-box; outline: none; }
+        body.disaster-mode .modal-input { border-color: rgba(255,255,255,0.15); }
+        .modal-textarea { resize: vertical; min-height: 80px; }
+        .btn-modal-submit { width: 100%; padding: 14px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none; border-radius: 25px; font-weight: 700; font-size: 15px; cursor: pointer; margin-top: 10px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4); }
+        .btn-modal-submit:active { transform: scale(0.97); }
+
         /* Loader Overlay */
         #loadingOverlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(10px); z-index: 50; display: none; justify-content: center; align-items: center; flex-direction: column; color: white; font-weight: 600; border-radius: inherit; }
         .spinner { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
 
         /* Animations */
         @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         @keyframes float-glacial { 0% { transform: translateY(0px); } 50% { transform: translateY(-12px); } 100% { transform: translateY(0px); } }
         @keyframes smoothReveal { 0% { opacity: 0; transform: translateY(15px); } 100% { opacity: 1; transform: translateY(0); } }
         @keyframes pulse-opacity { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
@@ -222,6 +247,7 @@
                     <strong>SRI LANKA.</strong>
                 </div>
                 <button class="btn-primary" onclick="handleInitialCheck()">Check now</button>
+                <button class="gps-pill-btn" onclick="useCurrentGpsLocation()" style="margin-top: 5px;">📍 Use Current GPS Location</button>
             </div>
         </div>
 
@@ -291,7 +317,7 @@
                         </div>
                     </div>
                     
-                    <div class="location-pill" style="margin-top: 15px;">
+                    <div class="location-pill" style="margin-top: 15px; cursor: pointer;" onclick="useCurrentGpsLocation()" title="Tap to refresh with device GPS">
                         <span class="pin">📍</span> <span id="dashboardLocationHeader">Colombo, Sri Lanka</span>
                     </div>
                 </div>
@@ -299,7 +325,7 @@
                 <div class="bottom-sheet">
                     <div class="hourly-header">
                         <h3>Today's Weather</h3>
-                        <span style="font-size: 13px; color: var(--bottom-sheet-muted);">Next 24h &rsaquo;</span>
+                        <span style="font-size: 13px; color: var(--bottom-sheet-muted); cursor: pointer;" onclick="useCurrentGpsLocation()">📍 Sync GPS</span>
                     </div>
                     
                     <div class="hourly-scroll">
@@ -332,12 +358,14 @@
 
                     <div class="community-header">
                         <h3>Community Reports <span class="live-dot">●</span></h3>
-                        <button class="btn-report" onclick="alert('Report UI')">+ Report</button>
+                        <button class="btn-report" onclick="openReportModal()">+ Report</button>
                     </div>
                     
-                    <div class="report-card">
-                        <div class="report-meta"><span class="report-user">Saman D.</span> • 5 mins ago</div>
-                        <div class="report-text">Severe flash flooding starting on Baseline Road. Avoid area.</div>
+                    <div id="communityReportsFeed">
+                        <div class="report-card">
+                            <div class="report-meta"><span class="report-user">Loading...</span></div>
+                            <div class="report-text">Retrieving live reports from nearby users...</div>
+                        </div>
                     </div>
                     
                     <button class="btn-view-stats" onclick="goToScreen3()">View Full Risk Report</button>
@@ -397,9 +425,9 @@
                     <h2>Locations</h2>
                 </div>
                 
-                <input type="text" id="searchInput" class="search-input" placeholder="Search city or district...">
+                <input type="text" id="searchInput" class="search-input" placeholder="Search city or district..." oninput="handleLocationSearch()">
 
-                <div class="city-list">
+                <div class="city-list" id="cityListContainer">
                     <div class="city-card glacier-panel" style="border-left: 4px solid #9ca3af;" onclick="overrideLocation('Central', 'Nuwara Eliya')">
                         <div class="city-info">
                             <h3>Nuwara Eliya</h3>
@@ -429,6 +457,50 @@
                         <div class="city-temp">33°</div>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- MOBILE COMMUNITY REPORT MODAL -->
+        <div id="reportModal" class="modal-overlay" onclick="if(event.target === this) closeReportModal()">
+            <div class="modal-sheet">
+                <div class="modal-header">
+                    <h3>📢 Post Community Weather Alert</h3>
+                    <button class="modal-close" onclick="closeReportModal()">&times;</button>
+                </div>
+                <div class="modal-form-group">
+                    <label>Your Name</label>
+                    <input type="text" id="reportUserName" class="modal-input" placeholder="e.g. Kasun">
+                </div>
+                <div class="modal-form-group">
+                    <label>District</label>
+                    <select id="reportDistrictSelect" class="modal-input">
+                        <option value="Colombo">Colombo</option>
+                        <option value="Gampaha">Gampaha</option>
+                        <option value="Kalutara">Kalutara</option>
+                        <option value="Kandy">Kandy</option>
+                        <option value="Nuwara Eliya">Nuwara Eliya</option>
+                        <option value="Galle">Galle</option>
+                        <option value="Matara">Matara</option>
+                        <option value="Jaffna">Jaffna</option>
+                        <option value="Ratnapura">Ratnapura</option>
+                        <option value="Badulla">Badulla</option>
+                        <option value="Anuradhapura">Anuradhapura</option>
+                        <option value="Trincomalee">Trincomalee</option>
+                    </select>
+                </div>
+                <div class="modal-form-group">
+                    <label>Threat Level</label>
+                    <select id="reportThreatLevel" class="modal-input">
+                        <option value="MODERATE">Moderate (Heavy Rain / Fog / Mist)</option>
+                        <option value="SEVERE">Severe (Flash Flood / Landslide / Fallen Tree)</option>
+                        <option value="LOW">Low (Clearing / Safe Road)</option>
+                    </select>
+                </div>
+                <div class="modal-form-group">
+                    <label>Incident Details (Max 500 characters)</label>
+                    <textarea id="reportMessage" class="modal-input modal-textarea" placeholder="e.g. Water logging on main road, strong winds blowing roof sheets..."></textarea>
+                </div>
+                <button class="btn-modal-submit" onclick="submitCommunityReport()">Submit Report</button>
             </div>
         </div>
 
@@ -522,9 +594,10 @@
             }
         }
 
-        // --- API Integration ---
+        // --- API Integration (Mobile Ready) ---
         async function fetchWeatherData(province, district) {
             const loader = document.getElementById('loadingOverlay');
+            document.getElementById('loadingText').textContent = "Syncing with Meteorological Data...";
             loader.style.display = 'flex';
             
             try {
@@ -536,6 +609,7 @@
                     return;
                 }
                 applyDataToUI(data);
+                fetchCommunityReports(data.location.district);
                 
             } catch (error) {
                 console.error("Failed to fetch weather:", error);
@@ -543,6 +617,56 @@
             } finally {
                 loader.style.display = 'none';
             }
+        }
+
+        async function fetchWeatherByCoords(lat, lon) {
+            const loader = document.getElementById('loadingOverlay');
+            document.getElementById('loadingText').textContent = "Finding Local Microclimate for GPS Location...";
+            loader.style.display = 'flex';
+            
+            try {
+                const response = await fetch(`/api/weather?lat=${lat}&lon=${lon}`);
+                const data = await response.json();
+                
+                if(data.error) {
+                    alert("GPS Weather Error: " + data.error);
+                    return;
+                }
+                
+                localStorage.setItem('sl_weather_province', data.location.province);
+                localStorage.setItem('sl_weather_district', data.location.district);
+                
+                showScreen('screen2');
+                applyDataToUI(data);
+                fetchCommunityReports(data.location.district);
+                
+            } catch (error) {
+                console.error("Failed to fetch GPS weather:", error);
+                alert("Failed to reach server. Please check internet connection.");
+            } finally {
+                loader.style.display = 'none';
+            }
+        }
+
+        function useCurrentGpsLocation() {
+            if (!navigator.geolocation) {
+                alert("Geolocation is not supported on this mobile device.");
+                return;
+            }
+            const loader = document.getElementById('loadingOverlay');
+            document.getElementById('loadingText').textContent = "Detecting High-Precision GPS Coordinates...";
+            loader.style.display = 'flex';
+            
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    fetchWeatherByCoords(pos.coords.latitude, pos.coords.longitude);
+                },
+                (err) => {
+                    loader.style.display = 'none';
+                    alert("GPS Permission or Signal Error: " + err.message);
+                },
+                { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 }
+            );
         }
         
         function mapCodeToText(code) {
@@ -558,7 +682,10 @@
             const dist = data.location.district;
             const prov = data.location.province;
             
-            document.getElementById('dashboardLocationHeader').textContent = `${dist}, Sri Lanka`;
+            const gpsInfo = data.location.gps_distance_km !== null && data.location.gps_distance_km !== undefined 
+                ? ` (${data.location.gps_distance_km} km from center)` 
+                : "";
+            document.getElementById('dashboardLocationHeader').textContent = `${dist}, Sri Lanka${gpsInfo}`;
             
             // Stats
             const temp = Math.round(data.metrics.temperature);
@@ -597,6 +724,141 @@
             }
         }
 
+        // --- Community Reporting Logic ---
+        async function fetchCommunityReports(district) {
+            const feed = document.getElementById('communityReportsFeed');
+            try {
+                const url = district ? `/api/reports?district=${encodeURIComponent(district)}` : '/api/reports';
+                const res = await fetch(url);
+                const data = await res.json();
+                
+                if (data.reports && data.reports.length > 0) {
+                    feed.innerHTML = data.reports.map(r => {
+                        const borderColor = r.threat_level === 'SEVERE' ? '#ef4444' : (r.threat_level === 'LOW' ? '#10b981' : '#f59e0b');
+                        return `
+                            <div class="report-card" style="border-left-color: ${borderColor};">
+                                <div class="report-meta">
+                                    <span class="report-user">${r.user_name}</span> (${r.district}) • <span style="font-weight:700; color:${borderColor};">[${r.threat_level}]</span>
+                                </div>
+                                <div class="report-text">${r.message}</div>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    feed.innerHTML = `
+                        <div class="report-card" style="border-left-color: #10b981;">
+                            <div class="report-meta">No active hazards reported</div>
+                            <div class="report-text">Roads and weather conditions are currently normal in ${district}.</div>
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                console.error("Error fetching community reports:", err);
+            }
+        }
+
+        function openReportModal() {
+            const currentDist = localStorage.getItem('sl_weather_district') || "Colombo";
+            const currentName = localStorage.getItem('sl_weather_username') || "";
+            document.getElementById('reportUserName').value = currentName;
+            document.getElementById('reportDistrictSelect').value = currentDist;
+            document.getElementById('reportModal').style.display = 'flex';
+        }
+
+        function closeReportModal() {
+            document.getElementById('reportModal').style.display = 'none';
+        }
+
+        async function submitCommunityReport() {
+            const userName = document.getElementById('reportUserName').value.trim();
+            const district = document.getElementById('reportDistrictSelect').value;
+            const threatLevel = document.getElementById('reportThreatLevel').value;
+            const message = document.getElementById('reportMessage').value.trim();
+
+            if (!userName || !message) {
+                alert("Please provide your name and report message.");
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/reports', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_name: userName,
+                        district: district,
+                        threat_level: threatLevel,
+                        message: message
+                    })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    closeReportModal();
+                    document.getElementById('reportMessage').value = '';
+                    fetchCommunityReports(district);
+                    alert("Thank you! Your emergency update has been broadcast to nearby users.");
+                } else {
+                    alert("Submission error: " + (data.error || "Unable to submit report."));
+                }
+            } catch (err) {
+                console.error("Submission failed:", err);
+                alert("Network error. Please try again.");
+            }
+        }
+
+        // --- Screen 4 Live Location Search ---
+        let searchTimeout = null;
+        async function handleLocationSearch() {
+            const query = document.getElementById('searchInput').value.trim();
+            const container = document.getElementById('cityListContainer');
+
+            clearTimeout(searchTimeout);
+            if (!query) {
+                // Restore defaults
+                container.innerHTML = `
+                    <div class="city-card glacier-panel" style="border-left: 4px solid #9ca3af;" onclick="overrideLocation('Central', 'Nuwara Eliya')">
+                        <div class="city-info"><h3>Nuwara Eliya</h3><span class="city-condition">Dense Mist</span></div>
+                        <div class="city-temp">14°</div>
+                    </div>
+                    <div class="city-card glacier-panel" style="border-left: 4px solid #3b82f6;" onclick="overrideLocation('Central', 'Kandy')">
+                        <div class="city-info"><h3>Kandy</h3><span class="city-condition">Light Rain</span></div>
+                        <div class="city-temp">22°</div>
+                    </div>
+                    <div class="city-card glacier-panel" style="border-left: 4px solid #f59e0b;" onclick="overrideLocation('Southern', 'Galle')">
+                        <div class="city-info"><h3>Galle</h3><span class="city-condition">Thundershowers</span></div>
+                        <div class="city-temp">29°</div>
+                    </div>
+                    <div class="city-card glacier-panel" style="border-left: 4px solid #ef4444;" onclick="overrideLocation('Northern', 'Jaffna')">
+                        <div class="city-info"><h3>Jaffna</h3><span class="city-condition">Clear Sky</span></div>
+                        <div class="city-temp">33°</div>
+                    </div>
+                `;
+                return;
+            }
+
+            searchTimeout = setTimeout(async () => {
+                try {
+                    const res = await fetch(`/api/locations/search?q=${encodeURIComponent(query)}`);
+                    const data = await res.json();
+                    if (data.results && data.results.length > 0) {
+                        container.innerHTML = data.results.map(loc => `
+                            <div class="city-card glacier-panel" style="border-left: 4px solid #38bdf8;" onclick="overrideLocation('${loc.province}', '${loc.district}')">
+                                <div class="city-info">
+                                    <h3>${loc.district}</h3>
+                                    <span class="city-condition">${loc.province} Province • ${loc.microclimate}</span>
+                                </div>
+                                <div class="city-temp" style="font-size: 24px;">📍</div>
+                            </div>
+                        `).join('');
+                    } else {
+                        container.innerHTML = `<div style="text-align:center; padding: 30px; color: var(--text-muted);">No matching Sri Lankan districts found.</div>`;
+                    }
+                } catch (e) {
+                    console.error("Search error:", e);
+                }
+            }, 250);
+        }
+
         function goToScreen2() {
             showScreen('screen2');
             const dist = localStorage.getItem('sl_weather_district') || "Colombo";
@@ -613,7 +875,13 @@
         function goToScreen3() { showScreen('screen3'); }
         function goToScreen4() { showScreen('screen4'); }
         
-        window.onload = function() { applySavedTheme(); };
+        window.onload = function() { 
+            applySavedTheme(); 
+            // Register mobile Service Worker for offline capability
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration note:', err));
+            }
+        };
     </script>
 </body>
 </html>
