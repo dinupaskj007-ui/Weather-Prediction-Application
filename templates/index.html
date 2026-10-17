@@ -80,7 +80,73 @@
         .app-container { width: 100%; height: 100vh; max-width: 100%; background: var(--bg-gradient); position: relative; overflow: hidden; display: flex; flex-direction: column; transition: background 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
         @media (min-width: 500px) { .app-container { max-width: 393px; height: 852px; max-height: 90vh; border-radius: 45px; border: 12px solid #000; box-shadow: 0 0 50px rgba(0,0,0,0.5); } }
 
-        .status-bar { display: flex; justify-content: space-between; padding: 15px 25px 5px; font-size: 13px; font-weight: 600; z-index: 10; color: var(--text-main); }
+        .status-bar { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: max(14px, env(safe-area-inset-top, 14px)) 26px 8px; 
+            font-size: 14px; 
+            font-weight: 600; 
+            z-index: 10; 
+            color: var(--text-main); 
+            user-select: none;
+            box-sizing: border-box;
+            width: 100%;
+        }
+        .status-time { 
+            font-size: 14px; 
+            font-weight: 600; 
+            letter-spacing: -0.2px; 
+            font-variant-numeric: tabular-nums; 
+        }
+        .status-icons { 
+            display: flex; 
+            align-items: center; 
+            gap: 7px; 
+        }
+        .status-icon { 
+            display: inline-block; 
+            vertical-align: middle; 
+            fill: currentColor; 
+        }
+        .signal-icon { 
+            width: 17px; 
+            height: 12px; 
+        }
+        .wifi-icon { 
+            width: 16px; 
+            height: 12px; 
+        }
+        .battery-wrapper { 
+            display: flex; 
+            align-items: center; 
+            gap: 1.5px; 
+        }
+        .battery-shell { 
+            width: 22px; 
+            height: 11.5px; 
+            border: 1.5px solid currentColor; 
+            border-radius: 4px; 
+            padding: 1.5px; 
+            box-sizing: border-box; 
+            display: flex; 
+            align-items: center; 
+        }
+        .battery-level { 
+            height: 100%; 
+            width: 85%;
+            background-color: currentColor; 
+            border-radius: 1.5px; 
+            transition: width 0.3s ease; 
+        }
+        .battery-cap { 
+            width: 1.5px; 
+            height: 4.5px; 
+            background-color: currentColor; 
+            border-top-right-radius: 1.5px; 
+            border-bottom-right-radius: 1.5px; 
+            opacity: 0.8; 
+        }
         .status-location { font-weight: 500; opacity: 0; font-size: 13px; transition: opacity 0.4s ease; }
 
         /* Smooth Screen Transitions */
@@ -233,9 +299,28 @@
             <div id="loadingText">Syncing Data...</div>
         </div>
         
-        <div class="status-bar">
-            <span>9:41</span>
-            <span>📶 🔋</span>
+        <div class="status-bar" id="appStatusBar">
+            <span class="status-time" id="statusBarTime">9:41</span>
+            <div class="status-icons">
+                <!-- Authentic Cellular Signal (4 stair bars) -->
+                <svg class="status-icon signal-icon" viewBox="0 0 18 12" aria-label="Cellular signal">
+                    <rect x="0" y="8.5" width="3" height="3.5" rx="0.8"/>
+                    <rect x="4.5" y="6" width="3" height="6" rx="0.8"/>
+                    <rect x="9" y="3.5" width="3" height="8.5" rx="0.8"/>
+                    <rect x="13.5" y="0.8" width="3" height="11.2" rx="0.8"/>
+                </svg>
+                <!-- Authentic Wi-Fi Wave Icon -->
+                <svg class="status-icon wifi-icon" viewBox="0 0 16 12" aria-label="Wi-Fi">
+                    <path d="M8 9.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm-3.5-3.2a5 5 0 0 1 7 0 .8.8 0 0 1-1.1 1.1 3.4 3.4 0 0 0-4.8 0 .8.8 0 0 1-1.1-1.1zm-3.3-3.2a9.7 9.7 0 0 1 13.6 0 .8.8 0 0 1-1.1 1.1 8.1 8.1 0 0 0-11.4 0 .8.8 0 1 1-1.1-1.1z"/>
+                </svg>
+                <!-- Authentic Battery Icon (Clean pill + cap without cluttering percentage text) -->
+                <div class="battery-wrapper" aria-label="Battery">
+                    <div class="battery-shell">
+                        <div class="battery-level" id="batteryLevelBar"></div>
+                    </div>
+                    <div class="battery-cap"></div>
+                </div>
+            </div>
         </div>
 
         <!-- SCREEN 1: ONBOARDING -->
@@ -875,6 +960,39 @@
         function goToScreen3() { showScreen('screen3'); }
         function goToScreen4() { showScreen('screen4'); }
         
+        // --- Live Mobile Status Bar Logic ---
+        function updateLiveClock() {
+            const timeEl = document.getElementById('statusBarTime');
+            if (!timeEl) return;
+            const now = new Date();
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            timeEl.textContent = `${hours}:${minutes}`;
+        }
+        setInterval(updateLiveClock, 1000);
+        updateLiveClock();
+
+        // Native Device Battery API (syncs real device charge level when available)
+        if ('getBattery' in navigator) {
+            navigator.getBattery().then(battery => {
+                function syncBattery() {
+                    const levelBar = document.getElementById('batteryLevelBar');
+                    if (levelBar) {
+                        const pct = Math.round(battery.level * 100);
+                        levelBar.style.width = `${Math.max(8, pct)}%`;
+                        if (battery.level <= 0.2) {
+                            levelBar.style.backgroundColor = '#ef4444';
+                        } else {
+                            levelBar.style.backgroundColor = 'currentColor';
+                        }
+                    }
+                }
+                syncBattery();
+                battery.addEventListener('levelchange', syncBattery);
+            }).catch(() => {});
+        }
+
         window.onload = function() { 
             applySavedTheme(); 
             // Register mobile Service Worker for offline capability
