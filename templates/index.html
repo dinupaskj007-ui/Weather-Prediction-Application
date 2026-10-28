@@ -187,15 +187,83 @@
         .main-temp-unit { font-size: 30px; font-weight: 500; margin-top: 10px; margin-left: 2px; }
         .main-condition { font-size: 18px; font-weight: 500; color: var(--text-main); letter-spacing: 0.5px; margin-bottom: 25px; }
         
-        .stats-grid-small { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .location-pill { display: inline-flex; align-items: center; gap: 6px; background: rgba(255, 255, 255, 0.15); border-radius: 20px; padding: 8px 16px; font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 2px; }
+        .location-pill .pin { font-size: 14px; }
+
+        /* Collapsible Tray for Extra Details (More Info) */
+        .collapsible-tray-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .tray-toggle-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-main);
+            border-radius: 20px;
+            padding: 7px 18px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            letter-spacing: 0.3px;
+            user-select: none;
+        }
+
+        .tray-toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.18);
+            border-color: rgba(255, 255, 255, 0.35);
+        }
+
+        .tray-toggle-btn:active {
+            transform: scale(0.96);
+        }
+
+        .tray-toggle-chevron {
+            display: inline-block;
+            font-size: 11px;
+            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .tray-toggle-btn.open .tray-toggle-chevron {
+            transform: rotate(180deg);
+        }
+
+        .collapsible-tray-content {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            width: 100%;
+            margin-top: 0;
+            transform: translateY(-6px) scale(0.98);
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+                        opacity 0.3s ease, 
+                        transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+                        margin-top 0.3s ease;
+        }
+
+        .collapsible-tray-content.open {
+            max-height: 250px;
+            opacity: 1;
+            margin-top: 14px;
+            transform: translateY(0) scale(1);
+        }
+
+        .stats-grid-small { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 4px; }
         .stat-pill-small { display: flex; align-items: center; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 12px; padding: 10px 12px; gap: 12px; text-align: left; }
         .stat-pill-small .icon { font-size: 18px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
         .stat-pill-small .stat-text { display: flex; flex-direction: column; }
         .stat-pill-small .label { font-size: 10px; font-weight: 500; color: var(--text-muted); margin-bottom: 2px; }
         .stat-pill-small .val { font-size: 13px; font-weight: 700; color: var(--text-main); }
-        
-        .location-pill { display: inline-flex; align-items: center; gap: 6px; background: rgba(255, 255, 255, 0.15); border-radius: 20px; padding: 8px 16px; font-size: 13px; font-weight: 600; color: var(--text-main); }
-        .location-pill .pin { font-size: 14px; }
 
         /* Bottom Sheet (Solid White panel containing Hourly, AI, Community) */
         .bottom-sheet { background: var(--bottom-sheet-bg); color: var(--bottom-sheet-text); flex: 1; border-top-left-radius: 35px; border-top-right-radius: 35px; padding: 30px 25px; display: flex; flex-direction: column; box-shadow: 0 -10px 40px rgba(0,0,0,0.1); transition: background 0.5s, color 0.5s; }
@@ -383,27 +451,38 @@
                     <div class="main-temp" id="mainTemp">+--<span class="main-temp-unit">°</span></div>
                     <div class="main-condition" id="mainCondition">Loading...</div>
                     
-                    <div class="stats-grid-small">
-                        <div class="stat-pill-small">
-                            <span class="icon">☀️</span>
-                            <div class="stat-text"><span class="label">UV Index</span><span class="val" id="uvValueCard">--</span></div>
-                        </div>
-                        <div class="stat-pill-small">
-                            <span class="icon">💨</span>
-                            <div class="stat-text"><span class="label">Wind</span><span class="val" id="windValueCard">-- km/h</span></div>
-                        </div>
-                        <div class="stat-pill-small">
-                            <span class="icon">🌩️</span>
-                            <div class="stat-text"><span class="label">Weather Code</span><span class="val" id="weatherCodeCard">--</span></div>
-                        </div>
-                        <div class="stat-pill-small">
-                            <span class="icon">💧</span>
-                            <div class="stat-text"><span class="label">Humidity</span><span class="val" id="humidityValueCard">--%</span></div>
-                        </div>
-                    </div>
-                    
-                    <div class="location-pill" style="margin-top: 15px; cursor: pointer;" onclick="useCurrentGpsLocation()" title="Tap to refresh with device GPS">
+                    <!-- Basic Info First -->
+                    <div class="location-pill" style="cursor: pointer;" onclick="useCurrentGpsLocation()" title="Tap to refresh with device GPS">
                         <span class="pin">📍</span> <span id="dashboardLocationHeader">Colombo, Sri Lanka</span>
+                    </div>
+
+                    <!-- Collapsible Tray for Extra Details -->
+                    <div class="collapsible-tray-wrapper">
+                        <button class="tray-toggle-btn" id="trayToggleBtn" onclick="toggleDetailsTray()" aria-expanded="false" title="Click to show or hide extra weather metrics">
+                            <span id="trayToggleText">More Info</span>
+                            <span class="tray-toggle-chevron">▾</span>
+                        </button>
+                        
+                        <div class="collapsible-tray-content" id="detailsTrayContent">
+                            <div class="stats-grid-small">
+                                <div class="stat-pill-small">
+                                    <span class="icon">☀️</span>
+                                    <div class="stat-text"><span class="label">UV Index</span><span class="val" id="uvValueCard">--</span></div>
+                                </div>
+                                <div class="stat-pill-small">
+                                    <span class="icon">💨</span>
+                                    <div class="stat-text"><span class="label">Wind</span><span class="val" id="windValueCard">-- km/h</span></div>
+                                </div>
+                                <div class="stat-pill-small">
+                                    <span class="icon">🌩️</span>
+                                    <div class="stat-text"><span class="label">Weather Code</span><span class="val" id="weatherCodeCard">--</span></div>
+                                </div>
+                                <div class="stat-pill-small">
+                                    <span class="icon">💧</span>
+                                    <div class="stat-text"><span class="label">Humidity</span><span class="val" id="humidityValueCard">--%</span></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -991,6 +1070,18 @@
                 syncBattery();
                 battery.addEventListener('levelchange', syncBattery);
             }).catch(() => {});
+        }
+
+        // --- Collapsible More Info Tray ---
+        function toggleDetailsTray() {
+            const btn = document.getElementById('trayToggleBtn');
+            const content = document.getElementById('detailsTrayContent');
+            const textSpan = document.getElementById('trayToggleText');
+            if (!content || !btn) return;
+            const isOpen = content.classList.toggle('open');
+            btn.classList.toggle('open', isOpen);
+            btn.setAttribute('aria-expanded', isOpen);
+            textSpan.textContent = isOpen ? 'Hide Details' : 'More Info';
         }
 
         window.onload = function() { 
