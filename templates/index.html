@@ -87,7 +87,8 @@
             padding: max(14px, env(safe-area-inset-top, 14px)) 26px 8px; 
             font-size: 14px; 
             font-weight: 600; 
-            z-index: 10; 
+            position: relative;
+            z-index: 20; 
             color: var(--text-main); 
             user-select: none;
             box-sizing: border-box;
@@ -150,18 +151,52 @@
         .status-location { font-weight: 500; opacity: 0; font-size: 13px; transition: opacity 0.4s ease; }
 
         /* Smooth Screen Transitions */
-        .screen { display: none; flex: 1; flex-direction: column; overflow-y: auto; overflow-x: hidden; -ms-overflow-style: none; scrollbar-width: none; opacity: 0; transform: translateY(15px); transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .screen { 
+            display: none; 
+            flex: 1; 
+            flex-direction: column; 
+            overflow-y: auto; 
+            overflow-x: hidden; 
+            -ms-overflow-style: none; 
+            scrollbar-width: none; 
+            opacity: 0; 
+            transform: translateY(15px); 
+            transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); 
+            position: relative;
+            z-index: 10;
+        }
         .screen::-webkit-scrollbar { display: none; }
-        .screen.active { display: flex; opacity: 1; transform: translateY(0); animation: smoothReveal 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+        .screen.active { 
+            display: flex !important; 
+            opacity: 1 !important; 
+            transform: translateY(0) !important; 
+            animation: smoothReveal 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; 
+            position: relative;
+            z-index: 10;
+            pointer-events: auto;
+        }
 
         /* --- SCREEN 1 & LOGIN (Kept Similar but updated theme) --- */
-        .s1-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px 25px; margin-top: -40px; }
+        .s1-content { 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            text-align: center; 
+            padding: 20px 25px; 
+            margin-top: -30px; 
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            box-sizing: border-box;
+        }
         /* --- DYNAMIC REAL-TIME WEATHER BACKGROUND --- */
         .weather-dynamic-bg {
             position: absolute;
             inset: 0;
             pointer-events: none;
-            z-index: 1;
+            z-index: 0;
             overflow: hidden;
             border-radius: inherit;
         }
@@ -380,9 +415,30 @@
             0% { transform: translate(0, 0) scale(1); }
             100% { transform: translate(50px, -20px) scale(1.1); }
         }
-        .hero-text { font-size: 16px; font-weight: 400; line-height: 1.6; color: var(--text-muted); margin-bottom: 40px; padding: 0 10px; }
-        .hero-text strong { color: var(--text-main); font-weight: 800; display: block; margin-top: 10px; font-size: 26px; letter-spacing: 1px; }
+        .hero-text { 
+            font-size: 16px; 
+            font-weight: 500; 
+            line-height: 1.6; 
+            color: #ffffff; 
+            margin-bottom: 35px; 
+            padding: 0 10px; 
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); 
+            position: relative;
+            z-index: 10;
+        }
+        .hero-text strong { 
+            color: #ffffff; 
+            font-weight: 800; 
+            display: block; 
+            margin-top: 10px; 
+            font-size: 26px; 
+            letter-spacing: 1px; 
+            text-shadow: 0 2px 14px rgba(0, 0, 0, 0.65);
+        }
 
+        .menu-action-item:hover, .menu-action-item:active {
+            background: rgba(255, 255, 255, 0.15) !important;
+        }
         .glacier-panel { background: var(--glass-bg); border: 1px solid var(--glass-border); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), var(--glass-highlight); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-radius: 24px; }
         .btn-primary { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: var(--text-main); backdrop-filter: blur(10px); border-radius: 30px; padding: 18px 0; width: 85%; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
         .btn-primary:active { transform: scale(0.96); background: rgba(255,255,255,0.25); }
@@ -653,6 +709,11 @@
         <!-- SCREEN 1.5: SETUP -->
         <div id="loginScreen" class="screen">
             <div class="s1-content">
+                <div style="width: 85%; display: flex; justify-content: flex-start; margin-bottom: 12px;">
+                    <button onclick="goToScreen1()" class="back-btn" style="font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; color: var(--text-muted); cursor: pointer; background: none; border: none; padding: 0;">
+                        ‹ Back to Welcome
+                    </button>
+                </div>
                 <div class="hero-text" style="margin-bottom: 25px;">
                     Personalize your alerts.<br>
                     <strong>WHERE ARE YOU?</strong>
@@ -681,11 +742,34 @@
         <div id="screen2" class="screen" style="padding: 0;">
             <div class="s2-content">
                 
-                <div class="top-nav-row">
-                    <div class="nav-icon" onclick="alert('Menu')">⋮</div>
-                    <div style="display: flex; gap: 15px;">
+                <div class="top-nav-row" style="position: relative; z-index: 30;">
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <div class="nav-icon" onclick="goToScreen1()" title="Back to Welcome Screen" style="font-size: 26px; line-height: 1;">‹</div>
+                        <div class="nav-icon" onclick="toggleAppMenu()" id="menuToggleBtn" title="Menu">⋮</div>
+                    </div>
+                    <div style="display: flex; gap: 12px; align-items: center;">
                         <div class="nav-icon" id="themeToggleBtn" onclick="toggleTheme()" style="font-size: 20px;">☀️</div>
-                        <div class="nav-icon" onclick="goToScreen4()">+</div>
+                        <div class="nav-icon" onclick="goToScreen4()" title="Add / Search Location">+</div>
+                    </div>
+                </div>
+
+                <!-- Sleek Glass App Menu Dropdown -->
+                <div id="appDropdownMenu" class="glacier-panel" style="display: none; position: absolute; top: 65px; left: 25px; width: 230px; z-index: 50; padding: 8px; box-shadow: 0 16px 40px rgba(0,0,0,0.45);">
+                    <div class="menu-action-item" onclick="goToScreen1(); closeAppMenu();" style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600; color: #fff; transition: background 0.2s;">
+                        <span style="font-size: 16px;">🏠</span> Welcome Screen
+                    </div>
+                    <div class="menu-action-item" onclick="goToScreen4(); closeAppMenu();" style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600; color: #fff; transition: background 0.2s;">
+                        <span style="font-size: 16px;">📍</span> Choose District
+                    </div>
+                    <div class="menu-action-item" onclick="goToScreen3(); closeAppMenu();" style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600; color: #fff; transition: background 0.2s;">
+                        <span style="font-size: 16px;">⚡</span> Risk & DMC Alerts
+                    </div>
+                    <div class="menu-action-item" onclick="useCurrentGpsLocation(); closeAppMenu();" style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600; color: #fff; transition: background 0.2s;">
+                        <span style="font-size: 16px;">🛰️</span> Sync Device GPS
+                    </div>
+                    <div style="height: 1px; background: rgba(255,255,255,0.15); margin: 6px 0;"></div>
+                    <div class="menu-action-item" onclick="resetUserSession(); closeAppMenu();" style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600; color: #fb7185; transition: background 0.2s;">
+                        <span style="font-size: 16px;">🔄</span> Reset & Sign Out
                     </div>
                 </div>
                 
@@ -1297,6 +1381,39 @@
             localStorage.setItem('sl_weather_district', dist);
             goToScreen2();
         }
+
+        function goToScreen1() {
+            showScreen('screen1');
+        }
+
+        function toggleAppMenu() {
+            const menu = document.getElementById('appDropdownMenu');
+            if (!menu) return;
+            const isShown = menu.style.display === 'block';
+            menu.style.display = isShown ? 'none' : 'block';
+        }
+
+        function closeAppMenu() {
+            const menu = document.getElementById('appDropdownMenu');
+            if (menu) menu.style.display = 'none';
+        }
+
+        function resetUserSession() {
+            localStorage.removeItem('sl_weather_username');
+            localStorage.removeItem('sl_weather_province');
+            localStorage.removeItem('sl_weather_district');
+            goToScreen1();
+        }
+
+        document.addEventListener('click', function(e) {
+            const menu = document.getElementById('appDropdownMenu');
+            const toggleBtn = document.getElementById('menuToggleBtn');
+            if (menu && menu.style.display === 'block') {
+                if (!menu.contains(e.target) && !toggleBtn.contains(e.target)) {
+                    menu.style.display = 'none';
+                }
+            }
+        });
 
         function goToScreen3() { showScreen('screen3'); }
         function goToScreen4() { showScreen('screen4'); }
