@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#12132e">
+    <meta name="theme-color" content="#1C1B33">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -11,309 +11,862 @@
     <link rel="apple-touch-icon" href="/static/icon.svg">
     <title>SL Weather - Precision</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800&display=swap');
         
         :root {
-            /* DARK THEME - Reference Style */
-            --bg-gradient: linear-gradient(160deg, #12132e 0%, #060714 100%);
-            --glass-bg: rgba(255, 255, 255, 0.1);
-            --glass-border: rgba(255, 255, 255, 0.2);
-            --glass-highlight: inset 0 2px 0 rgba(255, 255, 255, 0.15);
+            /* DEEP PURPLE STARRY NIGHT (Reference UI Palette) */
+            --bg-night: linear-gradient(175deg, #2E335A 0%, #1C1B33 45%, #34205C 80%, #4D2678 100%);
+            --card-base: #25244C;
+            --card-purple-wave: linear-gradient(135deg, #5936B4 0%, #362A84 100%);
+            --sheet-bg: rgba(30, 27, 60, 0.78);
+            --sheet-border: rgba(255, 255, 255, 0.12);
+            --pill-inactive: rgba(255, 255, 255, 0.06);
+            --pill-active: linear-gradient(180deg, #5936B4 0%, #362A84 100%);
             --text-main: #FFFFFF;
-            --text-muted: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.65);
+            --text-cyan: #38bdf8;
+            --accent-purple: #8b5cf6;
             
-            --btn-gradient: linear-gradient(135deg, rgba(6, 182, 212, 0.85) 0%, rgba(139, 92, 246, 0.85) 100%);
-            --btn-border: rgba(255, 255, 255, 0.15);
-            
-            --body-bg: #020617;
-            --accent-1: #22d3ee;
-            --accent-2: #c084fc;
-            
-            --bottom-sheet-bg: #ffffff;
-            --bottom-sheet-text: #1f2937;
-            --bottom-sheet-muted: #6b7280;
-            --bottom-sheet-card: #f3f4f6;
-            
-            --danger-bg: rgba(225, 29, 72, 0.12);
-            --danger-border: rgba(225, 29, 72, 0.3);
+            --danger-bg: rgba(225, 29, 72, 0.25);
+            --danger-border: rgba(225, 29, 72, 0.6);
             --danger-text: #fb7185;
-            --glass-blur: blur(25px);
         }
 
         body.light-theme {
-            /* LIGHT THEME - Reference Style (Vibrant Blue) */
-            --bg-gradient: linear-gradient(160deg, #5fb4f9 0%, #1573d6 100%);
-            --glass-bg: rgba(255, 255, 255, 0.2);
-            --glass-border: rgba(255, 255, 255, 0.4);
-            --glass-highlight: inset 0 2px 0 rgba(255, 255, 255, 0.3);
-            --text-main: #FFFFFF;
-            --text-muted: rgba(255, 255, 255, 0.85);
-            
-            --bottom-sheet-bg: #ffffff;
-            --bottom-sheet-text: #1f2937;
-            --bottom-sheet-muted: #6b7280;
-            --bottom-sheet-card: #f3f4f6;
-            
-            --danger-bg: rgba(225, 29, 72, 0.08);
-            --danger-border: rgba(225, 29, 72, 0.2);
-            --danger-text: #e11d48;
+            --bg-night: linear-gradient(175deg, #5A75B4 0%, #3B528C 45%, #5936B4 85%, #7E4CC7 100%);
+            --card-base: #333C6B;
+            --sheet-bg: rgba(45, 50, 95, 0.82);
         }
-        
+
         body.disaster-mode {
-            --bg-gradient: linear-gradient(160deg, #4c0f16 0%, #170505 100%);
-            --glass-border: rgba(225, 29, 72, 0.5);
-            --glass-highlight: inset 0 2px 0 rgba(225, 29, 72, 0.3);
-            --accent-1: #fb7185;
-            --accent-2: #f43f5e;
-            --bottom-sheet-bg: #1f0b0e;
-            --bottom-sheet-text: #f8fafc;
-            --bottom-sheet-muted: #cbd5e1;
-            --bottom-sheet-card: rgba(255, 255, 255, 0.05);
-        }
-        
-        body.disaster-mode.light-theme {
-            --bg-gradient: linear-gradient(160deg, #fd5c63 0%, #b81d24 100%);
+            --bg-night: linear-gradient(175deg, #4A1A2E 0%, #2A0E1C 45%, #6B1D36 80%, #881D3C 100%);
+            --card-base: #3D1524;
+            --card-purple-wave: linear-gradient(135deg, #991b1b 0%, #5c0f1c 100%);
+            --sheet-bg: rgba(45, 15, 25, 0.85);
+            --pill-active: linear-gradient(180deg, #dc2626 0%, #7f1d1d 100%);
         }
 
-        body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background-color: var(--body-bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; color: var(--text-main); transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
-        .app-container { width: 100%; height: 100vh; max-width: 100%; background: var(--bg-gradient); position: relative; overflow: hidden; display: flex; flex-direction: column; transition: background 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-        @media (min-width: 500px) { .app-container { max-width: 393px; height: 852px; max-height: 90vh; border-radius: 45px; border: 12px solid #000; box-shadow: 0 0 50px rgba(0,0,0,0.5); } }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #0b0c16;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
 
-        .status-bar { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            padding: max(14px, env(safe-area-inset-top, 14px)) 26px 8px; 
-            font-size: 14px; 
-            font-weight: 600; 
-            z-index: 10; 
-            color: var(--text-main); 
+        /* Phone Frame Container */
+        .app-container {
+            width: 100%;
+            height: 100vh;
+            max-width: 100%;
+            background: var(--bg-night);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: background 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        @media (min-width: 500px) {
+            .app-container {
+                max-width: 393px;
+                height: 852px;
+                max-height: 94vh;
+                border-radius: 48px;
+                border: 11px solid #141324;
+                box-shadow: 0 25px 80px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.1);
+            }
+        }
+
+        /* Star Dust Particle Background */
+        .star-field {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60%;
+            pointer-events: none;
+            background-image: 
+                radial-gradient(1.5px 1.5px at 30px 40px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 80px 120px, rgba(255,255,255,0.8), rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 150px 70px, rgba(255,255,255,0.9), rgba(0,0,0,0)),
+                radial-gradient(1.2px 1.2px at 220px 180px, #e9d5ff, rgba(0,0,0,0)),
+                radial-gradient(1.5px 1.5px at 290px 90px, rgba(255,255,255,0.85), rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 340px 160px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1.8px 1.8px at 180px 240px, rgba(255,255,255,0.7), rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 60px 280px, #e9d5ff, rgba(0,0,0,0)),
+                radial-gradient(1.5px 1.5px at 320px 260px, rgba(255,255,255,0.9), rgba(0,0,0,0));
+            opacity: 0.75;
+            animation: twinkle 6s ease-in-out infinite alternate;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.6; }
+            100% { opacity: 0.95; }
+        }
+
+        /* Top Status Bar (Authentic Mobile Smartphone Design) */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: max(12px, env(safe-area-inset-top, 12px)) 26px 4px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 25;
+            color: var(--text-main);
             user-select: none;
-            box-sizing: border-box;
             width: 100%;
         }
-        .status-time { 
-            font-size: 14px; 
-            font-weight: 600; 
-            letter-spacing: -0.2px; 
-            font-variant-numeric: tabular-nums; 
+
+        .status-time {
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: -0.2px;
+            font-variant-numeric: tabular-nums;
         }
-        .status-icons { 
-            display: flex; 
-            align-items: center; 
-            gap: 7px; 
+
+        .status-icons {
+            display: flex;
+            align-items: center;
+            gap: 7px;
         }
-        .status-icon { 
-            display: inline-block; 
-            vertical-align: middle; 
-            fill: currentColor; 
+
+        .status-icon {
+            display: inline-block;
+            vertical-align: middle;
+            fill: currentColor;
         }
-        .signal-icon { 
-            width: 17px; 
-            height: 12px; 
+
+        .signal-icon { width: 17px; height: 12px; }
+        .wifi-icon { width: 16px; height: 12px; }
+
+        .battery-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 1.5px;
         }
-        .wifi-icon { 
-            width: 16px; 
-            height: 12px; 
+
+        .battery-shell {
+            width: 22px;
+            height: 11.5px;
+            border: 1.5px solid currentColor;
+            border-radius: 4px;
+            padding: 1.5px;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
         }
-        .battery-wrapper { 
-            display: flex; 
-            align-items: center; 
-            gap: 1.5px; 
-        }
-        .battery-shell { 
-            width: 22px; 
-            height: 11.5px; 
-            border: 1.5px solid currentColor; 
-            border-radius: 4px; 
-            padding: 1.5px; 
-            box-sizing: border-box; 
-            display: flex; 
-            align-items: center; 
-        }
-        .battery-level { 
-            height: 100%; 
+
+        .battery-level {
+            height: 100%;
             width: 85%;
-            background-color: currentColor; 
-            border-radius: 1.5px; 
-            transition: width 0.3s ease; 
+            background-color: currentColor;
+            border-radius: 1.5px;
+            transition: width 0.3s ease;
         }
-        .battery-cap { 
-            width: 1.5px; 
-            height: 4.5px; 
-            background-color: currentColor; 
-            border-top-right-radius: 1.5px; 
-            border-bottom-right-radius: 1.5px; 
-            opacity: 0.8; 
-        }
-        .status-location { font-weight: 500; opacity: 0; font-size: 13px; transition: opacity 0.4s ease; }
 
-        /* Smooth Screen Transitions */
-        .screen { display: none; flex: 1; flex-direction: column; overflow-y: auto; overflow-x: hidden; -ms-overflow-style: none; scrollbar-width: none; opacity: 0; transform: translateY(15px); transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .battery-cap {
+            width: 1.5px;
+            height: 4.5px;
+            background-color: currentColor;
+            border-top-right-radius: 1.5px;
+            border-bottom-right-radius: 1.5px;
+            opacity: 0.8;
+        }
+
+        /* Screen Switcher Animations */
+        .screen {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+            opacity: 0;
+            transform: translateY(12px);
+            transition: opacity 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            position: relative;
+            z-index: 10;
+        }
         .screen::-webkit-scrollbar { display: none; }
-        .screen.active { display: flex; opacity: 1; transform: translateY(0); animation: smoothReveal 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+        .screen.active {
+            display: flex;
+            opacity: 1;
+            transform: translateY(0);
+        }
 
-        /* --- SCREEN 1 & LOGIN (Kept Similar but updated theme) --- */
-        .s1-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px 25px; margin-top: -40px; }
-        .hero-asset { width: 220px; height: 220px; margin-bottom: 30px; background: url('https://cdn-icons-png.flaticon.com/512/3222/3222801.png') no-repeat center; background-size: contain; filter: drop-shadow(0px 25px 30px rgba(0,0,0,0.3)); animation: float-glacial 5s ease-in-out infinite; }
-        .hero-text { font-size: 16px; font-weight: 400; line-height: 1.6; color: var(--text-muted); margin-bottom: 40px; padding: 0 10px; }
-        .hero-text strong { color: var(--text-main); font-weight: 800; display: block; margin-top: 10px; font-size: 26px; letter-spacing: 1px; }
+        /* ======================================================== */
+        /* SCREEN 1 & 1.5: ONBOARDING & SETUP                        */
+        /* ======================================================== */
+        .s1-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 30px 28px;
+        }
 
-        .glacier-panel { background: var(--glass-bg); border: 1px solid var(--glass-border); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), var(--glass-highlight); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-radius: 24px; }
-        .btn-primary { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: var(--text-main); backdrop-filter: blur(10px); border-radius: 30px; padding: 18px 0; width: 85%; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .btn-primary:active { transform: scale(0.96); background: rgba(255,255,255,0.25); }
-        
-        .input-group { width: 85%; margin-bottom: 18px; text-align: left; }
-        .input-label { font-size: 11px; color: var(--text-muted); margin-bottom: 8px; display: block; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; padding-left: 4px; }
-        .form-input { width: 100%; padding: 16px 20px; color: #fff; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); font-size: 15px; outline: none; box-sizing: border-box; font-family: 'Inter', sans-serif; transition: all 0.3s ease; border-radius: 16px; backdrop-filter: blur(10px); }
-        .form-input::placeholder { color: rgba(255,255,255,0.5); }
-        .form-input:focus { border-color: #fff; box-shadow: 0 0 0 2px rgba(255,255,255,0.2); }
-        select.form-input option { background: #12132e; color: #fff; }
+        .hero-cottage-s1 {
+            width: 210px;
+            height: 210px;
+            margin-bottom: 25px;
+            filter: drop-shadow(0 20px 30px rgba(0,0,0,0.5));
+            animation: gentleFloat 5s ease-in-out infinite;
+        }
 
-        /* --- SCREEN 2: REFERENCE UI DASHBOARD --- */
-        .s2-content { flex: 1; display: flex; flex-direction: column; width: 100%; position: relative; }
-        
-        .top-nav-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 25px 25px; }
-        .nav-icon { font-size: 24px; font-weight: bold; cursor: pointer; color: var(--text-main); display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; transition: background 0.2s; }
-        .nav-icon:active { background: rgba(255,255,255,0.1); }
-        
-        /* Main Glass Card (Reference Style) */
-        .main-glass-card { margin: 15px 25px 30px; position: relative; padding: 70px 20px 25px; text-align: center; }
-        
-        .weather-asset-large { position: absolute; top: -70px; left: 50%; transform: translateX(-50%); width: 180px; height: 180px; background: url('https://cdn-icons-png.flaticon.com/512/3222/3222794.png') no-repeat center; background-size: contain; filter: drop-shadow(0px 20px 30px rgba(0,0,0,0.3)); animation: float-glacial 6s ease-in-out infinite; }
-        
-        .main-temp { font-size: 80px; font-weight: 600; line-height: 1; letter-spacing: -3px; color: var(--text-main); margin-bottom: 10px; display: flex; justify-content: center; align-items: flex-start; }
-        .main-temp-unit { font-size: 30px; font-weight: 500; margin-top: 10px; margin-left: 2px; }
-        .main-condition { font-size: 18px; font-weight: 500; color: var(--text-main); letter-spacing: 0.5px; margin-bottom: 25px; }
-        
-        .stats-grid-small { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-        .stat-pill-small { display: flex; align-items: center; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 12px; padding: 10px 12px; gap: 12px; text-align: left; }
-        .stat-pill-small .icon { font-size: 18px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
-        .stat-pill-small .stat-text { display: flex; flex-direction: column; }
-        .stat-pill-small .label { font-size: 10px; font-weight: 500; color: var(--text-muted); margin-bottom: 2px; }
-        .stat-pill-small .val { font-size: 13px; font-weight: 700; color: var(--text-main); }
-        
-        .location-pill { display: inline-flex; align-items: center; gap: 6px; background: rgba(255, 255, 255, 0.15); border-radius: 20px; padding: 8px 16px; font-size: 13px; font-weight: 600; color: var(--text-main); }
-        .location-pill .pin { font-size: 14px; }
+        @keyframes gentleFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
 
-        /* Bottom Sheet (Solid White panel containing Hourly, AI, Community) */
-        .bottom-sheet { background: var(--bottom-sheet-bg); color: var(--bottom-sheet-text); flex: 1; border-top-left-radius: 35px; border-top-right-radius: 35px; padding: 30px 25px; display: flex; flex-direction: column; box-shadow: 0 -10px 40px rgba(0,0,0,0.1); transition: background 0.5s, color 0.5s; }
-        
-        .hourly-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .hourly-header h3 { margin: 0; font-size: 16px; font-weight: 700; color: var(--bottom-sheet-text); }
-        
-        .hourly-scroll { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 15px; -ms-overflow-style: none; scrollbar-width: none; }
-        .hourly-scroll::-webkit-scrollbar { display: none; }
-        .hourly-item { display: flex; flex-direction: column; align-items: center; gap: 10px; min-width: 45px; }
-        .hourly-item .time { font-size: 13px; font-weight: 600; color: var(--bottom-sheet-muted); }
-        .hourly-item .icon { font-size: 24px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
-        .hourly-item .temp { font-size: 16px; font-weight: 700; color: var(--bottom-sheet-text); }
-        
-        /* Secondary sections inside Bottom Sheet */
-        .ai-summary-card { background: var(--bottom-sheet-card); border-left: 4px solid #8b5cf6; padding: 18px; border-radius: 16px; margin-top: 15px; font-size: 14px; line-height: 1.6; color: var(--bottom-sheet-text); }
-        .ai-summary-title { font-weight: 800; color: #8b5cf6; margin-bottom: 8px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
-        
-        body.disaster-mode .ai-summary-card { border-left-color: var(--danger-text); }
-        body.disaster-mode .ai-summary-title { color: var(--danger-text); }
+        .hero-title {
+            font-size: 26px;
+            font-weight: 300;
+            line-height: 1.3;
+            letter-spacing: -0.5px;
+            margin-bottom: 30px;
+        }
+        .hero-title strong {
+            display: block;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff 0%, #c084fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
-        .community-header { display: flex; justify-content: space-between; align-items: center; margin-top: 25px; margin-bottom: 15px; }
-        .community-header h3 { margin: 0; font-size: 16px; font-weight: 700; color: var(--bottom-sheet-text); }
-        .live-dot { color: #ef4444; animation: pulse-opacity 1.5s infinite; font-size: 10px; margin-left: 4px; }
-        .btn-report { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 20px; padding: 6px 12px; font-size: 11px; font-weight: 700; cursor: pointer; text-transform: uppercase; }
+        .btn-glow {
+            width: 88%;
+            padding: 16px;
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            background: linear-gradient(135deg, rgba(89, 54, 180, 0.85) 0%, rgba(139, 92, 246, 0.85) 100%);
+            box-shadow: 0 10px 25px rgba(89, 54, 180, 0.45);
+            color: #fff;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            letter-spacing: 0.3px;
+            transition: all 0.2s ease;
+        }
+        .btn-glow:active { transform: scale(0.97); }
 
-        .report-card { background: var(--bottom-sheet-card); border-left: 4px solid #ef4444; padding: 16px; border-radius: 12px; margin-bottom: 12px; }
-        .report-meta { font-size: 11px; color: var(--bottom-sheet-muted); margin-bottom: 6px; font-weight: 500; }
-        .report-user { font-weight: 700; color: var(--bottom-sheet-text); }
-        .report-text { font-size: 13px; line-height: 1.5; color: var(--bottom-sheet-text); }
+        .btn-secondary-gps {
+            margin-top: 14px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 9px 18px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #e9d5ff;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-secondary-gps:active { transform: scale(0.96); }
 
-        .btn-view-stats { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; border: none; border-radius: 30px; padding: 16px 0; width: 100%; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 15px; transition: all 0.3s; text-transform: uppercase; letter-spacing: 1px; }
-        .btn-view-stats:active { transform: scale(0.98); background: rgba(139, 92, 246, 0.2); }
+        .form-group { width: 88%; margin-bottom: 16px; text-align: left; }
+        .form-label { display: block; font-size: 11px; text-transform: uppercase; font-weight: 700; color: var(--text-muted); margin-bottom: 6px; letter-spacing: 0.8px; }
+        .form-control {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 14px;
+            color: #fff;
+            font-size: 15px;
+            font-family: inherit;
+            outline: none;
+            backdrop-filter: blur(10px);
+        }
+        .form-control:focus { border-color: var(--accent-purple); box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.3); }
+        select.form-control option { background: #1C1B33; color: #fff; }
 
-        /* DMC Banner inside Dashboard (Disaster Mode) */
-        #dashboardEmergencyBannerContainer { padding: 0 25px; margin-bottom: 10px; }
-        .dmc-alert-banner { background: var(--danger-bg); border: 1px solid var(--danger-border); padding: 20px; border-radius: 16px; display: flex; flex-direction: column; gap: 15px; animation: pulse-danger-glow 3s infinite; }
-        .alert-logos { display: flex; gap: 10px; }
-        .logo-circle { width: 36px; height: 36px; border-radius: 50%; background: var(--danger-text); color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 10px; }
-        .alert-text { color: var(--text-main); font-size: 13px; line-height: 1.6; }
-        .alert-text strong { color: var(--danger-text); display: block; margin-bottom: 6px; font-size: 15px; text-transform: uppercase; }
-        body.disaster-mode .dmc-alert-banner .alert-text { color: var(--bottom-sheet-text); }
+        /* ======================================================== */
+        /* SCREEN 2: MAIN DASHBOARD (EXACT TO LEFT REFERENCE IMAGE)  */
+        /* ======================================================== */
+        .dashboard-screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            padding: 0;
+            position: relative;
+        }
 
-        /* --- SCREEN 3: RISK METRICS (Kept but styled to match) --- */
-        .s3-content { padding: 20px 25px; }
-        .nav-header { display: flex; align-items: center; margin-bottom: 30px; }
-        .back-btn { background: none; border: none; color: var(--text-main); font-size: 24px; cursor: pointer; padding: 0; margin-right: 20px; line-height: 1; }
-        .nav-header h2 { margin: 0; font-size: 22px; font-weight: 700; color: var(--text-main); }
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-        .stat-card { padding: 24px 20px; display: flex; flex-direction: column; gap: 10px; }
-        .risk-card { border: 1px solid var(--danger-border); background: linear-gradient(145deg, var(--danger-bg), transparent); }
-        .stat-title { font-size: 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
-        .stat-value { font-size: 34px; font-weight: 800; color: var(--text-main); letter-spacing: -1px; }
-        .stat-desc { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-top: auto; }
+        /* Centered Header Text Hierarchy */
+        .weather-hero-header {
+            text-align: center;
+            padding-top: 6px;
+            z-index: 15;
+            user-select: none;
+        }
 
-        /* --- SCREEN 4: LOCATIONS --- */
-        .s4-content { padding: 20px 25px; }
-        .search-input { width: 100%; padding: 18px 22px; font-size: 15px; border-radius: 20px; color: var(--text-main); background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); outline: none; margin-bottom: 25px; backdrop-filter: blur(10px); }
-        .search-input::placeholder { color: rgba(255,255,255,0.6); }
-        .city-card { padding: 24px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; cursor: pointer; }
-        .city-info h3 { margin: 0 0 8px 0; font-size: 20px; font-weight: 700; color: var(--text-main); }
-        .city-condition { font-size: 13px; color: var(--text-muted); font-weight: 500; }
-        .city-temp { font-size: 40px; font-weight: 800; color: var(--text-main); letter-spacing: -2px; }
+        .weather-city-title {
+            font-size: 26px;
+            font-weight: 400;
+            color: var(--text-main);
+            letter-spacing: -0.3px;
+            margin-bottom: 2px;
+            cursor: pointer;
+        }
 
-        /* Mobile GPS Button */
-        .gps-pill-btn { background: rgba(34, 211, 238, 0.15); border: 1px solid rgba(34, 211, 238, 0.4); color: var(--accent-1); border-radius: 20px; padding: 6px 14px; font-size: 12px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s; }
-        .gps-pill-btn:active { transform: scale(0.95); background: rgba(34, 211, 238, 0.3); }
+        .weather-temperature-main {
+            font-size: 78px;
+            font-weight: 200;
+            line-height: 1.0;
+            color: var(--text-main);
+            letter-spacing: -4px;
+            margin: 2px 0;
+            display: inline-block;
+        }
 
-        /* Mobile Report Modal */
-        .modal-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.65); backdrop-filter: blur(12px); z-index: 100; display: none; justify-content: center; align-items: flex-end; }
-        .modal-sheet { background: var(--bottom-sheet-bg); color: var(--bottom-sheet-text); width: 100%; border-top-left-radius: 30px; border-top-right-radius: 30px; padding: 25px; box-sizing: border-box; animation: slideUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); max-height: 85vh; overflow-y: auto; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .modal-header h3 { margin: 0; font-size: 18px; font-weight: 700; color: var(--bottom-sheet-text); }
-        .modal-close { font-size: 22px; cursor: pointer; color: var(--bottom-sheet-muted); background: none; border: none; padding: 0; }
-        .modal-form-group { margin-bottom: 14px; text-align: left; }
-        .modal-form-group label { display: block; font-size: 11px; font-weight: 700; color: var(--bottom-sheet-muted); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; }
-        .modal-input { width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.1); background: var(--bottom-sheet-card); color: var(--bottom-sheet-text); font-family: 'Inter', sans-serif; font-size: 14px; box-sizing: border-box; outline: none; }
-        body.disaster-mode .modal-input { border-color: rgba(255,255,255,0.15); }
-        .modal-textarea { resize: vertical; min-height: 80px; }
-        .btn-modal-submit { width: 100%; padding: 14px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none; border-radius: 25px; font-weight: 700; font-size: 15px; cursor: pointer; margin-top: 10px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4); }
-        .btn-modal-submit:active { transform: scale(0.97); }
+        .weather-condition-sub {
+            font-size: 15px;
+            font-weight: 400;
+            color: var(--text-muted);
+            letter-spacing: 0.2px;
+            margin-bottom: 4px;
+        }
 
-        /* Loader Overlay */
-        #loadingOverlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(10px); z-index: 50; display: none; justify-content: center; align-items: center; flex-direction: column; color: white; font-weight: 600; border-radius: inherit; }
-        .spinner { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
+        .weather-hl-range {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-main);
+            letter-spacing: 0.5px;
+            opacity: 0.9;
+        }
 
-        /* Animations */
+        /* 3D Cozy House Hero Illustration */
+        .house-art-wrapper {
+            position: relative;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: -10px;
+            margin-bottom: -15px;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .house-svg-graphic {
+            width: 250px;
+            height: 250px;
+            filter: drop-shadow(0 25px 35px rgba(0, 0, 0, 0.55));
+            animation: gentleFloat 6s ease-in-out infinite;
+        }
+
+        /* Bottom Floating Drawer Sheet */
+        .forecast-drawer-sheet {
+            background: var(--sheet-bg);
+            border-top: 1px solid var(--sheet-border);
+            border-top-left-radius: 36px;
+            border-top-right-radius: 36px;
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            box-shadow: 0 -15px 45px rgba(0, 0, 0, 0.45);
+            padding: 12px 20px 95px;
+            position: relative;
+            z-index: 20;
+            transition: all 0.4s ease;
+        }
+
+        .drawer-handle-bar {
+            width: 44px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 2px;
+            margin: 0 auto 12px;
+            cursor: pointer;
+        }
+
+        /* Forecast Drawer Tab Headers */
+        .drawer-tab-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 16px;
+        }
+
+        .drawer-tab {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding-bottom: 6px;
+            position: relative;
+            transition: color 0.2s;
+        }
+
+        .drawer-tab.active {
+            color: #ffffff;
+            font-weight: 600;
+        }
+        .drawer-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--text-main);
+            border-radius: 2px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+        }
+
+        /* Horizontal Scrollable Forecast Pill Cards */
+        .hourly-pill-row {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding: 4px 4px 8px;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .hourly-pill-row::-webkit-scrollbar { display: none; }
+
+        .forecast-pill-card {
+            min-width: 62px;
+            border-radius: 30px;
+            padding: 14px 8px;
+            background: var(--pill-inactive);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+        }
+        .forecast-pill-card:active { transform: scale(0.95); }
+
+        .forecast-pill-card.active {
+            background: var(--pill-active);
+            border: 1px solid rgba(192, 132, 252, 0.45);
+            box-shadow: 0 6px 18px rgba(89, 54, 180, 0.45);
+        }
+
+        .pill-time {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .pill-icon-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .pill-weather-icon {
+            font-size: 20px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+
+        .pill-rain-prob {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-cyan);
+            letter-spacing: -0.2px;
+        }
+
+        .pill-temp {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        /* Embedded AI & DMC Emergency Alerts within Drawer */
+        .drawer-ai-card {
+            margin-top: 14px;
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 3px solid var(--accent-purple);
+            border-radius: 14px;
+            padding: 12px 14px;
+            font-size: 12.5px;
+            line-height: 1.5;
+            color: rgba(255, 255, 255, 0.85);
+        }
+        .drawer-ai-title {
+            font-size: 11px;
+            font-weight: 800;
+            color: #c084fc;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* DMC Alert banner (if emergency) */
+        #dashboardEmergencyBannerContainer {
+            margin: 0 16px 10px;
+        }
+        .dmc-alert-banner {
+            background: var(--danger-bg);
+            border: 1px solid var(--danger-border);
+            padding: 14px 16px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: pulse-danger-glow 3s infinite;
+        }
+        .alert-badge {
+            background: #ef4444;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 4px 8px;
+            border-radius: 8px;
+            text-transform: uppercase;
+        }
+        .alert-text {
+            font-size: 12px;
+            line-height: 1.4;
+            color: #fff;
+        }
+        .alert-text strong { color: var(--danger-text); display: block; font-size: 13px; }
+
+        /* Bottom Curved Wave Navigation Dock */
+        .bottom-wave-dock {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 82px;
+            background: linear-gradient(180deg, rgba(28, 27, 51, 0.92) 0%, #151329 100%);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 35px 14px;
+            z-index: 30;
+        }
+
+        .dock-nav-btn {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 22px;
+            cursor: pointer;
+            padding: 10px;
+            transition: color 0.2s, transform 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .dock-nav-btn:active { transform: scale(0.9); color: #fff; }
+
+        .dock-center-circle {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background: #ffffff;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 255, 255, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4c1d95;
+            font-size: 26px;
+            font-weight: 300;
+            cursor: pointer;
+            transform: translateY(-16px);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 3px solid #1C1B33;
+        }
+        .dock-center-circle:active {
+            transform: translateY(-14px) scale(0.94);
+        }
+
+        /* ======================================================== */
+        /* SCREEN 4: WEATHER LOCATIONS & SEARCH (EXACT TO RIGHT)    */
+        /* ======================================================== */
+        .locations-screen-content {
+            padding: 10px 20px 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .locations-top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .header-back-title {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 22px;
+            font-weight: 600;
+            color: #ffffff;
+            cursor: pointer;
+            letter-spacing: -0.3px;
+        }
+
+        .header-more-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        /* Search Input */
+        .search-pill-container {
+            position: relative;
+            width: 100%;
+        }
+        .search-pill-input {
+            width: 100%;
+            padding: 12px 18px 12px 42px;
+            border-radius: 14px;
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            backdrop-filter: blur(10px);
+        }
+        .search-pill-input::placeholder { color: rgba(255, 255, 255, 0.4); }
+        .search-pill-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 15px;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        /* Signature Two-Tone Curved Location Cards (From Reference Image) */
+        .location-cards-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 6px;
+        }
+
+        .diagonal-weather-card {
+            position: relative;
+            height: 145px;
+            background: var(--card-base);
+            border-radius: 28px;
+            overflow: hidden;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+        .diagonal-weather-card:active {
+            transform: scale(0.98);
+        }
+
+        /* Inner Curved Diagonal Wave */
+        .card-wave-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 78%;
+            height: 100%;
+            background: var(--card-purple-wave);
+            clip-path: polygon(0 0, 85% 0, 55% 100%, 0% 100%);
+            z-index: 1;
+        }
+
+        .card-content-grid {
+            position: relative;
+            z-index: 5;
+            height: 100%;
+            padding: 16px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card-top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .card-large-temp {
+            font-size: 56px;
+            font-weight: 300;
+            line-height: 1.0;
+            letter-spacing: -2px;
+            color: #ffffff;
+        }
+
+        .card-bottom-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .card-location-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .card-hl-text {
+            font-size: 11px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.65);
+        }
+
+        .card-city-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #ffffff;
+            letter-spacing: -0.2px;
+        }
+
+        .card-condition-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.85);
+            text-align: right;
+            padding-right: 4px;
+        }
+
+        /* Floating 3D Weather Illustration on Top-Right */
+        .card-art-float {
+            position: absolute;
+            top: -12px;
+            right: 10px;
+            width: 110px;
+            height: 110px;
+            z-index: 4;
+            filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.45));
+            pointer-events: none;
+        }
+
+        /* ======================================================== */
+        /* COMMUNITY REPORT MODAL & LOADERS                          */
+        /* ======================================================== */
+        .modal-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(10, 8, 20, 0.75);
+            backdrop-filter: blur(15px);
+            z-index: 100;
+            display: none;
+            justify-content: center;
+            align-items: flex-end;
+        }
+        .modal-sheet {
+            background: #23224A;
+            color: #fff;
+            width: 100%;
+            border-top-left-radius: 32px;
+            border-top-right-radius: 32px;
+            padding: 24px 22px 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 -20px 50px rgba(0, 0, 0, 0.6);
+            animation: slideUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+        .modal-header h3 { font-size: 17px; font-weight: 700; }
+        .modal-close {
+            background: none; border: none; font-size: 24px; color: rgba(255, 255, 255, 0.6); cursor: pointer;
+        }
+
+        /* Loading Spinner Overlay */
+        #loadingOverlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(18, 16, 35, 0.75);
+            backdrop-filter: blur(14px);
+            z-index: 90;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 13px;
+        }
+        .spinner {
+            width: 38px;
+            height: 38px;
+            border: 3.5px solid rgba(255, 255, 255, 0.15);
+            border-top-color: #c084fc;
+            border-radius: 50%;
+            animation: spin 0.9s linear infinite;
+            margin-bottom: 14px;
+        }
+
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        @keyframes float-glacial { 0% { transform: translateY(0px); } 50% { transform: translateY(-12px); } 100% { transform: translateY(0px); } }
-        @keyframes smoothReveal { 0% { opacity: 0; transform: translateY(15px); } 100% { opacity: 1; transform: translateY(0); } }
-        @keyframes pulse-opacity { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
-        @keyframes pulse-danger-glow { 0% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.2); } 50% { box-shadow: 0 0 25px rgba(225, 29, 72, 0.1); } 100% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0); } }
+        @keyframes pulse-danger-glow { 0%, 100% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0); } 50% { box-shadow: 0 0 20px rgba(225, 29, 72, 0.35); } }
     </style>
 </head>
 <body>
 
     <div class="app-container">
+        <!-- Twinkling Star Background Overlay -->
+        <div class="star-field"></div>
+
+        <!-- Full-Screen Loading Overlay -->
         <div id="loadingOverlay">
             <div class="spinner"></div>
-            <div id="loadingText">Syncing Data...</div>
+            <div id="loadingText">Syncing Climate Data...</div>
         </div>
-        
+
+        <!-- Realistic Mobile Smartphone Status Bar -->
         <div class="status-bar" id="appStatusBar">
-            <span class="status-time" id="statusBarTime">9:41</span>
+            <span class="status-time" id="statusBarTime">1:41</span>
             <div class="status-icons">
-                <!-- Authentic Cellular Signal (4 stair bars) -->
+                <!-- 4-bar cellular staircase icon -->
                 <svg class="status-icon signal-icon" viewBox="0 0 18 12" aria-label="Cellular signal">
                     <rect x="0" y="8.5" width="3" height="3.5" rx="0.8"/>
                     <rect x="4.5" y="6" width="3" height="6" rx="0.8"/>
                     <rect x="9" y="3.5" width="3" height="8.5" rx="0.8"/>
                     <rect x="13.5" y="0.8" width="3" height="11.2" rx="0.8"/>
                 </svg>
-                <!-- Authentic Wi-Fi Wave Icon -->
+                <!-- 3-arc Wi-Fi wave icon -->
                 <svg class="status-icon wifi-icon" viewBox="0 0 16 12" aria-label="Wi-Fi">
                     <path d="M8 9.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm-3.5-3.2a5 5 0 0 1 7 0 .8.8 0 0 1-1.1 1.1 3.4 3.4 0 0 0-4.8 0 .8.8 0 0 1-1.1-1.1zm-3.3-3.2a9.7 9.7 0 0 1 13.6 0 .8.8 0 0 1-1.1 1.1 8.1 8.1 0 0 0-11.4 0 .8.8 0 1 1-1.1-1.1z"/>
                 </svg>
-                <!-- Authentic Battery Icon (Clean pill + cap without cluttering percentage text) -->
+                <!-- Realistic Battery Pill (cap + shell + level) -->
                 <div class="battery-wrapper" aria-label="Battery">
                     <div class="battery-shell">
                         <div class="battery-level" id="batteryLevelBar"></div>
@@ -326,239 +879,396 @@
         <!-- SCREEN 1: ONBOARDING -->
         <div id="screen1" class="screen active">
             <div class="s1-content">
-                <div class="hero-asset"></div>
-                <div class="hero-text">
-                    DISCOVER CLIMATE PRECISION,
-                    <strong>SRI LANKA.</strong>
+                <!-- 3D Cozy Cottage Graphic -->
+                <svg class="hero-cottage-s1" viewBox="0 0 200 200">
+                    <defs>
+                        <linearGradient id="roofGrad" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0%" stop-color="#E9B7CE"/>
+                            <stop offset="50%" stop-color="#C58DB1"/>
+                            <stop offset="100%" stop-color="#8F5E88"/>
+                        </linearGradient>
+                        <linearGradient id="wallGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#3D3A63"/>
+                            <stop offset="100%" stop-color="#211E3D"/>
+                        </linearGradient>
+                        <radialGradient id="glowWarm" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stop-color="#FFE082" stop-opacity="1"/>
+                            <stop offset="100%" stop-color="#FFB300" stop-opacity="0.8"/>
+                        </radialGradient>
+                        <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+                            <feGaussianBlur stdDeviation="3" result="blur"/>
+                            <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+                        </filter>
+                    </defs>
+                    <!-- Hill mound -->
+                    <ellipse cx="100" cy="175" rx="85" ry="20" fill="#201C3D"/>
+                    <ellipse cx="100" cy="172" rx="75" ry="14" fill="#2D2852"/>
+                    <!-- House Body -->
+                    <rect x="52" y="98" width="96" height="66" rx="4" fill="url(#wallGrad)"/>
+                    <!-- Horizontal siding lines -->
+                    <line x1="52" y1="110" x2="148" y2="110" stroke="#484475" stroke-width="1.5"/>
+                    <line x1="52" y1="122" x2="148" y2="122" stroke="#484475" stroke-width="1.5"/>
+                    <line x1="52" y1="134" x2="148" y2="134" stroke="#484475" stroke-width="1.5"/>
+                    <line x1="52" y1="146" x2="148" y2="146" stroke="#484475" stroke-width="1.5"/>
+                    <!-- Chimney -->
+                    <rect x="64" y="60" width="14" height="32" rx="2" fill="#58517D"/>
+                    <rect x="62" y="58" width="18" height="4" rx="1.5" fill="#C58DB1"/>
+                    <!-- Warm Windows (Ground Floor) -->
+                    <rect x="68" y="126" width="18" height="24" rx="9" fill="url(#glowWarm)" filter="url(#softGlow)"/>
+                    <rect x="68" y="126" width="18" height="24" rx="9" fill="none" stroke="#E9B7CE" stroke-width="2"/>
+                    <line x1="77" y1="126" x2="77" y2="150" stroke="#774567" stroke-width="1.5"/>
+                    <line x1="68" y1="138" x2="86" y2="138" stroke="#774567" stroke-width="1.5"/>
+                    <rect x="114" y="126" width="18" height="24" rx="9" fill="url(#glowWarm)" filter="url(#softGlow)"/>
+                    <rect x="114" y="126" width="18" height="24" rx="9" fill="none" stroke="#E9B7CE" stroke-width="2"/>
+                    <line x1="123" y1="126" x2="123" y2="150" stroke="#774567" stroke-width="1.5"/>
+                    <line x1="114" y1="138" x2="132" y2="138" stroke="#774567" stroke-width="1.5"/>
+                    <!-- Main Gable Roof -->
+                    <polygon points="100,56 40,102 160,102" fill="url(#roofGrad)"/>
+                    <polygon points="100,56 40,102 46,104 100,62 154,104 160,102" fill="#FCE4EC"/>
+                    <!-- Attic Circular Window with Cross -->
+                    <circle cx="100" cy="85" r="9" fill="url(#glowWarm)" filter="url(#softGlow)"/>
+                    <circle cx="100" cy="85" r="9" fill="none" stroke="#E9B7CE" stroke-width="2"/>
+                    <line x1="100" y1="76" x2="100" y2="94" stroke="#774567" stroke-width="1.5"/>
+                    <line x1="91" y1="85" x2="109" y2="85" stroke="#774567" stroke-width="1.5"/>
+                </svg>
+
+                <div class="hero-title">
+                    PRECISION CLIMATE
+                    <strong>SRI LANKA</strong>
                 </div>
-                <button class="btn-primary" onclick="handleInitialCheck()">Check now</button>
-                <button class="gps-pill-btn" onclick="useCurrentGpsLocation()" style="margin-top: 5px;">📍 Use Current GPS Location</button>
+
+                <button class="btn-glow" onclick="handleInitialCheck()">Check Weather Now</button>
+                <button class="btn-secondary-gps" onclick="useCurrentGpsLocation()">📍 Use Device GPS</button>
             </div>
         </div>
 
-        <!-- SCREEN 1.5: SETUP -->
+        <!-- SCREEN 1.5: ONBOARDING LOCATION SETUP -->
         <div id="loginScreen" class="screen">
             <div class="s1-content">
-                <div class="hero-text" style="margin-bottom: 25px;">
-                    Personalize your alerts.<br>
+                <div class="hero-title" style="margin-bottom: 25px;">
+                    Hyper-Local Forecast
                     <strong>WHERE ARE YOU?</strong>
                 </div>
-                <div class="input-group">
-                    <span class="input-label">First Name</span>
-                    <input type="text" id="userNameInput" class="form-input" placeholder="e.g. Kasun" autocomplete="off">
+                <div class="form-group">
+                    <label class="form-label">Your Name</label>
+                    <input type="text" id="userNameInput" class="form-control" placeholder="e.g. Kasun" autocomplete="off">
                 </div>
-                <div class="input-group">
-                    <span class="input-label">Province</span>
-                    <select id="provinceSelect" class="form-input" onchange="updateDistricts()">
+                <div class="form-group">
+                    <label class="form-label">Province</label>
+                    <select id="provinceSelect" class="form-control" onchange="updateDistricts()">
                         <option value="" disabled selected>Select Province</option>
                     </select>
                 </div>
-                <div class="input-group" style="margin-bottom: 35px;">
-                    <span class="input-label">District</span>
-                    <select id="districtSelect" class="form-input" disabled>
+                <div class="form-group" style="margin-bottom: 30px;">
+                    <label class="form-label">District</label>
+                    <select id="districtSelect" class="form-control" disabled>
                         <option value="" disabled selected>Select District</option>
                     </select>
                 </div>
-                <button class="btn-primary" onclick="saveDataAndProceed()">Continue</button>
+                <button class="btn-glow" onclick="saveDataAndProceed()">Continue to Weather</button>
             </div>
         </div>
 
-        <!-- SCREEN 2: MAIN DASHBOARD (Reference UI Style) -->
-        <div id="screen2" class="screen" style="padding: 0;">
-            <div class="s2-content">
+        <!-- SCREEN 2: MAIN DASHBOARD (Exact to Left Screen in Reference) -->
+        <div id="screen2" class="screen">
+            <div class="dashboard-screen">
                 
-                <div class="top-nav-row">
-                    <div class="nav-icon" onclick="alert('Menu')">⋮</div>
-                    <div style="display: flex; gap: 15px;">
-                        <div class="nav-icon" id="themeToggleBtn" onclick="toggleTheme()" style="font-size: 20px;">☀️</div>
-                        <div class="nav-icon" onclick="goToScreen4()">+</div>
-                    </div>
+                <!-- Centered Main Weather Information -->
+                <div class="weather-hero-header">
+                    <h1 class="weather-city-title" id="dashboardLocationHeader" onclick="goToScreen4()">Colombo</h1>
+                    <div class="weather-temperature-main" id="mainTemp">28°</div>
+                    <div class="weather-condition-sub" id="mainCondition">Mostly Clear</div>
+                    <div class="weather-hl-range" id="mainHighLow">H:31°   L:24°</div>
                 </div>
-                
+
+                <!-- Emergency DMC Alert (Dynamic if active) -->
                 <div id="dashboardEmergencyBannerContainer"></div>
 
-                <div class="main-glass-card glacier-panel">
-                    <div class="weather-asset-large"></div>
+                <!-- Center Cozy House Illustration (Under Night Sky) -->
+                <div class="house-art-wrapper">
+                    <svg class="house-svg-graphic" viewBox="0 0 220 220">
+                        <defs>
+                            <linearGradient id="roofGrad2" x1="0" y1="0" x2="1" y2="1">
+                                <stop offset="0%" stop-color="#F2C7DA"/>
+                                <stop offset="45%" stop-color="#D09BB9"/>
+                                <stop offset="100%" stop-color="#93648B"/>
+                            </linearGradient>
+                            <linearGradient id="wallGrad2" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#3F3C69"/>
+                                <stop offset="100%" stop-color="#232043"/>
+                            </linearGradient>
+                            <radialGradient id="glowYellow" cx="50%" cy="50%" r="50%">
+                                <stop offset="0%" stop-color="#FFF59D"/>
+                                <stop offset="50%" stop-color="#FFD54F"/>
+                                <stop offset="100%" stop-color="#FFA000"/>
+                            </radialGradient>
+                            <filter id="softGlow2" x="-20%" y="-20%" width="140%" height="140%">
+                                <feGaussianBlur stdDeviation="3.5" result="blur"/>
+                                <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+                            </filter>
+                        </defs>
+                        <!-- Hill / Ground -->
+                        <ellipse cx="110" cy="188" rx="90" ry="20" fill="#1C1835"/>
+                        <ellipse cx="110" cy="184" rx="78" ry="14" fill="#29244A"/>
+                        <!-- Cottage Main Walls -->
+                        <rect x="58" y="105" width="104" height="72" rx="4" fill="url(#wallGrad2)"/>
+                        <!-- Siding stripes -->
+                        <line x1="58" y1="118" x2="162" y2="118" stroke="#4C4778" stroke-width="1.5"/>
+                        <line x1="58" y1="131" x2="162" y2="131" stroke="#4C4778" stroke-width="1.5"/>
+                        <line x1="58" y1="144" x2="162" y2="144" stroke="#4C4778" stroke-width="1.5"/>
+                        <line x1="58" y1="157" x2="162" y2="157" stroke="#4C4778" stroke-width="1.5"/>
+                        <!-- Chimney with cap -->
+                        <rect x="70" y="62" width="16" height="38" rx="2" fill="#58517D"/>
+                        <rect x="67" y="60" width="22" height="4" rx="1.5" fill="#D09BB9"/>
+                        <!-- Ground Floor Arched Windows -->
+                        <rect x="74" y="134" width="20" height="28" rx="10" fill="url(#glowYellow)" filter="url(#softGlow2)"/>
+                        <rect x="74" y="134" width="20" height="28" rx="10" fill="none" stroke="#F2C7DA" stroke-width="2"/>
+                        <line x1="84" y1="134" x2="84" y2="162" stroke="#774567" stroke-width="1.5"/>
+                        <line x1="74" y1="148" x2="94" y2="148" stroke="#774567" stroke-width="1.5"/>
+                        <!-- Right Window -->
+                        <rect x="126" y="134" width="20" height="28" rx="10" fill="url(#glowYellow)" filter="url(#softGlow2)"/>
+                        <rect x="126" y="134" width="20" height="28" rx="10" fill="none" stroke="#F2C7DA" stroke-width="2"/>
+                        <line x1="136" y1="134" x2="136" y2="162" stroke="#774567" stroke-width="1.5"/>
+                        <line x1="126" y1="148" x2="146" y2="148" stroke="#774567" stroke-width="1.5"/>
+                        <!-- Front Door with Porch Light -->
+                        <rect x="102" y="146" width="16" height="31" rx="4" fill="#312B54"/>
+                        <circle cx="114" cy="162" r="1.5" fill="#FFD54F"/>
+                        <!-- Gable Roof -->
+                        <polygon points="110,58 44,110 176,110" fill="url(#roofGrad2)"/>
+                        <polygon points="110,58 44,110 50,112 110,64 170,112 176,110" fill="#FFFFFF" opacity="0.8"/>
+                        <!-- Attic Circular Window with Cross -->
+                        <circle cx="110" cy="90" r="10.5" fill="url(#glowYellow)" filter="url(#softGlow2)"/>
+                        <circle cx="110" cy="90" r="10.5" fill="none" stroke="#F2C7DA" stroke-width="2"/>
+                        <line x1="110" y1="79.5" x2="110" y2="100.5" stroke="#774567" stroke-width="1.5"/>
+                        <line x1="99.5" y1="90" x2="120.5" y2="90" stroke="#774567" stroke-width="1.5"/>
+                    </svg>
+                </div>
+
+                <!-- Bottom Floating Glass Forecast Drawer -->
+                <div class="forecast-drawer-sheet">
+                    <div class="drawer-handle-bar" onclick="goToScreen4()"></div>
                     
-                    <div class="main-temp" id="mainTemp">+--<span class="main-temp-unit">°</span></div>
-                    <div class="main-condition" id="mainCondition">Loading...</div>
-                    
-                    <div class="stats-grid-small">
-                        <div class="stat-pill-small">
-                            <span class="icon">☀️</span>
-                            <div class="stat-text"><span class="label">UV Index</span><span class="val" id="uvValueCard">--</span></div>
+                    <!-- Tabs -->
+                    <div class="drawer-tab-row">
+                        <span class="drawer-tab active" id="tabHourly" onclick="switchForecastTab('hourly')">Hourly Forecast</span>
+                        <span class="drawer-tab" id="tabWeekly" onclick="switchForecastTab('weekly')">Weekly Forecast</span>
+                        <span class="drawer-tab" id="tabInsights" onclick="switchForecastTab('insights')">AI & Risk</span>
+                    </div>
+
+                    <!-- Hourly Forecast Row (Pill Cards) -->
+                    <div class="hourly-pill-row" id="forecastPillContainer">
+                        <div class="forecast-pill-card">
+                            <span class="pill-time">12 AM</span>
+                            <div class="pill-icon-box">
+                                <span class="pill-weather-icon">🌧️</span>
+                                <span class="pill-rain-prob">30%</span>
+                            </div>
+                            <span class="pill-temp" id="pillTemp0">19°</span>
                         </div>
-                        <div class="stat-pill-small">
-                            <span class="icon">💨</span>
-                            <div class="stat-text"><span class="label">Wind</span><span class="val" id="windValueCard">-- km/h</span></div>
+                        <div class="forecast-pill-card active">
+                            <span class="pill-time">Now</span>
+                            <div class="pill-icon-box">
+                                <span class="pill-weather-icon">🌧️</span>
+                                <span class="pill-rain-prob" id="pillRainNow">--</span>
+                            </div>
+                            <span class="pill-temp" id="pillTempNow">28°</span>
                         </div>
-                        <div class="stat-pill-small">
-                            <span class="icon">🌩️</span>
-                            <div class="stat-text"><span class="label">Weather Code</span><span class="val" id="weatherCodeCard">--</span></div>
+                        <div class="forecast-pill-card">
+                            <span class="pill-time">2 AM</span>
+                            <div class="pill-icon-box">
+                                <span class="pill-weather-icon">🌦️</span>
+                                <span class="pill-rain-prob">--</span>
+                            </div>
+                            <span class="pill-temp" id="pillTemp2">27°</span>
                         </div>
-                        <div class="stat-pill-small">
-                            <span class="icon">💧</span>
-                            <div class="stat-text"><span class="label">Humidity</span><span class="val" id="humidityValueCard">--%</span></div>
+                        <div class="forecast-pill-card">
+                            <span class="pill-time">3 AM</span>
+                            <div class="pill-icon-box">
+                                <span class="pill-weather-icon">🌧️</span>
+                                <span class="pill-rain-prob">--</span>
+                            </div>
+                            <span class="pill-temp" id="pillTemp3">27°</span>
+                        </div>
+                        <div class="forecast-pill-card">
+                            <span class="pill-time">4 AM</span>
+                            <div class="pill-icon-box">
+                                <span class="pill-weather-icon">☁️</span>
+                                <span class="pill-rain-prob">--</span>
+                            </div>
+                            <span class="pill-temp" id="pillTemp4">26°</span>
                         </div>
                     </div>
-                    
-                    <div class="location-pill" style="margin-top: 15px; cursor: pointer;" onclick="useCurrentGpsLocation()" title="Tap to refresh with device GPS">
-                        <span class="pin">📍</span> <span id="dashboardLocationHeader">Colombo, Sri Lanka</span>
+
+                    <!-- AI Summary & Community Updates Card inside Drawer -->
+                    <div class="drawer-ai-card">
+                        <div class="drawer-ai-title">
+                            <span>✨ Meteorological Synthesis</span>
+                            <span id="humidityMetricBadge" style="color:var(--text-cyan); font-weight:600; text-transform:none;">💧 82%</span>
+                        </div>
+                        <div id="aiSummaryText">Syncing hyper-local weather fusion with Disaster Management Centre...</div>
                     </div>
                 </div>
 
-                <div class="bottom-sheet">
-                    <div class="hourly-header">
-                        <h3>Today's Weather</h3>
-                        <span style="font-size: 13px; color: var(--bottom-sheet-muted); cursor: pointer;" onclick="useCurrentGpsLocation()">📍 Sync GPS</span>
+                <!-- Bottom Curved Wave Dock (Matching Left Reference Screen) -->
+                <div class="bottom-wave-dock">
+                    <!-- Left: GPS Map Pin -->
+                    <button class="dock-nav-btn" onclick="useCurrentGpsLocation()" title="Sync Real Device GPS">
+                        📍
+                    </button>
+                    <!-- Center: Elevated Circular Plus Button -->
+                    <div class="dock-center-circle" onclick="openReportModal()" title="Report Emergency Incident">
+                        +
                     </div>
-                    
-                    <div class="hourly-scroll">
-                        <div class="hourly-item">
-                            <span class="time">Now</span>
-                            <span class="icon">⛅</span>
-                            <span class="temp" id="hourlyNow">--°</span>
-                        </div>
-                        <div class="hourly-item">
-                            <span class="time">15:00</span>
-                            <span class="icon">🌧️</span>
-                            <span class="temp" id="hourlyNext1">--°</span>
-                        </div>
-                        <div class="hourly-item">
-                            <span class="time">16:00</span>
-                            <span class="icon">🌩️</span>
-                            <span class="temp" id="hourlyNext2">--°</span>
-                        </div>
-                        <div class="hourly-item">
-                            <span class="time">17:00</span>
-                            <span class="icon">☁️</span>
-                            <span class="temp">--°</span>
-                        </div>
-                    </div>
-                    
-                    <div class="ai-summary-card">
-                        <div class="ai-summary-title">✨ AI Summary</div>
-                        <span id="aiSummaryText">Syncing local meteorological data...</span>
-                    </div>
-
-                    <div class="community-header">
-                        <h3>Community Reports <span class="live-dot">●</span></h3>
-                        <button class="btn-report" onclick="openReportModal()">+ Report</button>
-                    </div>
-                    
-                    <div id="communityReportsFeed">
-                        <div class="report-card">
-                            <div class="report-meta"><span class="report-user">Loading...</span></div>
-                            <div class="report-text">Retrieving live reports from nearby users...</div>
-                        </div>
-                    </div>
-                    
-                    <button class="btn-view-stats" onclick="goToScreen3()">View Full Risk Report</button>
+                    <!-- Right: Menu / City List Button -->
+                    <button class="dock-nav-btn" onclick="goToScreen4()" title="Open Weather Locations">
+                        ☰
+                    </button>
                 </div>
+
             </div>
         </div>
 
-        <!-- SCREEN 3: RISK METRICS (DMC) -->
-        <div id="screen3" class="screen">
-            <div class="s3-content">
-                <div class="nav-header">
-                    <button onclick="goToScreen2()" class="back-btn">‹</button>
-                    <h2>Risk Analysis</h2>
-                </div>
-
-                <div class="dmc-alert-banner glacier-panel" id="screen3DmcBanner">
-                    <div class="alert-logos">
-                        <div class="logo-circle">DMC</div>
-                        <div class="logo-circle">MET</div>
-                    </div>
-                    <div class="alert-text">
-                        <strong id="dmcSeverityHeader">URGENT DMC ALERT:</strong> 
-                        <span id="dmcAlertText">Fetching latest alerts...</span>
-                    </div>
-                </div>
-
-                <div class="stats-grid">
-                    <div class="stat-card glacier-panel risk-card">
-                        <div class="stat-title">Lightning Prob.</div>
-                        <div class="stat-value text-danger" id="lightningProb">90%</div>
-                        <div class="stat-desc text-danger">RED ALERT</div>
-                    </div>
-                    <div class="stat-card glacier-panel">
-                        <div class="stat-title">Humidity</div>
-                        <div class="stat-value" id="humidityValueScreen3">--%</div>
-                        <div class="stat-desc">Very High</div>
-                    </div>
-                    <div class="stat-card glacier-panel">
-                        <div class="stat-title">Wind Speed</div>
-                        <div class="stat-value" id="windValueScreen3">--</div>
-                        <div class="stat-desc">km/h</div>
-                    </div>
-                    <div class="stat-card glacier-panel">
-                        <div class="stat-title">UV Index</div>
-                        <div class="stat-value" id="uvValueScreen3">--</div>
-                        <div class="stat-desc">Low</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- SCREEN 4: LOCATIONS -->
+        <!-- SCREEN 4: WEATHER LOCATIONS & PREDICTIVE SEARCH (Exact to Right Reference Image) -->
         <div id="screen4" class="screen">
-            <div class="s4-content">
-                <div class="nav-header">
-                    <button onclick="goToScreen2()" class="back-btn">‹</button>
-                    <h2>Locations</h2>
-                </div>
+            <div class="locations-screen-content">
                 
-                <input type="text" id="searchInput" class="search-input" placeholder="Search city or district..." oninput="handleLocationSearch()">
+                <!-- Header with '< Weather' and '(...)' Options -->
+                <div class="locations-top-header">
+                    <div class="header-back-title" onclick="goToScreen2()">
+                        <span>‹</span>
+                        <span>Weather</span>
+                    </div>
+                    <div class="header-more-btn" onclick="toggleTheme()" title="Toggle Dark/Light Theme">
+                        ⋯
+                    </div>
+                </div>
 
-                <div class="city-list" id="cityListContainer">
-                    <div class="city-card glacier-panel" style="border-left: 4px solid #9ca3af;" onclick="overrideLocation('Central', 'Nuwara Eliya')">
-                        <div class="city-info">
-                            <h3>Nuwara Eliya</h3>
-                            <span class="city-condition">Dense Mist</span>
+                <!-- Search Input Bar -->
+                <div class="search-pill-container">
+                    <span class="search-pill-icon">🔍</span>
+                    <input type="text" id="searchInput" class="search-pill-input" placeholder="Search for a city or airport" oninput="handleLocationSearch()">
+                </div>
+
+                <!-- List of Signature Two-Tone Curved Weather Cards -->
+                <div class="location-cards-stack" id="cityListContainer">
+                    
+                    <!-- Card 1: Montreal / Colombo -->
+                    <div class="diagonal-weather-card" onclick="overrideLocation('Western', 'Colombo')">
+                        <div class="card-wave-bg"></div>
+                        <svg class="card-art-float" viewBox="0 0 100 100">
+                            <!-- Moon + Rain Cloud 3D Graphic -->
+                            <path d="M72 25 a15 15 0 0 0 -12 24 a18 18 0 1 1 12 -24 z" fill="#D8B4E2"/>
+                            <path d="M25 65 h46 a16 16 0 0 0 0 -32 a20 20 0 0 0 -36 -6 a15 15 0 0 0 -10 38 z" fill="#FFFFFF" opacity="0.95"/>
+                            <ellipse cx="38" cy="74" rx="3" ry="5" fill="#38BDF8"/>
+                            <ellipse cx="50" cy="78" rx="3" ry="5" fill="#38BDF8"/>
+                            <ellipse cx="62" cy="74" rx="3" ry="5" fill="#38BDF8"/>
+                        </svg>
+                        <div class="card-content-grid">
+                            <div class="card-top-row">
+                                <span class="card-large-temp">19°</span>
+                            </div>
+                            <div class="card-bottom-row">
+                                <div class="card-location-meta">
+                                    <span class="card-hl-text">H:24°  L:18°</span>
+                                    <span class="card-city-name">Colombo, Sri Lanka</span>
+                                </div>
+                                <span class="card-condition-label">Mid Rain</span>
+                            </div>
                         </div>
-                        <div class="city-temp">14°</div>
                     </div>
-                    <div class="city-card glacier-panel" style="border-left: 4px solid #3b82f6;" onclick="overrideLocation('Central', 'Kandy')">
-                        <div class="city-info">
-                            <h3>Kandy</h3>
-                            <span class="city-condition">Light Rain</span>
+
+                    <!-- Card 2: Kandy / Toronto (Fast Wind) -->
+                    <div class="diagonal-weather-card" onclick="overrideLocation('Central', 'Kandy')">
+                        <div class="card-wave-bg"></div>
+                        <svg class="card-art-float" viewBox="0 0 100 100">
+                            <!-- Wind swirl + Cloud -->
+                            <path d="M74 24 a15 15 0 0 0 -12 24 a18 18 0 1 1 12 -24 z" fill="#D8B4E2"/>
+                            <path d="M24 60 h46 a16 16 0 0 0 0 -32 a20 20 0 0 0 -36 -6 a15 15 0 0 0 -10 38 z" fill="#FFFFFF" opacity="0.95"/>
+                            <path d="M15 68 h50 a6 6 0 0 0 0 -12 h-6" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/>
+                            <path d="M28 76 h40 a5 5 0 0 1 0 10 h-8" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+                        </svg>
+                        <div class="card-content-grid">
+                            <div class="card-top-row">
+                                <span class="card-large-temp">20°</span>
+                            </div>
+                            <div class="card-bottom-row">
+                                <div class="card-location-meta">
+                                    <span class="card-hl-text">H:21°  L:19°</span>
+                                    <span class="card-city-name">Kandy, Central</span>
+                                </div>
+                                <span class="card-condition-label">Fast Wind</span>
+                            </div>
                         </div>
-                        <div class="city-temp">22°</div>
                     </div>
-                    <div class="city-card glacier-panel" style="border-left: 4px solid #f59e0b;" onclick="overrideLocation('Southern', 'Galle')">
-                        <div class="city-info">
-                            <h3>Galle</h3>
-                            <span class="city-condition">Thundershowers</span>
+
+                    <!-- Card 3: Nuwara Eliya / Tokyo (Showers) -->
+                    <div class="diagonal-weather-card" onclick="overrideLocation('Central', 'Nuwara Eliya')">
+                        <div class="card-wave-bg"></div>
+                        <svg class="card-art-float" viewBox="0 0 100 100">
+                            <!-- Sun + Rain Cloud -->
+                            <circle cx="34" cy="38" r="14" fill="#FBBF24"/>
+                            <path d="M30 66 h48 a16 16 0 0 0 0 -32 a20 20 0 0 0 -36 -6 a15 15 0 0 0 -12 38 z" fill="#FFFFFF" opacity="0.95"/>
+                            <line x1="42" y1="72" x2="36" y2="84" stroke="#38BDF8" stroke-width="3" stroke-linecap="round"/>
+                            <line x1="54" y1="72" x2="48" y2="84" stroke="#38BDF8" stroke-width="3" stroke-linecap="round"/>
+                            <line x1="66" y1="72" x2="60" y2="84" stroke="#38BDF8" stroke-width="3" stroke-linecap="round"/>
+                        </svg>
+                        <div class="card-content-grid">
+                            <div class="card-top-row">
+                                <span class="card-large-temp">13°</span>
+                            </div>
+                            <div class="card-bottom-row">
+                                <div class="card-location-meta">
+                                    <span class="card-hl-text">H:16°  L:8°</span>
+                                    <span class="card-city-name">Nuwara Eliya, Highlands</span>
+                                </div>
+                                <span class="card-condition-label">Showers</span>
+                            </div>
                         </div>
-                        <div class="city-temp">29°</div>
                     </div>
-                    <div class="city-card glacier-panel" style="border-left: 4px solid #ef4444;" onclick="overrideLocation('Northern', 'Jaffna')">
-                        <div class="city-info">
-                            <h3>Jaffna</h3>
-                            <span class="city-condition">Clear Sky</span>
+
+                    <!-- Card 4: Galle / Coastal (Swirl) -->
+                    <div class="diagonal-weather-card" onclick="overrideLocation('Southern', 'Galle')">
+                        <div class="card-wave-bg"></div>
+                        <svg class="card-art-float" viewBox="0 0 100 100">
+                            <!-- Tornado Swirl Art -->
+                            <ellipse cx="50" cy="32" rx="28" ry="6" fill="none" stroke="#FFFFFF" stroke-width="3.5"/>
+                            <ellipse cx="50" cy="46" rx="20" ry="5" fill="none" stroke="#FFFFFF" stroke-width="3"/>
+                            <ellipse cx="50" cy="60" rx="14" ry="4" fill="none" stroke="#FFFFFF" stroke-width="2.5"/>
+                            <ellipse cx="50" cy="72" rx="8" ry="3" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+                            <circle cx="50" cy="82" r="2.5" fill="#FFFFFF"/>
+                        </svg>
+                        <div class="card-content-grid">
+                            <div class="card-top-row">
+                                <span class="card-large-temp">23°</span>
+                            </div>
+                            <div class="card-bottom-row">
+                                <div class="card-location-meta">
+                                    <span class="card-hl-text">H:28°  L:22°</span>
+                                    <span class="card-city-name">Galle, Southern Coast</span>
+                                </div>
+                                <span class="card-condition-label">Rough Swell</span>
+                            </div>
                         </div>
-                        <div class="city-temp">33°</div>
                     </div>
+
                 </div>
             </div>
         </div>
 
-        <!-- MOBILE COMMUNITY REPORT MODAL -->
+        <!-- MOBILE INCIDENT REPORT MODAL (Triggered by Center Plus Button) -->
         <div id="reportModal" class="modal-overlay" onclick="if(event.target === this) closeReportModal()">
             <div class="modal-sheet">
                 <div class="modal-header">
-                    <h3>📢 Post Community Weather Alert</h3>
+                    <h3>📢 Broadcast Weather / Disaster Update</h3>
                     <button class="modal-close" onclick="closeReportModal()">&times;</button>
                 </div>
-                <div class="modal-form-group">
-                    <label>Your Name</label>
-                    <input type="text" id="reportUserName" class="modal-input" placeholder="e.g. Kasun">
+                <div class="form-group" style="width:100%;">
+                    <label class="form-label">Your Name</label>
+                    <input type="text" id="reportUserName" class="form-control" placeholder="e.g. Kasun">
                 </div>
-                <div class="modal-form-group">
-                    <label>District</label>
-                    <select id="reportDistrictSelect" class="modal-input">
+                <div class="form-group" style="width:100%;">
+                    <label class="form-label">District</label>
+                    <select id="reportDistrictSelect" class="form-control">
                         <option value="Colombo">Colombo</option>
                         <option value="Gampaha">Gampaha</option>
                         <option value="Kalutara">Kalutara</option>
@@ -573,19 +1283,19 @@
                         <option value="Trincomalee">Trincomalee</option>
                     </select>
                 </div>
-                <div class="modal-form-group">
-                    <label>Threat Level</label>
-                    <select id="reportThreatLevel" class="modal-input">
-                        <option value="MODERATE">Moderate (Heavy Rain / Fog / Mist)</option>
+                <div class="form-group" style="width:100%;">
+                    <label class="form-label">Threat Severity</label>
+                    <select id="reportThreatLevel" class="form-control">
+                        <option value="MODERATE">Moderate (Heavy Rain / Fog / Gusts)</option>
                         <option value="SEVERE">Severe (Flash Flood / Landslide / Fallen Tree)</option>
-                        <option value="LOW">Low (Clearing / Safe Road)</option>
+                        <option value="LOW">Low (Roads Cleared / Safe)</option>
                     </select>
                 </div>
-                <div class="modal-form-group">
-                    <label>Incident Details (Max 500 characters)</label>
-                    <textarea id="reportMessage" class="modal-input modal-textarea" placeholder="e.g. Water logging on main road, strong winds blowing roof sheets..."></textarea>
+                <div class="form-group" style="width:100%;">
+                    <label class="form-label">Incident Details (Max 500 characters)</label>
+                    <textarea id="reportMessage" class="form-control" style="min-height:75px; resize:vertical;" placeholder="Describe what is happening on the ground..."></textarea>
                 </div>
-                <button class="btn-modal-submit" onclick="submitCommunityReport()">Submit Report</button>
+                <button class="btn-glow" style="width:100%; margin-top:8px;" onclick="submitCommunityReport()">Post Community Report</button>
             </div>
         </div>
 
@@ -595,25 +1305,20 @@
         // --- Theme Logic ---
         function toggleTheme() {
             const body = document.body;
-            const btn = document.getElementById('themeToggleBtn');
             const isLight = body.classList.toggle('light-theme');
             localStorage.setItem('sl_weather_theme', isLight ? 'light' : 'dark');
-            btn.textContent = isLight ? '🌙' : '☀️';
         }
 
         function applySavedTheme() {
             const savedTheme = localStorage.getItem('sl_weather_theme');
-            const btn = document.getElementById('themeToggleBtn');
             if (savedTheme === 'light') {
                 document.body.classList.add('light-theme');
-                btn.textContent = '🌙';
             } else {
                 document.body.classList.remove('light-theme');
-                btn.textContent = '☀️';
             }
         }
 
-        // --- SL Data Map ---
+        // --- Sri Lanka Districts Data Map ---
         const slData = {
             "Western": ["Colombo", "Gampaha", "Kalutara"],
             "Central": ["Kandy", "Matale", "Nuwara Eliya"],
@@ -655,7 +1360,7 @@
         // --- Navigation Logic ---
         function showScreen(screenId) {
             document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
-            setTimeout(() => document.getElementById(screenId).classList.add('active'), 50);
+            setTimeout(() => document.getElementById(screenId).classList.add('active'), 40);
         }
 
         function handleInitialCheck() {
@@ -679,10 +1384,10 @@
             }
         }
 
-        // --- API Integration (Mobile Ready) ---
+        // --- Weather & Disaster API Fetching ---
         async function fetchWeatherData(province, district) {
             const loader = document.getElementById('loadingOverlay');
-            document.getElementById('loadingText').textContent = "Syncing with Meteorological Data...";
+            document.getElementById('loadingText').textContent = "Syncing Atmospheric Forecast...";
             loader.style.display = 'flex';
             
             try {
@@ -694,11 +1399,10 @@
                     return;
                 }
                 applyDataToUI(data);
-                fetchCommunityReports(data.location.district);
                 
             } catch (error) {
                 console.error("Failed to fetch weather:", error);
-                document.getElementById('aiSummaryText').textContent = "Failed to connect to backend.";
+                document.getElementById('aiSummaryText').textContent = "Failed to connect to local weather server.";
             } finally {
                 loader.style.display = 'none';
             }
@@ -706,7 +1410,7 @@
 
         async function fetchWeatherByCoords(lat, lon) {
             const loader = document.getElementById('loadingOverlay');
-            document.getElementById('loadingText').textContent = "Finding Local Microclimate for GPS Location...";
+            document.getElementById('loadingText').textContent = "Resolving Microclimate for Device GPS...";
             loader.style.display = 'flex';
             
             try {
@@ -723,7 +1427,6 @@
                 
                 showScreen('screen2');
                 applyDataToUI(data);
-                fetchCommunityReports(data.location.district);
                 
             } catch (error) {
                 console.error("Failed to fetch GPS weather:", error);
@@ -739,7 +1442,7 @@
                 return;
             }
             const loader = document.getElementById('loadingOverlay');
-            document.getElementById('loadingText').textContent = "Detecting High-Precision GPS Coordinates...";
+            document.getElementById('loadingText').textContent = "Detecting High-Precision GPS...";
             loader.style.display = 'flex';
             
             navigator.geolocation.getCurrentPosition(
@@ -748,100 +1451,81 @@
                 },
                 (err) => {
                     loader.style.display = 'none';
-                    alert("GPS Permission or Signal Error: " + err.message);
+                    alert("GPS Signal Error: " + err.message);
                 },
                 { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 }
             );
         }
-        
-        function mapCodeToText(code) {
-            if(code <= 3) return "Sunny with Cloud";
-            if(code <= 49) return "Very Cloudy / Fog";
-            if(code <= 69) return "It's Raining";
-            if(code <= 79) return "It's Snowing";
-            return "It's a Storm";
+
+        function mapCodeToCondition(code) {
+            if(code === 0) return "Clear Sky";
+            if(code <= 3) return "Mostly Clear";
+            if(code <= 49) return "Fog & Low Clouds";
+            if(code <= 69) return "Rain Showers";
+            if(code <= 79) return "Cold Mist";
+            return "Thundershowers";
         }
 
         function applyDataToUI(data) {
             const name = localStorage.getItem('sl_weather_username') || "User";
             const dist = data.location.district;
-            const prov = data.location.province;
             
-            const gpsInfo = data.location.gps_distance_km !== null && data.location.gps_distance_km !== undefined 
-                ? ` (${data.location.gps_distance_km} km from center)` 
-                : "";
-            document.getElementById('dashboardLocationHeader').textContent = `${dist}, Sri Lanka${gpsInfo}`;
+            document.getElementById('dashboardLocationHeader').textContent = dist;
             
             // Stats
             const temp = Math.round(data.metrics.temperature);
-            const prefix = temp > 0 ? "+" : "";
-            document.getElementById('mainTemp').innerHTML = `${prefix}${temp}<span class="main-temp-unit">°</span>`;
-            document.getElementById('mainCondition').textContent = mapCodeToText(data.metrics.weather_code);
+            document.getElementById('mainTemp').textContent = `${temp}°`;
+            document.getElementById('mainCondition').textContent = mapCodeToCondition(data.metrics.weather_code);
             
-            document.getElementById('uvValueCard').textContent = `${data.metrics.uv_index || 0} of 10`;
-            document.getElementById('windValueCard').textContent = `${data.metrics.wind_speed} km/h`;
-            document.getElementById('weatherCodeCard').textContent = `${data.metrics.weather_code}`;
-            document.getElementById('humidityValueCard').textContent = `${data.metrics.humidity}%`;
+            // High / Low from daily forecast
+            const high = data.forecast && data.forecast.temp_max && data.forecast.temp_max[0] ? Math.round(data.forecast.temp_max[0]) : temp + 3;
+            const low = data.forecast && data.forecast.temp_min && data.forecast.temp_min[0] ? Math.round(data.forecast.temp_min[0]) : temp - 4;
+            document.getElementById('mainHighLow').textContent = `H:${high}°   L:${low}°`;
             
-            document.getElementById('hourlyNow').textContent = `${temp}°`;
-            document.getElementById('hourlyNext1').textContent = `${temp - 1}°`;
-            document.getElementById('hourlyNext2').textContent = `${temp - 2}°`;
-            
-            document.getElementById('humidityValueScreen3').textContent = `${data.metrics.humidity}%`;
-            document.getElementById('windValueScreen3').textContent = `${data.metrics.wind_speed}`;
-            document.getElementById('uvValueScreen3').textContent = data.metrics.uv_index || 0;
+            document.getElementById('pillTempNow').textContent = `${temp}°`;
+            document.getElementById('pillTemp0').textContent = `${temp - 1}°`;
+            document.getElementById('pillTemp2').textContent = `${temp - 1}°`;
+            document.getElementById('pillTemp3').textContent = `${temp - 2}°`;
+            document.getElementById('pillTemp4').textContent = `${temp - 3}°`;
+            document.getElementById('humidityMetricBadge').textContent = `💧 ${data.metrics.humidity}%`;
             
             const ai = data.ai_insights;
             const dmc = data.dmc_alert;
             
-            document.getElementById('aiSummaryText').textContent = `Hi ${name}, ${ai.synthetic_impact_statement}`;
-            document.getElementById('dmcAlertText').textContent = dmc.message;
-            document.getElementById('dmcSeverityHeader').textContent = `[${dmc.source}] ${dmc.severity}:`;
+            document.getElementById('aiSummaryText').textContent = `Hello ${name}, ${ai.synthetic_impact_statement}`;
             
-            // Disaster Mode Logic
+            // Generative Disaster Mode Repaint
+            const bannerContainer = document.getElementById('dashboardEmergencyBannerContainer');
             if(ai.is_emergency) {
                 document.body.classList.add('disaster-mode');
-                const bannerHtml = document.getElementById('screen3DmcBanner').outerHTML;
-                document.getElementById('dashboardEmergencyBannerContainer').innerHTML = bannerHtml;
+                bannerContainer.innerHTML = `
+                    <div class="dmc-alert-banner">
+                        <span class="alert-badge">${dmc.severity}</span>
+                        <div class="alert-text">
+                            <strong>${dmc.threat_type}</strong>
+                            <span>${dmc.message}</span>
+                        </div>
+                    </div>
+                `;
             } else {
                 document.body.classList.remove('disaster-mode');
-                document.getElementById('dashboardEmergencyBannerContainer').innerHTML = '';
+                bannerContainer.innerHTML = '';
             }
         }
 
-        // --- Community Reporting Logic ---
-        async function fetchCommunityReports(district) {
-            const feed = document.getElementById('communityReportsFeed');
-            try {
-                const url = district ? `/api/reports?district=${encodeURIComponent(district)}` : '/api/reports';
-                const res = await fetch(url);
-                const data = await res.json();
-                
-                if (data.reports && data.reports.length > 0) {
-                    feed.innerHTML = data.reports.map(r => {
-                        const borderColor = r.threat_level === 'SEVERE' ? '#ef4444' : (r.threat_level === 'LOW' ? '#10b981' : '#f59e0b');
-                        return `
-                            <div class="report-card" style="border-left-color: ${borderColor};">
-                                <div class="report-meta">
-                                    <span class="report-user">${r.user_name}</span> (${r.district}) • <span style="font-weight:700; color:${borderColor};">[${r.threat_level}]</span>
-                                </div>
-                                <div class="report-text">${r.message}</div>
-                            </div>
-                        `;
-                    }).join('');
-                } else {
-                    feed.innerHTML = `
-                        <div class="report-card" style="border-left-color: #10b981;">
-                            <div class="report-meta">No active hazards reported</div>
-                            <div class="report-text">Roads and weather conditions are currently normal in ${district}.</div>
-                        </div>
-                    `;
-                }
-            } catch (err) {
-                console.error("Error fetching community reports:", err);
+        // --- Forecast Tab Switcher ---
+        function switchForecastTab(tab) {
+            document.querySelectorAll('.drawer-tab').forEach(t => t.classList.remove('active'));
+            if(tab === 'hourly') {
+                document.getElementById('tabHourly').classList.add('active');
+            } else if(tab === 'weekly') {
+                document.getElementById('tabWeekly').classList.add('active');
+            } else {
+                document.getElementById('tabInsights').classList.add('active');
             }
         }
 
+        // --- Modal & Reporting ---
         function openReportModal() {
             const currentDist = localStorage.getItem('sl_weather_district') || "Colombo";
             const currentName = localStorage.getItem('sl_weather_username') || "";
@@ -861,7 +1545,7 @@
             const message = document.getElementById('reportMessage').value.trim();
 
             if (!userName || !message) {
-                alert("Please provide your name and report message.");
+                alert("Please provide your name and incident message.");
                 return;
             }
 
@@ -876,50 +1560,26 @@
                         message: message
                     })
                 });
-                const data = await res.json();
                 if (res.ok) {
                     closeReportModal();
                     document.getElementById('reportMessage').value = '';
-                    fetchCommunityReports(district);
-                    alert("Thank you! Your emergency update has been broadcast to nearby users.");
+                    alert("Report successfully posted to nearby users.");
                 } else {
-                    alert("Submission error: " + (data.error || "Unable to submit report."));
+                    alert("Submission error. Please try again.");
                 }
             } catch (err) {
                 console.error("Submission failed:", err);
-                alert("Network error. Please try again.");
             }
         }
 
-        // --- Screen 4 Live Location Search ---
+        // --- Screen 4 Location Predictive Search ---
         let searchTimeout = null;
         async function handleLocationSearch() {
             const query = document.getElementById('searchInput').value.trim();
             const container = document.getElementById('cityListContainer');
 
             clearTimeout(searchTimeout);
-            if (!query) {
-                // Restore defaults
-                container.innerHTML = `
-                    <div class="city-card glacier-panel" style="border-left: 4px solid #9ca3af;" onclick="overrideLocation('Central', 'Nuwara Eliya')">
-                        <div class="city-info"><h3>Nuwara Eliya</h3><span class="city-condition">Dense Mist</span></div>
-                        <div class="city-temp">14°</div>
-                    </div>
-                    <div class="city-card glacier-panel" style="border-left: 4px solid #3b82f6;" onclick="overrideLocation('Central', 'Kandy')">
-                        <div class="city-info"><h3>Kandy</h3><span class="city-condition">Light Rain</span></div>
-                        <div class="city-temp">22°</div>
-                    </div>
-                    <div class="city-card glacier-panel" style="border-left: 4px solid #f59e0b;" onclick="overrideLocation('Southern', 'Galle')">
-                        <div class="city-info"><h3>Galle</h3><span class="city-condition">Thundershowers</span></div>
-                        <div class="city-temp">29°</div>
-                    </div>
-                    <div class="city-card glacier-panel" style="border-left: 4px solid #ef4444;" onclick="overrideLocation('Northern', 'Jaffna')">
-                        <div class="city-info"><h3>Jaffna</h3><span class="city-condition">Clear Sky</span></div>
-                        <div class="city-temp">33°</div>
-                    </div>
-                `;
-                return;
-            }
+            if (!query) return;
 
             searchTimeout = setTimeout(async () => {
                 try {
@@ -927,16 +1587,26 @@
                     const data = await res.json();
                     if (data.results && data.results.length > 0) {
                         container.innerHTML = data.results.map(loc => `
-                            <div class="city-card glacier-panel" style="border-left: 4px solid #38bdf8;" onclick="overrideLocation('${loc.province}', '${loc.district}')">
-                                <div class="city-info">
-                                    <h3>${loc.district}</h3>
-                                    <span class="city-condition">${loc.province} Province • ${loc.microclimate}</span>
+                            <div class="diagonal-weather-card" onclick="overrideLocation('${loc.province}', '${loc.district}')">
+                                <div class="card-wave-bg"></div>
+                                <svg class="card-art-float" viewBox="0 0 100 100">
+                                    <circle cx="35" cy="35" r="14" fill="#FBBF24"/>
+                                    <path d="M25 65 h46 a16 16 0 0 0 0 -32 a20 20 0 0 0 -36 -6 a15 15 0 0 0 -10 38 z" fill="#FFFFFF" opacity="0.95"/>
+                                </svg>
+                                <div class="card-content-grid">
+                                    <div class="card-top-row">
+                                        <span class="card-large-temp">--°</span>
+                                    </div>
+                                    <div class="card-bottom-row">
+                                        <div class="card-location-meta">
+                                            <span class="card-hl-text">${loc.province} Province</span>
+                                            <span class="card-city-name">${loc.district}, Sri Lanka</span>
+                                        </div>
+                                        <span class="card-condition-label">${loc.microclimate}</span>
+                                    </div>
                                 </div>
-                                <div class="city-temp" style="font-size: 24px;">📍</div>
                             </div>
                         `).join('');
-                    } else {
-                        container.innerHTML = `<div style="text-align:center; padding: 30px; color: var(--text-muted);">No matching Sri Lankan districts found.</div>`;
                     }
                 } catch (e) {
                     console.error("Search error:", e);
@@ -944,22 +1614,22 @@
             }, 250);
         }
 
+        // --- Screen Transitions ---
         function goToScreen2() {
             showScreen('screen2');
             const dist = localStorage.getItem('sl_weather_district') || "Colombo";
             const prov = localStorage.getItem('sl_weather_province') || "Western";
             fetchWeatherData(prov, dist);
         }
-        
+
         function overrideLocation(prov, dist) {
             localStorage.setItem('sl_weather_province', prov);
             localStorage.setItem('sl_weather_district', dist);
             goToScreen2();
         }
 
-        function goToScreen3() { showScreen('screen3'); }
         function goToScreen4() { showScreen('screen4'); }
-        
+
         // --- Live Mobile Status Bar Logic ---
         function updateLiveClock() {
             const timeEl = document.getElementById('statusBarTime');
@@ -973,7 +1643,7 @@
         setInterval(updateLiveClock, 1000);
         updateLiveClock();
 
-        // Native Device Battery API (syncs real device charge level when available)
+        // Native Device Battery API
         if ('getBattery' in navigator) {
             navigator.getBattery().then(battery => {
                 function syncBattery() {
@@ -981,11 +1651,7 @@
                     if (levelBar) {
                         const pct = Math.round(battery.level * 100);
                         levelBar.style.width = `${Math.max(8, pct)}%`;
-                        if (battery.level <= 0.2) {
-                            levelBar.style.backgroundColor = '#ef4444';
-                        } else {
-                            levelBar.style.backgroundColor = 'currentColor';
-                        }
+                        levelBar.style.backgroundColor = battery.level <= 0.2 ? '#ef4444' : 'currentColor';
                     }
                 }
                 syncBattery();
@@ -995,9 +1661,8 @@
 
         window.onload = function() { 
             applySavedTheme(); 
-            // Register mobile Service Worker for offline capability
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration note:', err));
+                navigator.serviceWorker.register('/sw.js').catch(() => {});
             }
         };
     </script>
