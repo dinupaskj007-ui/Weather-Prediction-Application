@@ -87,7 +87,8 @@
             padding: max(14px, env(safe-area-inset-top, 14px)) 26px 8px; 
             font-size: 14px; 
             font-weight: 600; 
-            z-index: 10; 
+            position: relative;
+            z-index: 20; 
             color: var(--text-main); 
             user-select: none;
             box-sizing: border-box;
@@ -150,16 +151,294 @@
         .status-location { font-weight: 500; opacity: 0; font-size: 13px; transition: opacity 0.4s ease; }
 
         /* Smooth Screen Transitions */
-        .screen { display: none; flex: 1; flex-direction: column; overflow-y: auto; overflow-x: hidden; -ms-overflow-style: none; scrollbar-width: none; opacity: 0; transform: translateY(15px); transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .screen { 
+            display: none; 
+            flex: 1; 
+            flex-direction: column; 
+            overflow-y: auto; 
+            overflow-x: hidden; 
+            -ms-overflow-style: none; 
+            scrollbar-width: none; 
+            opacity: 0; 
+            transform: translateY(15px); 
+            transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); 
+            position: relative;
+            z-index: 10;
+        }
         .screen::-webkit-scrollbar { display: none; }
-        .screen.active { display: flex; opacity: 1; transform: translateY(0); animation: smoothReveal 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+        .screen.active { 
+            display: flex !important; 
+            opacity: 1 !important; 
+            transform: translateY(0) !important; 
+            animation: smoothReveal 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; 
+            position: relative;
+            z-index: 10;
+            pointer-events: auto;
+        }
 
         /* --- SCREEN 1 & LOGIN (Kept Similar but updated theme) --- */
-        .s1-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px 25px; margin-top: -40px; }
-        .hero-asset { width: 220px; height: 220px; margin-bottom: 30px; background: url('https://cdn-icons-png.flaticon.com/512/3222/3222801.png') no-repeat center; background-size: contain; filter: drop-shadow(0px 25px 30px rgba(0,0,0,0.3)); animation: float-glacial 5s ease-in-out infinite; }
-        .hero-text { font-size: 16px; font-weight: 400; line-height: 1.6; color: var(--text-muted); margin-bottom: 40px; padding: 0 10px; }
-        .hero-text strong { color: var(--text-main); font-weight: 800; display: block; margin-top: 10px; font-size: 26px; letter-spacing: 1px; }
+        .s1-content { 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            text-align: center; 
+            padding: 20px 25px; 
+            margin-top: -30px; 
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        /* --- DYNAMIC REAL-TIME WEATHER BACKGROUND --- */
+        .weather-dynamic-bg {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+            border-radius: inherit;
+        }
 
+        .sky-gradient-base {
+            position: absolute;
+            inset: 0;
+            background: var(--bg-gradient);
+            transition: background 1.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Sunny Flare & Ambient Rays */
+        .sun-flare-layer {
+            position: absolute;
+            top: -60px;
+            right: -40px;
+            width: 320px;
+            height: 320px;
+            pointer-events: none;
+            opacity: 0;
+            transform: scale(0.85);
+            transition: opacity 1.5s ease, transform 1.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .sun-flare-layer.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .sun-core {
+            position: absolute;
+            top: 50px;
+            right: 50px;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(254, 240, 138, 0.95) 0%, rgba(245, 158, 11, 0.65) 45%, rgba(217, 119, 6, 0.15) 75%, transparent 100%);
+            filter: blur(10px);
+            animation: sunPulse 6s ease-in-out infinite alternate;
+        }
+        .sun-beam {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            border-radius: 50%;
+            background: radial-gradient(ellipse at center, rgba(253, 224, 71, 0.3) 0%, rgba(56, 189, 248, 0.08) 55%, transparent 75%);
+            filter: blur(20px);
+            transform-origin: center center;
+        }
+        .beam-1 {
+            width: 440px;
+            height: 180px;
+            transform: translate(-50%, -50%) rotate(25deg);
+            animation: rotateBeams 26s linear infinite;
+        }
+        .beam-2 {
+            width: 380px;
+            height: 220px;
+            transform: translate(-50%, -50%) rotate(-35deg);
+            animation: rotateBeamsReverse 30s linear infinite;
+        }
+        .sun-lens-flare {
+            position: absolute;
+            top: 130px;
+            right: 130px;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(56, 189, 248, 0.35) 60%, transparent 100%);
+            filter: blur(12px);
+            box-shadow: 0 0 45px rgba(253, 224, 71, 0.5);
+        }
+
+        /* Liquid Glass Cloud Layer */
+        .cloud-layer {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 1.3s ease;
+        }
+        .cloud-layer.active {
+            opacity: 1;
+        }
+        .liquid-cloud {
+            position: absolute;
+            border-radius: 50% 50% 45% 45% / 60% 60% 40% 40%;
+            filter: blur(24px);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            background: var(--cloud-fill, rgba(15, 23, 42, 0.85));
+            box-shadow: 0 12px 45px rgba(0, 0, 0, 0.3);
+            transition: background 1.4s ease, transform 1.4s ease, opacity 1.4s ease;
+        }
+        .cloud-1 {
+            width: 340px;
+            height: 220px;
+            top: -25px;
+            left: -50px;
+            animation: driftCloud1 24s ease-in-out infinite alternate;
+        }
+        .cloud-2 {
+            width: 380px;
+            height: 250px;
+            top: 70px;
+            right: -70px;
+            animation: driftCloud2 20s ease-in-out infinite alternate;
+        }
+        .cloud-3 {
+            width: 420px;
+            height: 230px;
+            top: 200px;
+            left: -60px;
+            animation: driftCloud3 30s ease-in-out infinite alternate;
+        }
+
+        /* Rain Canvas */
+        .rain-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+            opacity: 0;
+            transition: opacity 1.2s ease;
+        }
+        .rain-canvas.active {
+            opacity: 1;
+        }
+
+        /* Lightning Flash Effect */
+        .lightning-flash {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 60% 25%, rgba(255, 255, 255, 0.95) 0%, rgba(186, 230, 253, 0.6) 40%, transparent 80%);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 3;
+            transition: opacity 0.08s ease-out;
+        }
+
+        .glass-ambient-overlay {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 50% 100%, rgba(255, 255, 255, 0.04) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 4;
+        }
+
+        /* Screen 1 Liquid Glass Weather Badge (Replaces old static icon) */
+        .glacier-weather-badge {
+            position: relative;
+            width: 170px;
+            height: 170px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 25px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25), inset 0 2px 4px rgba(255, 255, 255, 0.35);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            animation: float-glacial 5s ease-in-out infinite;
+            z-index: 5;
+        }
+        .badge-ring {
+            position: absolute;
+            inset: -6px;
+            border-radius: 50%;
+            border: 1.5px dashed rgba(255, 255, 255, 0.25);
+            animation: rotateBadgeRing 35s linear infinite;
+        }
+        .badge-core {
+            font-size: 56px;
+            line-height: 1;
+            filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.35));
+            margin-bottom: 4px;
+            transition: transform 0.4s ease;
+        }
+        .badge-status {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.6px;
+            color: var(--text-muted);
+        }
+
+        @keyframes sunPulse {
+            0% { transform: scale(1); filter: blur(8px); }
+            100% { transform: scale(1.15); filter: blur(14px); }
+        }
+        @keyframes rotateBeams {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        @keyframes rotateBeamsReverse {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(-360deg); }
+        }
+        @keyframes rotateBadgeRing {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes driftCloud1 {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(35px, 20px) scale(1.08); }
+        }
+        @keyframes driftCloud2 {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(-45px, 15px) scale(1.05); }
+        }
+        @keyframes driftCloud3 {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(50px, -20px) scale(1.1); }
+        }
+        .hero-text { 
+            font-size: 16px; 
+            font-weight: 500; 
+            line-height: 1.6; 
+            color: #ffffff; 
+            margin-bottom: 35px; 
+            padding: 0 10px; 
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); 
+            position: relative;
+            z-index: 10;
+        }
+        .hero-text strong { 
+            color: #ffffff; 
+            font-weight: 800; 
+            display: block; 
+            margin-top: 10px; 
+            font-size: 26px; 
+            letter-spacing: 1px; 
+            text-shadow: 0 2px 14px rgba(0, 0, 0, 0.65);
+        }
+
+        .menu-action-item:hover, .menu-action-item:active {
+            background: rgba(255, 255, 255, 0.15) !important;
+        }
         .glacier-panel { background: var(--glass-bg); border: 1px solid var(--glass-border); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), var(--glass-highlight); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-radius: 24px; }
         .btn-primary { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: var(--text-main); backdrop-filter: blur(10px); border-radius: 30px; padding: 18px 0; width: 85%; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
         .btn-primary:active { transform: scale(0.96); background: rgba(255,255,255,0.25); }
@@ -360,6 +639,25 @@
 <body>
 
     <div class="app-container">
+        <!-- DYNAMIC REAL-TIME WEATHER BACKGROUND -->
+        <div id="weatherDynamicBg" class="weather-dynamic-bg" aria-hidden="true">
+            <div class="sky-gradient-base" id="skyGradientBase"></div>
+            <div class="sun-flare-layer active" id="sunFlareLayer">
+                <div class="sun-core"></div>
+                <div class="sun-beam beam-1"></div>
+                <div class="sun-beam beam-2"></div>
+                <div class="sun-lens-flare"></div>
+            </div>
+            <div class="cloud-layer" id="cloudLayer">
+                <div class="liquid-cloud cloud-1" id="cloud1"></div>
+                <div class="liquid-cloud cloud-2" id="cloud2"></div>
+                <div class="liquid-cloud cloud-3" id="cloud3"></div>
+            </div>
+            <canvas id="rainCanvas" class="rain-canvas"></canvas>
+            <div class="lightning-flash" id="lightningFlash"></div>
+            <div class="glass-ambient-overlay"></div>
+        </div>
+
         <div id="loadingOverlay">
             <div class="spinner"></div>
             <div id="loadingText">Syncing Data...</div>
@@ -392,7 +690,13 @@
         <!-- SCREEN 1: ONBOARDING -->
         <div id="screen1" class="screen active">
             <div class="s1-content">
-                <div class="hero-asset"></div>
+                <div class="glacier-weather-badge">
+                    <div class="badge-ring"></div>
+                    <div class="badge-core">
+                        <span id="heroWeatherGlyph">🌤️</span>
+                    </div>
+                    <div class="badge-status" id="heroConditionLabel">PRECISION RADAR</div>
+                </div>
                 <div class="hero-text">
                     DISCOVER CLIMATE PRECISION,
                     <strong>SRI LANKA.</strong>
@@ -405,6 +709,11 @@
         <!-- SCREEN 1.5: SETUP -->
         <div id="loginScreen" class="screen">
             <div class="s1-content">
+                <div style="width: 85%; display: flex; justify-content: flex-start; margin-bottom: 12px;">
+                    <button onclick="goToScreen1()" class="back-btn" style="font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; color: var(--text-muted); cursor: pointer; background: none; border: none; padding: 0;">
+                        ‹ Back to Welcome
+                    </button>
+                </div>
                 <div class="hero-text" style="margin-bottom: 25px;">
                     Personalize your alerts.<br>
                     <strong>WHERE ARE YOU?</strong>
@@ -433,11 +742,34 @@
         <div id="screen2" class="screen" style="padding: 0;">
             <div class="s2-content">
                 
-                <div class="top-nav-row">
-                    <div class="nav-icon" onclick="alert('Menu')">⋮</div>
-                    <div style="display: flex; gap: 15px;">
+                <div class="top-nav-row" style="position: relative; z-index: 30;">
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <div class="nav-icon" onclick="goToScreen1()" title="Back to Welcome Screen" style="font-size: 26px; line-height: 1;">‹</div>
+                        <div class="nav-icon" onclick="toggleAppMenu()" id="menuToggleBtn" title="Menu">⋮</div>
+                    </div>
+                    <div style="display: flex; gap: 12px; align-items: center;">
                         <div class="nav-icon" id="themeToggleBtn" onclick="toggleTheme()" style="font-size: 20px;">☀️</div>
-                        <div class="nav-icon" onclick="goToScreen4()">+</div>
+                        <div class="nav-icon" onclick="goToScreen4()" title="Add / Search Location">+</div>
+                    </div>
+                </div>
+
+                <!-- Sleek Glass App Menu Dropdown -->
+                <div id="appDropdownMenu" class="glacier-panel" style="display: none; position: absolute; top: 65px; left: 25px; width: 230px; z-index: 50; padding: 8px; box-shadow: 0 16px 40px rgba(0,0,0,0.45);">
+                    <div class="menu-action-item" onclick="goToScreen1(); closeAppMenu();" style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600; color: #fff; transition: background 0.2s;">
+                        <span style="font-size: 16px;">🏠</span> Welcome Screen
+                    </div>
+                    <div class="menu-action-item" onclick="goToScreen4(); closeAppMenu();" style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600; color: #fff; transition: background 0.2s;">
+                        <span style="font-size: 16px;">📍</span> Choose District
+                    </div>
+                    <div class="menu-action-item" onclick="goToScreen3(); closeAppMenu();" style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600; color: #fff; transition: background 0.2s;">
+                        <span style="font-size: 16px;">⚡</span> Risk & DMC Alerts
+                    </div>
+                    <div class="menu-action-item" onclick="useCurrentGpsLocation(); closeAppMenu();" style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600; color: #fff; transition: background 0.2s;">
+                        <span style="font-size: 16px;">🛰️</span> Sync Device GPS
+                    </div>
+                    <div style="height: 1px; background: rgba(255,255,255,0.15); margin: 6px 0;"></div>
+                    <div class="menu-action-item" onclick="resetUserSession(); closeAppMenu();" style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600; color: #fb7185; transition: background 0.2s;">
+                        <span style="font-size: 16px;">🔄</span> Reset & Sign Out
                     </div>
                 </div>
                 
@@ -883,6 +1215,23 @@
                 document.body.classList.remove('disaster-mode');
                 document.getElementById('dashboardEmergencyBannerContainer').innerHTML = '';
             }
+
+            // Real-time Dynamic Atmospheric Animation Engine
+            const precipSum = (data.forecast && data.forecast.precipitation && data.forecast.precipitation[0]) || 0;
+            let rainProb = 0;
+            if (data.metrics.weather_code >= 95) {
+                rainProb = 95;
+            } else if (data.metrics.weather_code >= 60) {
+                rainProb = Math.min(100, Math.round(75 + precipSum * 5));
+            } else if (data.metrics.weather_code >= 50) {
+                rainProb = Math.min(85, Math.round(50 + precipSum * 4));
+            } else if (data.metrics.weather_code >= 2) {
+                rainProb = Math.min(45, Math.round(data.metrics.humidity * 0.35));
+            } else {
+                rainProb = Math.max(5, Math.round(data.metrics.humidity * 0.15));
+            }
+
+            updateWeatherAtmosphere(data.metrics.weather_code, rainProb, ai.is_emergency);
         }
 
         // --- Community Reporting Logic ---
@@ -1033,6 +1382,39 @@
             goToScreen2();
         }
 
+        function goToScreen1() {
+            showScreen('screen1');
+        }
+
+        function toggleAppMenu() {
+            const menu = document.getElementById('appDropdownMenu');
+            if (!menu) return;
+            const isShown = menu.style.display === 'block';
+            menu.style.display = isShown ? 'none' : 'block';
+        }
+
+        function closeAppMenu() {
+            const menu = document.getElementById('appDropdownMenu');
+            if (menu) menu.style.display = 'none';
+        }
+
+        function resetUserSession() {
+            localStorage.removeItem('sl_weather_username');
+            localStorage.removeItem('sl_weather_province');
+            localStorage.removeItem('sl_weather_district');
+            goToScreen1();
+        }
+
+        document.addEventListener('click', function(e) {
+            const menu = document.getElementById('appDropdownMenu');
+            const toggleBtn = document.getElementById('menuToggleBtn');
+            if (menu && menu.style.display === 'block') {
+                if (!menu.contains(e.target) && !toggleBtn.contains(e.target)) {
+                    menu.style.display = 'none';
+                }
+            }
+        });
+
         function goToScreen3() { showScreen('screen3'); }
         function goToScreen4() { showScreen('screen4'); }
         
@@ -1081,11 +1463,233 @@
             textSpan.textContent = isOpen ? 'Hide Details' : 'More Info';
         }
 
+        // --- Dynamic Real-Time Atmosphere & Rain Engine ---
+        class RainSystem {
+            constructor(canvasId) {
+                this.canvas = document.getElementById(canvasId);
+                this.ctx = this.canvas ? this.canvas.getContext('2d') : null;
+                this.drops = [];
+                this.maxDrops = 0;
+                this.targetDrops = 0;
+                this.animationFrame = null;
+                this.running = false;
+                this.resize();
+                window.addEventListener('resize', () => this.resize());
+            }
+
+            resize() {
+                if (!this.canvas) return;
+                const rect = this.canvas.parentElement.getBoundingClientRect();
+                this.width = this.canvas.width = rect.width || window.innerWidth;
+                this.height = this.canvas.height = rect.height || window.innerHeight;
+            }
+
+            setIntensity(density) {
+                // density is 0.0 to 1.0
+                if (!this.canvas) return;
+                this.targetDrops = Math.round(density * 180);
+                if (density > 0.05) {
+                    this.canvas.classList.add('active');
+                    if (!this.running) {
+                        this.running = true;
+                        this.animate();
+                    }
+                } else {
+                    this.targetDrops = 0;
+                    if (this.drops.length === 0) {
+                        this.canvas.classList.remove('active');
+                        this.running = false;
+                        if (this.animationFrame) cancelAnimationFrame(this.animationFrame);
+                    }
+                }
+            }
+
+            animate() {
+                if (!this.running || !this.ctx) return;
+                this.ctx.clearRect(0, 0, this.width, this.height);
+
+                // Add or trim drops toward target
+                if (this.drops.length < this.targetDrops) {
+                    const toAdd = Math.min(6, this.targetDrops - this.drops.length);
+                    for (let i = 0; i < toAdd; i++) {
+                        this.drops.push({
+                            x: Math.random() * this.width,
+                            y: Math.random() * -50,
+                            speed: 9 + Math.random() * 8,
+                            len: 14 + Math.random() * 12,
+                            opacity: 0.35 + Math.random() * 0.45,
+                            width: 1.2 + Math.random() * 0.8
+                        });
+                    }
+                } else if (this.drops.length > this.targetDrops) {
+                    this.drops.splice(0, 3);
+                }
+
+                // Render drops with glass streak gradient
+                for (let i = 0; i < this.drops.length; i++) {
+                    const d = this.drops[i];
+                    d.y += d.speed;
+                    d.x += 1.2; // subtle wind drift
+
+                    if (d.y > this.height) {
+                        d.y = Math.random() * -30;
+                        d.x = Math.random() * this.width;
+                    }
+
+                    const grad = this.ctx.createLinearGradient(d.x, d.y, d.x + 1.2, d.y + d.len);
+                    grad.addColorStop(0, `rgba(186, 230, 253, 0)`);
+                    grad.addColorStop(1, `rgba(224, 242, 254, ${d.opacity})`);
+
+                    this.ctx.beginPath();
+                    this.ctx.strokeStyle = grad;
+                    this.ctx.lineWidth = d.width;
+                    this.ctx.lineCap = 'round';
+                    this.ctx.moveTo(d.x, d.y);
+                    this.ctx.lineTo(d.x + 1.2, d.y + d.len);
+                    this.ctx.stroke();
+                }
+
+                if (this.targetDrops === 0 && this.drops.length === 0) {
+                    this.canvas.classList.remove('active');
+                    this.running = false;
+                    return;
+                }
+
+                this.animationFrame = requestAnimationFrame(() => this.animate());
+            }
+        }
+
+        let rainEngine = null;
+        let lightningInterval = null;
+
+        function updateWeatherAtmosphere(weatherCode, rainProb, isDisaster) {
+            const skyBase = document.getElementById('skyGradientBase');
+            const sunFlare = document.getElementById('sunFlareLayer');
+            const cloudLayer = document.getElementById('cloudLayer');
+            const flashEl = document.getElementById('lightningFlash');
+            const heroGlyph = document.getElementById('heroWeatherGlyph');
+            const heroLabel = document.getElementById('heroConditionLabel');
+
+            if (!rainEngine) {
+                rainEngine = new RainSystem('rainCanvas');
+            }
+
+            if (lightningInterval) {
+                clearInterval(lightningInterval);
+                lightningInterval = null;
+            }
+
+            // Normalise rain probability (0 to 1)
+            const probRatio = Math.min(Math.max(rainProb / 100, 0), 1);
+
+            // Disaster Mode override
+            if (isDisaster) {
+                if (skyBase) skyBase.style.background = 'linear-gradient(165deg, #7f1d1d 0%, #450a0a 50%, #170305 100%)';
+                if (sunFlare) sunFlare.classList.remove('active');
+                if (cloudLayer) {
+                    cloudLayer.classList.add('active');
+                    document.documentElement.style.setProperty('--cloud-fill', 'rgba(15, 3, 5, 0.95)');
+                }
+                rainEngine.setIntensity(0.75);
+                if (heroGlyph) heroGlyph.textContent = '🚨';
+                if (heroLabel) heroLabel.textContent = 'EMERGENCY ALERT';
+                return;
+            }
+
+            // RAIN / THUNDERSTORM
+            if (weatherCode >= 50 || probRatio >= 0.55) {
+                const isStorm = weatherCode >= 95;
+                const rainIntensity = isStorm ? 1.0 : Math.max(0.35, probRatio);
+
+                // Deep charcoal/black clouds scaled to rain probability
+                const darkness = Math.min(0.96, 0.70 + (probRatio * 0.25));
+                const cloudR = Math.round(15 * (1 - probRatio));
+                const cloudG = Math.round(18 * (1 - probRatio));
+                const cloudB = Math.round(24 * (1 - probRatio));
+                const cloudCss = `rgba(${cloudR}, ${cloudG}, ${cloudB}, ${darkness})`;
+
+                // Sky gradient becomes dark storm navy
+                const skyDarkTop = isStorm ? '#060912' : '#0f172a';
+                const skyDarkMid = isStorm ? '#020409' : '#090d16';
+                if (skyBase) skyBase.style.background = `linear-gradient(165deg, ${skyDarkTop} 0%, ${skyDarkMid} 60%, #000000 100%)`;
+
+                if (sunFlare) sunFlare.classList.remove('active');
+                if (cloudLayer) {
+                    cloudLayer.classList.add('active');
+                    document.documentElement.style.setProperty('--cloud-fill', cloudCss);
+                }
+
+                rainEngine.setIntensity(rainIntensity);
+
+                if (isStorm) {
+                    if (heroGlyph) heroGlyph.textContent = '⛈️';
+                    if (heroLabel) heroLabel.textContent = `STORM (${rainProb}% RAIN)`;
+                    // Random subtle lightning flash
+                    lightningInterval = setInterval(() => {
+                        if (Math.random() > 0.4 && flashEl) {
+                            flashEl.style.opacity = '0.75';
+                            setTimeout(() => { flashEl.style.opacity = '0'; }, 100);
+                            setTimeout(() => {
+                                flashEl.style.opacity = '0.9';
+                                setTimeout(() => { flashEl.style.opacity = '0'; }, 80);
+                            }, 180);
+                        }
+                    }, 5000);
+                } else {
+                    if (heroGlyph) heroGlyph.textContent = '🌧️';
+                    if (heroLabel) heroLabel.textContent = `RAINING (${rainProb}%)`;
+                }
+                return;
+            }
+
+            // CLOUDY / OVERCAST (Darkness scales with probability of rain)
+            if (weatherCode >= 2 || probRatio >= 0.2) {
+                // "if it is cloudy make it a black cloud. change the intensity of the dark according to the proberbility of raining"
+                const cloudDarkness = 0.55 + (probRatio * 0.40); // 0.55 up to 0.95
+                const grayVal = Math.round(45 * (1 - probRatio) + 10);
+                const cloudCss = `rgba(${grayVal}, ${grayVal + 4}, ${grayVal + 10}, ${cloudDarkness})`;
+
+                // Slate moody sky
+                const sky1 = probRatio > 0.35 ? '#1e293b' : '#334155';
+                const sky2 = probRatio > 0.35 ? '#0f172a' : '#1e293b';
+                if (skyBase) skyBase.style.background = `linear-gradient(165deg, ${sky1} 0%, ${sky2} 60%, #020617 100%)`;
+
+                if (sunFlare) sunFlare.classList.remove('active');
+                if (cloudLayer) {
+                    cloudLayer.classList.add('active');
+                    document.documentElement.style.setProperty('--cloud-fill', cloudCss);
+                }
+                rainEngine.setIntensity(0);
+
+                if (heroGlyph) heroGlyph.textContent = '☁️';
+                if (heroLabel) heroLabel.textContent = `OVERCAST (${rainProb}% RAIN)`;
+                return;
+            }
+
+            // SUNNY / BRIGHT SKY
+            // "if sunny make in bright sky accordingly in the background"
+            if (skyBase) skyBase.style.background = 'linear-gradient(165deg, #38bdf8 0%, #0ea5e9 45%, #0284c7 80%, #0369a1 100%)';
+            if (sunFlare) sunFlare.classList.add('active');
+            if (cloudLayer) cloudLayer.classList.remove('active');
+            rainEngine.setIntensity(0);
+
+            if (heroGlyph) heroGlyph.textContent = '☀️';
+            if (heroLabel) heroLabel.textContent = 'BRIGHT & SUNNY';
+        }
+
         window.onload = function() { 
             applySavedTheme(); 
             // Register mobile Service Worker for offline capability
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration note:', err));
+            }
+            // Initialize dynamic liquid atmosphere on launch
+            const hr = new Date().getHours();
+            const isNight = hr >= 18 || hr < 6;
+            if (isNight) {
+                updateWeatherAtmosphere(2, 25, false);
+            } else {
+                updateWeatherAtmosphere(0, 5, false);
             }
         };
     </script>
