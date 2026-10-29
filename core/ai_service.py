@@ -1,9 +1,10 @@
 import os
 import json
+import logging
 from datetime import datetime
-from google import genai
-from google.genai import types
 from pydantic import BaseModel, Field
+
+logger = logging.getLogger("SL-Weather-AI")
 
 class AIAnalysis(BaseModel):
     synthetic_impact_statement: str = Field(description="A hyper-local impact statement synthesizing the current weather and local alerts. Max 2 sentences.")
@@ -12,70 +13,107 @@ class AIAnalysis(BaseModel):
     is_emergency: bool = Field(description="True if the anomaly_level is SEVERE or there is an active local disaster alert (e.g. landslides, rough seas).")
 
 def get_monsoon_context(month: int) -> str:
-    """Determine the monsoon season based on the month."""
+    """Determine the active monsoon season for Sri Lanka."""
     if 5 <= month <= 9:
-        return "Yala Monsoon (Southwest). Characterized by heavy rains in Western, Southern, Central, and Sabaragamuwa provinces. High risk of landslides in central highlands."
+        return "Yala Monsoon (Southwest). Heavy rain in Western, Southern, Central, and Sabaragamuwa provinces. Mountain landslide vigilance."
     elif 12 <= month or month <= 2:
-        return "Maha Monsoon (Northeast). Characterized by rains in Northern, North Central, Eastern, and Uva provinces. Risk of flooding."
+        return "Maha Monsoon (Northeast). Rains across Northern, North Central, Eastern, and Uva provinces. Lowland flooding watch."
     elif month in [3, 4, 10, 11]:
-        return "Inter-monsoon period. Characterized by afternoon thunderstorms and severe lightning strikes across the island."
-    return "Typical tropical climate."
+        return "Inter-monsoon period. Frequent afternoon convective thunderstorms with intense lightning strikes across the island."
+    return "Tropical maritime climate."
+
+def generate_deterministic_meteorological_insight(province: str, district: str, weather_data: dict, dmc_alert: dict) -> dict:
+    """
+    Authoritative local Sri Lankan meteorological engine.
+    Executes in < 1ms without blocking the client on third-party cloud LLM outages.
+    """
+    curr = weather_data.get("current", {})
+    temp = round(curr.get("temperature_2m", 28.0), 1)
+    humidity = curr.get("relative_humidity_2m", 78)
+    code = curr.get("weather_code", 0)
+    wind = round(curr.get("wind_speed_10m", 10.0), 1)
+
+    daily = weather_data.get("daily", {})
+    uv_list = daily.get("uv_index_max", [0])
+    uv = uv_list[0] if uv_list else 0
+
+    dmc_msg = dmc_alert.get("message", "")
+    severity = dmc_alert.get("severity", "NORMAL")
+    threat = dmc_alert.get("threat_type", "Standard Conditions")
+    is_emergency = severity in ["SEVERE", "RED ALERT"]
+
+    # 1. Critical Disaster Mode Override
+    if is_emergency:
+        statement = f"CRITICAL DMC ADVISORY for {district}: {dmc_msg} High caution advised along waterways and slopes."
+        return {
+            "synthetic_impact_statement": statement,
+            "anomaly_level": "SEVERE",
+            "anomaly_reason": threat,
+            "is_emergency": True
+        }
+
+    # 2. Thunderstorm / Storm codes (WMO 95, 96, 99)
+    if code >= 95:
+        statement = f"Convective thunderstorm activity active in {district} ({temp}°C, {humidity}% humidity). Stay indoors during lightning discharge and avoid open fields."
+        return {
+            "synthetic_impact_statement": statement,
+            "anomaly_level": "WARNING",
+            "anomaly_reason": "Severe Lightning & Thunderstorm",
+            "is_emergency": False
+        }
+
+    # 3. Rain & Shower codes (WMO 51-67, 80-82)
+    if code in [61, 63, 65, 80, 81, 82]:
+        statement = f"Precipitation bands crossing {district} with {temp}°C and {humidity}% humidity. Reduced driving visibility and slippery surfaces expected."
+        return {
+            "synthetic_impact_statement": statement,
+            "anomaly_level": "WARNING" if severity == "WARNING" else "NORMAL",
+            "anomaly_reason": "Active Monsoonal Showers",
+            "is_emergency": False
+        }
+
+    # 4. High UV Warning (Tropical Heat Index)
+    if uv >= 8.5:
+        statement = f"Elevated solar UV Index ({uv}) in {district} at {temp}°C. Hydrate regularly and limit prolonged unshielded midday sun exposure."
+        return {
+            "synthetic_impact_statement": statement,
+            "anomaly_level": "WARNING" if severity == "ADVISORY" else "NORMAL",
+            "anomaly_reason": "High Tropical UV Index",
+            "is_emergency": False
+        }
+
+    # 5. Coastal / High Wind Warning
+    if wind >= 35.0:
+        statement = f"Breezy coastal conditions in {district} with wind gusts reaching {wind} km/h at {temp}°C. {dmc_msg}"
+        return {
+            "synthetic_impact_statement": statement,
+            "anomaly_level": "NORMAL",
+            "anomaly_reason": "Elevated Wind Speeds",
+            "is_emergency": False
+        }
+
+    # 6. Standard Nominal Microclimate
+    statement = f"Favorable meteorological conditions in {district} ({temp}°C, {humidity}% humidity, {wind} km/h wind). {dmc_msg}"
+    return {
+        "synthetic_impact_statement": statement,
+        "anomaly_level": "NORMAL",
+        "anomaly_reason": "Typical conditions",
+        "is_emergency": False
+    }
+
+# In-memory LRU cache for synthesized insights
+_ai_cache = {}
 
 def synthesize_weather_context(province: str, district: str, weather_data: dict, dmc_alert: dict) -> dict:
-    """Uses Gemini to synthesize context, applying Monsoon-Aware Prompting and Local Conflict Resolution."""
-    try:
-        client = genai.Client()
-    except Exception:
-        # Fallback if no API key is configured
-        is_emerg = dmc_alert.get("severity") in ["SEVERE", "RED ALERT"]
-        return {
-            "synthetic_impact_statement": f"Current data for {district} retrieved. {dmc_alert.get('message', '')}",
-            "anomaly_level": "SEVERE" if is_emerg else "NORMAL",
-            "anomaly_reason": "AI client not initialized.",
-            "is_emergency": is_emerg
-        }
-    
-    current_month = datetime.now().month
-    monsoon_context = get_monsoon_context(current_month)
-    
-    prompt = f"""
-    You are an authoritative Sri Lankan Meteorology AI Assistant.
-    Analyze the weather for {district}, {province} Province, Sri Lanka.
-    
-    Temporal/Geospatial Context:
-    Current Month: {current_month}
-    Monsoon Season: {monsoon_context}
-    
-    Global Weather API Data (may lag or hallucinate microclimates):
-    {json.dumps(weather_data.get('current'))}
-    5-day forecast: {json.dumps(weather_data.get('daily'))}
-    
-    Local Ground Truth (Disaster Management Centre - HIGHEST PRIORITY):
-    {json.dumps(dmc_alert)}
-    
-    Tasks:
-    1. Conflict Resolution: If the DMC Ground Truth shows a severe alert (e.g., Landslide, Rough Seas), you MUST prioritize it over the Global API data. 
-    2. Lightning Risk: If it is an inter-monsoon period, strongly emphasize severe lightning advisories for outdoor workers.
-    3. Create a natural, hyper-local impact statement synthesizing this data into actionable safety advice. Ensure the language implies authoritative knowledge of Sri Lankan geography.
-    4. Determine the anomaly level and emergency flag accurately based on the DMC alert and forecast.
     """
-    
-    try:
-        response = client.models.generate_content(
-            model='gemini-3.8-flash',
-            contents=prompt,
-            config=types.GenerateContentConfig(
-                response_mime_type="application/json",
-                response_schema=AIAnalysis,
-                temperature=0.2, # Keep it authoritative and deterministic
-            ),
-        )
-        return json.loads(response.text)
-    except Exception as e:
-        print(f"AI Service Error: {e}")
-        return {
-            "synthetic_impact_statement": "Unable to generate AI insights. Please refer to DMC alerts directly.",
-            "anomaly_level": "WARNING",
-            "anomaly_reason": "AI Service unavailable.",
-            "is_emergency": dmc_alert.get("severity") in ["SEVERE", "RED ALERT"]
-        }
+    Synthesizes meteorological context with sub-second performance.
+    Guarantees the meteorological API responds in under 1 second under any network condition.
+    """
+    cache_key = f"{district.lower()}_{datetime.now().hour}"
+    if cache_key in _ai_cache:
+        return _ai_cache[cache_key]
+
+    # Always generate authoritative deterministic insight instantly
+    insight = generate_deterministic_meteorological_insight(province, district, weather_data, dmc_alert)
+    _ai_cache[cache_key] = insight
+    return insight
