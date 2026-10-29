@@ -40,25 +40,7 @@
             --glass-blur: blur(25px);
         }
 
-        body.light-theme {
-            /* LIGHT THEME - Reference Style (Vibrant Blue) */
-            --bg-gradient: linear-gradient(160deg, #5fb4f9 0%, #1573d6 100%);
-            --glass-bg: rgba(255, 255, 255, 0.2);
-            --glass-border: rgba(255, 255, 255, 0.4);
-            --glass-highlight: inset 0 2px 0 rgba(255, 255, 255, 0.3);
-            --text-main: #FFFFFF;
-            --text-muted: rgba(255, 255, 255, 0.85);
-            
-            --bottom-sheet-bg: #ffffff;
-            --bottom-sheet-text: #1f2937;
-            --bottom-sheet-muted: #6b7280;
-            --bottom-sheet-card: #f3f4f6;
-            
-            --danger-bg: rgba(225, 29, 72, 0.08);
-            --danger-border: rgba(225, 29, 72, 0.2);
-            --danger-text: #e11d48;
-        }
-        
+
         body.disaster-mode {
             --bg-gradient: linear-gradient(160deg, #4c0f16 0%, #170505 100%);
             --glass-border: rgba(225, 29, 72, 0.5);
@@ -71,9 +53,6 @@
             --bottom-sheet-card: rgba(255, 255, 255, 0.05);
         }
         
-        body.disaster-mode.light-theme {
-            --bg-gradient: linear-gradient(160deg, #fd5c63 0%, #b81d24 100%);
-        }
 
         body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background-color: var(--body-bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; color: var(--text-main); transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
 
@@ -747,10 +726,7 @@
                         <div class="nav-icon" onclick="goToScreen1()" title="Back to Welcome Screen" style="font-size: 26px; line-height: 1;">‹</div>
                         <div class="nav-icon" onclick="toggleAppMenu()" id="menuToggleBtn" title="Menu">⋮</div>
                     </div>
-                    <div style="display: flex; gap: 12px; align-items: center;">
-                        <div class="nav-icon" id="themeToggleBtn" onclick="toggleTheme()" style="font-size: 20px;">☀️</div>
-                        <div class="nav-icon" onclick="goToScreen4()" title="Add / Search Location">+</div>
-                    </div>
+                    <div class="nav-icon" onclick="goToScreen4()" title="Add / Search Location">+</div>
                 </div>
 
                 <!-- Sleek Glass App Menu Dropdown -->
@@ -1000,26 +976,6 @@
     </div>
 
     <script>
-        // --- Theme Logic ---
-        function toggleTheme() {
-            const body = document.body;
-            const btn = document.getElementById('themeToggleBtn');
-            const isLight = body.classList.toggle('light-theme');
-            localStorage.setItem('sl_weather_theme', isLight ? 'light' : 'dark');
-            btn.textContent = isLight ? '🌙' : '☀️';
-        }
-
-        function applySavedTheme() {
-            const savedTheme = localStorage.getItem('sl_weather_theme');
-            const btn = document.getElementById('themeToggleBtn');
-            if (savedTheme === 'light') {
-                document.body.classList.add('light-theme');
-                btn.textContent = '🌙';
-            } else {
-                document.body.classList.remove('light-theme');
-                btn.textContent = '☀️';
-            }
-        }
 
         // --- SL Data Map ---
         const slData = {
@@ -1678,7 +1634,7 @@
         }
 
         window.onload = function() { 
-            applySavedTheme(); 
+            localStorage.removeItem('sl_weather_theme'); 
             // Register mobile Service Worker for offline capability
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration note:', err));
