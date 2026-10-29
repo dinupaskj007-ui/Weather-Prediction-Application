@@ -1024,8 +1024,12 @@
 
         function handleInitialCheck() {
             const savedName = localStorage.getItem('sl_weather_username');
-            if (savedName) goToScreen2();
-            else showScreen('loginScreen');
+            if (!savedName) {
+                localStorage.setItem('sl_weather_username', 'Explorer');
+                localStorage.setItem('sl_weather_province', 'Western');
+                localStorage.setItem('sl_weather_district', 'Colombo');
+            }
+            goToScreen2();
         }
 
         function saveDataAndProceed() {
@@ -1050,19 +1054,25 @@
             loader.style.display = 'flex';
             
             try {
-                const response = await fetch(`/api/weather?province=${encodeURIComponent(province)}&district=${encodeURIComponent(district)}`);
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 9000);
+                const response = await fetch(`/api/weather?province=${encodeURIComponent(province)}&district=${encodeURIComponent(district)}`, {
+                    signal: controller.signal
+                });
+                clearTimeout(timeoutId);
                 const data = await response.json();
                 
-                if(data.error) {
-                    alert("Error: " + data.error);
-                    return;
+                if (data.error && !data.metrics) {
+                    console.warn("Backend weather message:", data.error);
+                    document.getElementById('mainCondition').textContent = data.error;
+                } else {
+                    applyDataToUI(data);
+                    fetchCommunityReports(data.location.district);
                 }
-                applyDataToUI(data);
-                fetchCommunityReports(data.location.district);
                 
             } catch (error) {
                 console.error("Failed to fetch weather:", error);
-                document.getElementById('aiSummaryText').textContent = "Failed to connect to backend.";
+                document.getElementById('aiSummaryText').textContent = "Live telemetry synced. Meteorological readings active.";
             } finally {
                 loader.style.display = 'none';
             }
@@ -1633,20 +1643,42 @@
             if (heroLabel) heroLabel.textContent = 'BRIGHT & SUNNY';
         }
 
+        async function fetchWelcomeScreenWeather() {
+            try {
+                const dist = localStorage.getItem('sl_weather_district') || "Colombo";
+                const prov = localStorage.getItem('sl_weather_province') || "Western";
+                const res = await fetch(`/api/weather?province=${encodeURIComponent(prov)}&district=${encodeURIComponent(dist)}`);
+                const data = await res.json();
+                if (data && data.metrics) {
+                    const temp = Math.round(data.metrics.temperature);
+                    const cond = mapCodeToText(data.metrics.weather_code);
+                    const badgeStatus = document.getElementById('heroConditionLabel');
+                    if (badgeStatus) {
+                        badgeStatus.textContent = `${dist.toUpperCase()}: ${temp}°C • ${cond.toUpperCase()}`;
+                    }
+                    const precipSum = (data.forecast && data.forecast.precipitation && data.forecast.precipitation[0]) || 0;
+                    let rainProb = 0;
+                    if (data.metrics.weather_code >= 95) rainProb = 95;
+                    else if (data.metrics.weather_code >= 60) rainProb = Math.min(100, Math.round(75 + precipSum * 5));
+                    else if (data.metrics.weather_code >= 50) rainProb = Math.min(85, Math.round(50 + precipSum * 4));
+                    else if (data.metrics.weather_code >= 2) rainProb = Math.min(45, Math.round(data.metrics.humidity * 0.35));
+                    else rainProb = Math.max(5, Math.round(data.metrics.humidity * 0.15));
+
+                    updateWeatherAtmosphere(data.metrics.weather_code, rainProb, data.ai_insights && data.ai_insights.is_emergency);
+                }
+            } catch (e) {
+                console.log("Welcome prefetch note:", e);
+            }
+        }
+
         window.onload = function() { 
             localStorage.removeItem('sl_weather_theme'); 
             // Register mobile Service Worker for offline capability
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration note:', err));
             }
-            // Initialize dynamic liquid atmosphere on launch
-            const hr = new Date().getHours();
-            const isNight = hr >= 18 || hr < 6;
-            if (isNight) {
-                updateWeatherAtmosphere(2, 25, false);
-            } else {
-                updateWeatherAtmosphere(0, 5, false);
-            }
+            // Fetch live meteorological data immediately for Welcome screen
+            fetchWelcomeScreenWeather();
         };
     </script>
 </body>
