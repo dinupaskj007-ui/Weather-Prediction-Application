@@ -535,6 +535,95 @@
         .hourly-item .temp { font-size: 16px; font-weight: 700; color: var(--bottom-sheet-text); }
 
         /* Modern AI Prediction Trigger Button */
+        /* --- EMERGENCY LIGHT BUTTON (Beacon Look) --- */
+        .emergency-light-btn {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 5px 11px;
+            height: 38px;
+            border-radius: 20px;
+            background: radial-gradient(circle at 35% 35%, rgba(254, 202, 202, 0.25), rgba(220, 38, 38, 0.45));
+            border: 1.5px solid rgba(248, 113, 113, 0.7);
+            box-shadow: 0 0 16px rgba(239, 68, 68, 0.55), inset 0 0 10px rgba(254, 202, 202, 0.35);
+            cursor: pointer;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+            animation: emergencyBeaconStrobe 2s infinite ease-in-out;
+            outline: none;
+            user-select: none;
+        }
+        .emergency-light-btn:hover {
+            transform: scale(1.08);
+            box-shadow: 0 0 24px rgba(239, 68, 68, 0.85), inset 0 0 14px rgba(254, 202, 202, 0.6);
+            border-color: #fca5a5;
+        }
+        .emergency-light-btn:active {
+            transform: scale(0.95);
+        }
+        .beacon-icon {
+            font-size: 18px;
+            line-height: 1;
+            display: inline-block;
+            animation: beaconSirenWobble 2s infinite ease-in-out;
+            filter: drop-shadow(0 0 4px #ef4444);
+        }
+        .beacon-pulse-ring {
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            border-radius: 24px;
+            border: 1.5px solid rgba(239, 68, 68, 0.75);
+            animation: beaconPulseRing 2s infinite ease-out;
+            pointer-events: none;
+        }
+        .beacon-badge {
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: #ffffff;
+            background: rgba(220, 38, 38, 0.9);
+            padding: 2px 6px;
+            border-radius: 10px;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        @keyframes emergencyBeaconStrobe {
+            0%, 100% {
+                box-shadow: 0 0 10px rgba(239, 68, 68, 0.4), inset 0 0 6px rgba(254, 202, 202, 0.2);
+                border-color: rgba(248, 113, 113, 0.6);
+            }
+            50% {
+                box-shadow: 0 0 24px rgba(239, 68, 68, 0.9), 0 0 35px rgba(245, 158, 11, 0.5), inset 0 0 12px rgba(254, 202, 202, 0.6);
+                border-color: rgba(254, 202, 202, 0.95);
+            }
+        }
+        @keyframes beaconPulseRing {
+            0% {
+                transform: scale(0.96);
+                opacity: 0.85;
+            }
+            70% {
+                transform: scale(1.26);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1.28);
+                opacity: 0;
+            }
+        }
+        @keyframes beaconSirenWobble {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-7deg) scale(1.08); }
+            75% { transform: rotate(7deg) scale(1.08); }
+        }
+
         .btn-ai-prediction {
             width: 100%;
             background: linear-gradient(135deg, rgba(139, 92, 246, 0.12) 0%, rgba(6, 182, 212, 0.12) 100%);
@@ -1055,7 +1144,15 @@
                         <div class="nav-icon" onclick="goToScreen1()" title="Back to Welcome Screen" style="font-size: 26px; line-height: 1;">‹</div>
                         <div class="nav-icon" onclick="toggleAppMenu()" id="menuToggleBtn" title="Menu">⋮</div>
                     </div>
-                    <div class="nav-icon" onclick="goToScreen4()" title="Add / Search Location">+</div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <!-- EMERGENCY LIGHT BUTTON FOR COMMUNITY HAZARD REPORTS -->
+                        <button class="emergency-light-btn" id="emergencyBeaconBtn" onclick="openCommunityReportsModal()" title="Community Hazard Reports & Emergency Live Feed">
+                            <span class="beacon-pulse-ring"></span>
+                            <span class="beacon-icon">🚨</span>
+                            <span class="beacon-badge" id="emergencyReportsBadge">Live</span>
+                        </button>
+                        <div class="nav-icon" onclick="goToScreen4()" title="Add / Search Location">+</div>
+                    </div>
                 </div>
 
                 <!-- Sleek Glass App Menu Dropdown -->
@@ -1065,6 +1162,9 @@
                     </div>
                     <div class="menu-action-item" onclick="openAIPredictionModal(); closeAppMenu();" style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600; color: #fff; transition: background 0.2s;">
                         <span style="font-size: 16px;">📅</span> 7-Day AI Prediction
+                    </div>
+                    <div class="menu-action-item" onclick="openCommunityReportsModal(); closeAppMenu();" style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600; color: #fff; transition: background 0.2s;">
+                        <span style="font-size: 16px;">🚨</span> Community Reports
                     </div>
                     <div class="menu-action-item" onclick="goToScreen4(); closeAppMenu();" style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600; color: #fff; transition: background 0.2s;">
                         <span style="font-size: 16px;">📍</span> Choose District
@@ -1178,18 +1278,6 @@
                         <span id="aiSummaryText">Syncing local meteorological data...</span>
                     </div>
 
-                    <div class="community-header">
-                        <h3>Community Reports <span class="live-dot">●</span></h3>
-                        <button class="btn-report" onclick="openReportModal()">+ Report</button>
-                    </div>
-                    
-                    <div id="communityReportsFeed">
-                        <div class="report-card">
-                            <div class="report-meta"><span class="report-user">Loading...</span></div>
-                            <div class="report-text">Retrieving live reports from nearby users...</div>
-                        </div>
-                    </div>
-                    
                     <button class="btn-view-stats" onclick="goToScreen3()">View Full Risk Report</button>
                 </div>
             </div>
@@ -1327,6 +1415,44 @@
         </div>
 
         <!-- 7-DAY AI PREDICTION MODAL SHEET -->
+        <!-- DEDICATED COMMUNITY REPORTS & EMERGENCY RADAR MODAL -->
+        <div id="communityReportsModal" class="modal-overlay" onclick="if(event.target === this) closeCommunityReportsModal()">
+            <div class="modal-sheet" style="max-height: 86vh; overflow-y: auto;">
+                <div class="modal-header" style="margin-bottom: 6px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 22px;">🚨</span>
+                        <div>
+                            <h3 style="margin: 0; font-size: 17px; font-weight: 800; color: var(--bottom-sheet-text);">Community Reports</h3>
+                            <div style="font-size: 11px; color: var(--bottom-sheet-muted); font-weight: 500;">Live Crowdsourced Ground Radar & Hazard Feed</div>
+                        </div>
+                    </div>
+                    <button class="modal-close" onclick="closeCommunityReportsModal()">&times;</button>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0 10px 0; padding: 10px 14px; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.22); border-radius: 14px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span class="live-dot" style="color: #ef4444; font-size: 12px;">●</span>
+                        <span style="font-size: 13px; font-weight: 700; color: var(--bottom-sheet-text);" id="communityModalDistrictText">Live Ground Feed</span>
+                    </div>
+                    <button class="btn-report" onclick="openReportModal()" style="margin: 0; padding: 6px 14px; font-size: 12px; font-weight: 700; border-radius: 20px;">+ New Report</button>
+                </div>
+
+                <!-- Community Reports Feed Container -->
+                <div id="communityReportsFeed" class="report-feed" style="margin-top: 10px;">
+                    <div class="report-card">
+                        <div class="report-meta"><span class="report-user">Loading...</span></div>
+                        <div class="report-text">Retrieving live reports from nearby users...</div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 16px; text-align: center;">
+                    <button class="btn-view-stats" onclick="closeCommunityReportsModal(); goToScreen3();" style="width: 100%; margin: 0; background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(220, 38, 38, 0.25)); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5;">
+                        ⚡ View Official DMC Disaster Alerts
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <div id="aiPredictionModal" class="modal-overlay" onclick="if(event.target === this) closeAIPredictionModal()">
             <div class="modal-sheet" style="max-height: 88vh; overflow-y: auto;">
                 <div class="modal-header" style="margin-bottom: 8px;">
@@ -1690,6 +1816,19 @@
                 const url = district ? `/api/reports?district=${encodeURIComponent(district)}` : '/api/reports';
                 const res = await fetch(url);
                 const data = await res.json();
+
+                // Update Emergency Beacon Badge
+                const badge = document.getElementById('emergencyReportsBadge');
+                if (badge) {
+                    const count = (data.reports && data.reports.length) || 0;
+                    badge.textContent = count > 0 ? `${count} Live` : 'Live';
+                }
+
+                // Update Modal Header District Text
+                const distText = document.getElementById('communityModalDistrictText');
+                if (distText) {
+                    distText.textContent = district ? `${district} Active Ground Feed` : 'All-Island Ground Feed';
+                }
                 
                 if (data.reports && data.reports.length > 0) {
                     feed.innerHTML = data.reports.map(r => {
@@ -1834,6 +1973,20 @@
         // --- 7-Day AI Prediction Controller ---
         let currentForecastDays = [];
         let selectedDayIndex = 0;
+
+        function openCommunityReportsModal() {
+            const currentDist = localStorage.getItem('sl_weather_district') || "Colombo";
+            const distText = document.getElementById('communityModalDistrictText');
+            if (distText) distText.textContent = `${currentDist} Active Feed`;
+            fetchCommunityReports(currentDist);
+            const modal = document.getElementById('communityReportsModal');
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function closeCommunityReportsModal() {
+            const modal = document.getElementById('communityReportsModal');
+            if (modal) modal.style.display = 'none';
+        }
 
         function openAIPredictionModal() {
             const modal = document.getElementById('aiPredictionModal');
