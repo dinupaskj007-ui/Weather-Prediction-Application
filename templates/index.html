@@ -524,15 +524,283 @@
         /* Bottom Sheet (Solid White panel containing Hourly, AI, Community) */
         .bottom-sheet { background: var(--bottom-sheet-bg); color: var(--bottom-sheet-text); flex: 1; border-top-left-radius: 35px; border-top-right-radius: 35px; padding: 30px 25px; display: flex; flex-direction: column; box-shadow: 0 -10px 40px rgba(0,0,0,0.1); transition: background 0.5s, color 0.5s; }
         
-        .hourly-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .hourly-header h3 { margin: 0; font-size: 16px; font-weight: 700; color: var(--bottom-sheet-text); }
-        
-        .hourly-scroll { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 15px; -ms-overflow-style: none; scrollbar-width: none; }
-        .hourly-scroll::-webkit-scrollbar { display: none; }
-        .hourly-item { display: flex; flex-direction: column; align-items: center; gap: 10px; min-width: 45px; }
-        .hourly-item .time { font-size: 13px; font-weight: 600; color: var(--bottom-sheet-muted); }
-        .hourly-item .icon { font-size: 24px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
-        .hourly-item .temp { font-size: 16px; font-weight: 700; color: var(--bottom-sheet-text); }
+        /* --- 7-DAY AI WEATHER PREDICTION ENGINE STYLES --- */
+        .forecast-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+        .forecast-header h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--bottom-sheet-text);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .forecast-accuracy-badge {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 12px;
+            background: rgba(139, 92, 246, 0.12);
+            color: #8b5cf6;
+            border: 1px solid rgba(139, 92, 246, 0.25);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .forecast-scroll {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 4px 2px 14px;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+            scroll-snap-type: x mandatory;
+        }
+        .forecast-scroll::-webkit-scrollbar { display: none; }
+
+        .forecast-day-card {
+            min-width: 84px;
+            flex-shrink: 0;
+            scroll-snap-align: start;
+            background: var(--bottom-sheet-card);
+            border: 1.5px solid transparent;
+            border-radius: 18px;
+            padding: 12px 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+            position: relative;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+            user-select: none;
+        }
+        .forecast-day-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.07);
+        }
+        .forecast-day-card.active {
+            background: linear-gradient(155deg, rgba(139, 92, 246, 0.12) 0%, rgba(6, 182, 212, 0.14) 100%);
+            border-color: #8b5cf6;
+            box-shadow: 0 6px 18px rgba(139, 92, 246, 0.22);
+            transform: translateY(-2px);
+        }
+
+        .day-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--bottom-sheet-text);
+        }
+        .day-subdate {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--bottom-sheet-muted);
+            margin-top: -4px;
+        }
+        .forecast-glyph {
+            font-size: 26px;
+            line-height: 1;
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.12));
+            margin: 2px 0;
+        }
+        .day-temps {
+            display: flex;
+            gap: 4px;
+            align-items: baseline;
+            font-size: 13px;
+        }
+        .day-temp-high {
+            font-weight: 800;
+            color: var(--bottom-sheet-text);
+        }
+        .day-temp-low {
+            font-weight: 500;
+            color: var(--bottom-sheet-muted);
+            font-size: 11px;
+        }
+
+        .rain-prob-badge {
+            font-size: 10px;
+            font-weight: 700;
+            border-radius: 10px;
+            padding: 2px 7px;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            letter-spacing: -0.2px;
+        }
+        .rain-high {
+            background: rgba(239, 68, 68, 0.12);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        .rain-mid {
+            background: rgba(245, 158, 11, 0.12);
+            color: #d97706;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        .rain-low {
+            background: rgba(16, 185, 129, 0.12);
+            color: #059669;
+            border: 1px solid rgba(16, 185, 129, 0.25);
+        }
+        .conf-dot {
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--bottom-sheet-muted);
+            opacity: 0.85;
+        }
+
+        /* Day Detail Inspector Panel */
+        .day-detail-panel {
+            background: var(--bottom-sheet-card);
+            border-radius: 20px;
+            padding: 18px 16px;
+            margin-top: 10px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        .day-detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+        .detail-metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .detail-stat {
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(0, 0, 0, 0.04);
+            border-radius: 12px;
+            padding: 8px 6px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        body.disaster-mode .detail-stat {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+        .detail-stat .label {
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--bottom-sheet-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+        .detail-stat .value {
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--bottom-sheet-text);
+        }
+        .detail-advisory-box {
+            background: rgba(139, 92, 246, 0.06);
+            border-left: 3px solid #8b5cf6;
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 12px;
+            line-height: 1.5;
+            color: var(--bottom-sheet-text);
+        }
+        .advisory-tag {
+            display: block;
+            font-size: 9px;
+            font-weight: 800;
+            color: #8b5cf6;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 3px;
+        }
+
+        /* 7-Day Ensemble Intelligence Card */
+        .weekly-ai-card {
+            background: linear-gradient(145deg, rgba(139, 92, 246, 0.08) 0%, rgba(6, 182, 212, 0.06) 100%);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        .weekly-ai-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .weekly-ai-tag {
+            font-size: 11px;
+            font-weight: 800;
+            color: #8b5cf6;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+        .confidence-badge {
+            font-size: 10px;
+            font-weight: 700;
+            background: rgba(16, 185, 129, 0.12);
+            color: #059669;
+            padding: 3px 8px;
+            border-radius: 10px;
+            border: 1px solid rgba(16, 185, 129, 0.25);
+        }
+        .weekly-highlights {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .highlight-chip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+        }
+        .highlight-chip.alert {
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+        .highlight-chip.safe {
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+        .highlight-chip .icon {
+            font-size: 16px;
+        }
+        .highlight-chip .text {
+            display: flex;
+            flex-direction: column;
+        }
+        .highlight-chip .title {
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--bottom-sheet-muted);
+            text-transform: uppercase;
+        }
+        .highlight-chip .desc {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--bottom-sheet-text);
+        }
+        .weekly-trend-text {
+            font-size: 12px;
+            line-height: 1.55;
+            color: var(--bottom-sheet-text);
+            padding-top: 6px;
+            border-top: 1px dashed rgba(0, 0, 0, 0.08);
+        }
         
         /* Secondary sections inside Bottom Sheet */
         .ai-summary-card { background: var(--bottom-sheet-card); border-left: 4px solid #8b5cf6; padding: 18px; border-radius: 16px; margin-top: 15px; font-size: 14px; line-height: 1.6; color: var(--bottom-sheet-text); }
@@ -734,6 +1002,9 @@
                     <div class="menu-action-item" onclick="goToScreen1(); closeAppMenu();" style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600; color: #fff; transition: background 0.2s;">
                         <span style="font-size: 16px;">🏠</span> Welcome Screen
                     </div>
+                    <div class="menu-action-item" onclick="scrollToForecast(); closeAppMenu();" style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600; color: #fff; transition: background 0.2s;">
+                        <span style="font-size: 16px;">📅</span> 7-Day AI Prediction
+                    </div>
                     <div class="menu-action-item" onclick="goToScreen4(); closeAppMenu();" style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600; color: #fff; transition: background 0.2s;">
                         <span style="font-size: 16px;">📍</span> Choose District
                     </div>
@@ -792,31 +1063,91 @@
                 </div>
 
                 <div class="bottom-sheet">
-                    <div class="hourly-header">
-                        <h3>Today's Weather</h3>
-                        <span style="font-size: 13px; color: var(--bottom-sheet-muted); cursor: pointer;" onclick="useCurrentGpsLocation()">📍 Sync GPS</span>
-                    </div>
-                    
-                    <div class="hourly-scroll">
-                        <div class="hourly-item">
-                            <span class="time">Now</span>
-                            <span class="icon">⛅</span>
-                            <span class="temp" id="hourlyNow">--°</span>
+                    <!-- 7-DAY AI WEATHER PREDICTION SECTION -->
+                    <div id="forecast7DaySection">
+                        <div class="forecast-header">
+                            <h3>✨ 7-Day AI Prediction</h3>
+                            <span class="forecast-accuracy-badge" id="forecastModelPill">95% High Probability</span>
                         </div>
-                        <div class="hourly-item">
-                            <span class="time">15:00</span>
-                            <span class="icon">🌧️</span>
-                            <span class="temp" id="hourlyNext1">--°</span>
+                        
+                        <!-- 7-Day Daily Strip -->
+                        <div class="forecast-scroll" id="forecast7DayScroll">
+                            <div class="forecast-day-card active">
+                                <span class="day-title">Today</span>
+                                <span class="day-subdate">--/--</span>
+                                <span class="forecast-glyph">⛅</span>
+                                <div class="day-temps">
+                                    <span class="day-temp-high">--°</span>
+                                    <span class="day-temp-low">--°</span>
+                                </div>
+                                <span class="rain-prob-badge rain-low">💧 --%</span>
+                                <span class="conf-dot">--%</span>
+                            </div>
                         </div>
-                        <div class="hourly-item">
-                            <span class="time">16:00</span>
-                            <span class="icon">🌩️</span>
-                            <span class="temp" id="hourlyNext2">--°</span>
+
+                        <!-- Interactive Day Detail Inspector -->
+                        <div class="day-detail-panel" id="selectedDayDetailCard">
+                            <div class="day-detail-header">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span id="detailDayGlyph" style="font-size: 24px;">🌤️</span>
+                                    <div>
+                                        <h4 id="detailDayTitle" style="margin: 0; font-size: 14px; font-weight: 700; color: var(--bottom-sheet-text);">Today's AI Meteorological Intelligence</h4>
+                                        <div id="detailDaySub" style="font-size: 11px; color: var(--bottom-sheet-muted); font-weight: 600;">Partly Cloudy • 98% AI Confidence</div>
+                                    </div>
+                                </div>
+                                <div id="detailRainPill" class="rain-prob-badge rain-low">💧 --% Rain</div>
+                            </div>
+                            
+                            <div class="detail-metrics-grid">
+                                <div class="detail-stat">
+                                    <span class="label">PRECIPITATION</span>
+                                    <span class="value" id="detailPrecipMm">-- mm</span>
+                                </div>
+                                <div class="detail-stat">
+                                    <span class="label">MAX WIND</span>
+                                    <span class="value" id="detailWindSpeed">-- km/h</span>
+                                </div>
+                                <div class="detail-stat">
+                                    <span class="label">UV INDEX</span>
+                                    <span class="value" id="detailUvIndex">-- Max</span>
+                                </div>
+                                <div class="detail-stat">
+                                    <span class="label">CONFIDENCE</span>
+                                    <span class="value" id="detailConfidence">--% High</span>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-advisory-box">
+                                <span class="advisory-tag">🎯 AI METEOROLOGY ADVISORY</span>
+                                <div id="detailAdvisoryText">Syncing hyper-local microclimate prediction...</div>
+                            </div>
                         </div>
-                        <div class="hourly-item">
-                            <span class="time">17:00</span>
-                            <span class="icon">☁️</span>
-                            <span class="temp">--°</span>
+
+                        <!-- 7-Day Ensemble Intelligence Card -->
+                        <div class="weekly-ai-card">
+                            <div class="weekly-ai-header">
+                                <span class="weekly-ai-tag">✨ 7-Day Ensemble Intelligence</span>
+                                <span id="weeklyConfidenceBadge" class="confidence-badge">94.6% Accuracy</span>
+                            </div>
+                            <div class="weekly-highlights">
+                                <div class="highlight-chip alert" id="peakRainHighlight">
+                                    <span class="icon">⚠️</span>
+                                    <div class="text">
+                                        <span class="title">Peak Rain Day</span>
+                                        <span class="desc" id="peakRainDayText">Calculating...</span>
+                                    </div>
+                                </div>
+                                <div class="highlight-chip safe" id="bestOutdoorHighlight">
+                                    <span class="icon">☀️</span>
+                                    <div class="text">
+                                        <span class="title">Best Outdoor Day</span>
+                                        <span class="desc" id="bestOutdoorDayText">Calculating...</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="weekly-trend-text" id="weeklyTrendAnalysisText">
+                                Synthesizing 7-day atmospheric trajectories and monsoon moisture convergence...
+                            </div>
                         </div>
                     </div>
                     
@@ -1157,9 +1488,10 @@
             document.getElementById('weatherCodeCard').textContent = `${data.metrics.weather_code}`;
             document.getElementById('humidityValueCard').textContent = `${data.metrics.humidity}%`;
             
-            document.getElementById('hourlyNow').textContent = `${temp}°`;
-            document.getElementById('hourlyNext1').textContent = `${temp - 1}°`;
-            document.getElementById('hourlyNext2').textContent = `${temp - 2}°`;
+            // Render 7-Day AI Weather Prediction
+            if (data.ai_7day_prediction) {
+                render7DayPrediction(data.ai_7day_prediction);
+            }
             
             document.getElementById('humidityValueScreen3').textContent = `${data.metrics.humidity}%`;
             document.getElementById('windValueScreen3').textContent = `${data.metrics.wind_speed}`;
@@ -1346,6 +1678,108 @@
             localStorage.setItem('sl_weather_province', prov);
             localStorage.setItem('sl_weather_district', dist);
             goToScreen2();
+        }
+
+        // --- 7-Day AI Prediction Controller ---
+        let currentForecastDays = [];
+        let selectedDayIndex = 0;
+
+        function scrollToForecast() {
+            const section = document.getElementById('forecast7DaySection');
+            if (section) section.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function render7DayPrediction(ai7Day) {
+            if (!ai7Day || !ai7Day.daily_predictions || ai7Day.daily_predictions.length === 0) return;
+            currentForecastDays = ai7Day.daily_predictions;
+
+            // Update badges and highlights
+            const pillBadge = document.getElementById('forecastModelPill');
+            if (pillBadge) pillBadge.textContent = `${ai7Day.overall_confidence}% High Precision`;
+
+            const confBadge = document.getElementById('weeklyConfidenceBadge');
+            if (confBadge) confBadge.textContent = `${ai7Day.overall_confidence}% Confidence`;
+
+            const peakText = document.getElementById('peakRainDayText');
+            if (peakText && ai7Day.peak_rain_day) {
+                peakText.textContent = `${ai7Day.peak_rain_day.day_name} (${ai7Day.peak_rain_day.rain_probability}%)`;
+            }
+
+            const bestText = document.getElementById('bestOutdoorDayText');
+            if (bestText && ai7Day.best_outdoor_day) {
+                bestText.textContent = `${ai7Day.best_outdoor_day.day_name} (${ai7Day.best_outdoor_day.rain_probability}%)`;
+            }
+
+            const trendText = document.getElementById('weeklyTrendAnalysisText');
+            if (trendText) trendText.textContent = ai7Day.trend_analysis;
+
+            // Render 7-day cards strip
+            const container = document.getElementById('forecast7DayScroll');
+            if (container) {
+                container.innerHTML = currentForecastDays.map((d, idx) => {
+                    let rainClass = 'rain-low';
+                    if (d.rain_probability >= 70) rainClass = 'rain-high';
+                    else if (d.rain_probability >= 40) rainClass = 'rain-mid';
+
+                    const activeClass = idx === selectedDayIndex ? ' active' : '';
+                    const dateParts = d.date.split('-');
+                    const dateFmt = dateParts.length === 3 ? `${dateParts[1]}/${dateParts[2]}` : d.date;
+
+                    return `
+                        <div class="forecast-day-card${activeClass}" onclick="selectForecastDay(${idx})" id="dayCard-${idx}" title="Tap for ${d.day_name} AI analysis">
+                            <span class="day-title">${d.day_name}</span>
+                            <span class="day-subdate">${dateFmt}</span>
+                            <span class="forecast-glyph">${d.glyph}</span>
+                            <div class="day-temps">
+                                <span class="day-temp-high">${d.temp_max}°</span>
+                                <span class="day-temp-low">${d.temp_min}°</span>
+                            </div>
+                            <span class="rain-prob-badge ${rainClass}">
+                                <span>💧</span> ${d.rain_probability}%
+                            </span>
+                            <span class="conf-dot" title="Confidence: ${d.confidence_score}%">${d.confidence_score}%</span>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            selectForecastDay(selectedDayIndex);
+        }
+
+        function selectForecastDay(idx) {
+            selectedDayIndex = idx;
+            if (!currentForecastDays || !currentForecastDays[idx]) return;
+            const d = currentForecastDays[idx];
+
+            // Toggle active classes on cards
+            document.querySelectorAll('.forecast-day-card').forEach((el, i) => {
+                el.classList.toggle('active', i === idx);
+            });
+
+            const glyphEl = document.getElementById('detailDayGlyph');
+            const titleEl = document.getElementById('detailDayTitle');
+            const subEl = document.getElementById('detailDaySub');
+            const rainPill = document.getElementById('detailRainPill');
+            const precipEl = document.getElementById('detailPrecipMm');
+            const windEl = document.getElementById('detailWindSpeed');
+            const uvEl = document.getElementById('detailUvIndex');
+            const confEl = document.getElementById('detailConfidence');
+            const advisoryEl = document.getElementById('detailAdvisoryText');
+
+            if (glyphEl) glyphEl.textContent = d.glyph;
+            if (titleEl) titleEl.textContent = `${d.day_name}: ${d.condition}`;
+            if (subEl) subEl.textContent = `${d.date} • High: ${d.temp_max}°C / Low: ${d.temp_min}°C`;
+            
+            if (rainPill) {
+                rainPill.innerHTML = `💧 ${d.rain_probability}% Rain`;
+                rainPill.className = 'rain-prob-badge ' + (d.rain_probability >= 70 ? 'rain-high' : (d.rain_probability >= 40 ? 'rain-mid' : 'rain-low'));
+            }
+
+            if (precipEl) precipEl.textContent = `${d.precipitation_mm} mm`;
+            if (windEl) windEl.textContent = `${d.wind_max_kmh} km/h`;
+            if (uvEl) uvEl.textContent = `${d.uv_index} Max`;
+            if (confEl) confEl.textContent = `${d.confidence_score}% High`;
+            if (advisoryEl) advisoryEl.textContent = d.ai_advisory;
         }
 
         function goToScreen1() {

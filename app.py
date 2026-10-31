@@ -7,7 +7,7 @@ import pybreaker
 from core.locations import SL_DISTRICTS, get_district_info, find_nearest_district, search_locations
 from core.weather_client import resolve_coordinates, fetch_weather_data, fetch_local_dmc_alerts
 from core.cache import init_db, get_cached_weather, set_cached_weather, add_community_report, get_community_reports
-from core.ai_service import synthesize_weather_context
+from core.ai_service import synthesize_weather_context, generate_7day_ai_prediction
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("SL-Weather-Backend")
@@ -149,8 +149,9 @@ def api_weather():
     # Fetch ground-truth DMC disaster warnings & emergency hotlines
     dmc_alert = fetch_local_dmc_alerts(target_province, target_district)
 
-    # Gemini AI Context Synthesis (Monsoon-Aware & Conflict Resolution)
+    # Gemini AI Context Synthesis & 7-Day Prediction Engine
     ai_context = synthesize_weather_context(target_province, target_district, weather_data, dmc_alert)
+    ai_7day = generate_7day_ai_prediction(target_province, target_district, weather_data, dmc_alert)
 
     # Build mobile-optimized response
     current = weather_data.get("current", {})
@@ -182,13 +183,83 @@ def api_weather():
             "time": daily.get("time", [])[:7],
             "temp_max": daily.get("temperature_2m_max", [])[:7],
             "temp_min": daily.get("temperature_2m_min", [])[:7],
-            "precipitation": daily.get("precipitation_sum", [])[:7]
+            "precipitation": daily.get("precipitation_sum", [])[:7],
+            "precipitation_probability": daily.get("precipitation_probability_max", [])[:7],
+            "weather_code": daily.get("weather_code", [])[:7],
+            "wind_speed_max": daily.get("wind_speed_10m_max", [])[:7]
         },
         "dmc_alert": dmc_alert,
-        "ai_insights": ai_context
+        "ai_insights": ai_context,
+        "ai_7day_prediction": ai_7day
     }
 
     return jsonify(response_payload)
+
+# --- 7-Day AI Weather Prediction Endpoint ---
+
+@app.route("/api/forecast/7day")
+def api_7day_forecast():
+    """
+    High-precision 7-day AI weather prediction endpoint with calibrated rain probabilities.
+    """
+    lat_str = request.args.get("lat")
+    lon_str = request.args.get("lon")
+    district = request.args.get("district")
+    province = request.args.get("province")
+
+    target_lat = None
+    target_lon = None
+    target_district = "Colombo"
+    target_province = "Western"
+
+    if lat_str and lon_str:
+        try:
+            target_lat = float(lat_str)
+            target_lon = float(lon_str)
+            closest_dist, dist_info = find_nearest_district(target_lat, target_lon)
+            target_district = closest_dist
+            target_province = dist_info["province"]
+        except ValueError:
+            return jsonify({"error": "Invalid coordinates"}), 400
+    else:
+        loc = (district or "Colombo").strip()
+        local_info = get_district_info(loc)
+        if local_info:
+            target_district = local_info["district"]
+            target_province = province.strip() if province else local_info["province"]
+            target_lat = local_info["lat"]
+            target_lon = local_info["lon"]
+        else:
+            try:
+                geo = resolve_coordinates(loc)
+                target_district = geo.name
+                target_province = province.strip() if province else "Western"
+                target_lat = geo.latitude
+                target_lon = geo.longitude
+            except ValueError as e:
+                return jsonify({"error": str(e)}), 404
+
+    cache_key = f"{target_district.lower()}"
+    try:
+        raw_weather = fetch_weather_data(target_lat, target_lon)
+        weather_data = {
+            "city": target_district,
+            "province": target_province,
+            "latitude": target_lat,
+            "longitude": target_lon,
+            "current": raw_weather["current"],
+            "daily": raw_weather["daily"]
+        }
+        set_cached_weather(cache_key, weather_data)
+    except Exception as e:
+        weather_data = get_cached_weather(cache_key)
+
+    if not weather_data:
+        return jsonify({"error": "7-day forecast data currently unavailable."}), 503
+
+    dmc_alert = fetch_local_dmc_alerts(target_province, target_district)
+    prediction = generate_7day_ai_prediction(target_province, target_district, weather_data, dmc_alert)
+    return jsonify(prediction)
 
 # --- Mobile Disaster Alerts Endpoint ---
 

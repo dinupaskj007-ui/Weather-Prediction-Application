@@ -21,7 +21,10 @@ class DailyForecast(BaseModel):
     temperature_2m_max: List[float]
     temperature_2m_min: List[float]
     precipitation_sum: List[float]
+    precipitation_probability_max: Optional[List[int]] = None
+    weather_code: Optional[List[int]] = None
     uv_index_max: Optional[List[float]] = None
+    wind_speed_10m_max: Optional[List[float]] = None
 
 class WeatherResponseSchema(BaseModel):
     current: CurrentWeather
@@ -141,7 +144,7 @@ def fetch_weather_data(lat: float, lon: float) -> dict:
     url = (
         f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}"
         "&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m"
-        "&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,uv_index_max"
+        "&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,weather_code,uv_index_max,wind_speed_10m_max"
         "&timezone=Asia/Colombo"
     )
     response = requests.get(url, timeout=5)
