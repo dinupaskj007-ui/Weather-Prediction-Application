@@ -535,93 +535,49 @@
         .hourly-item .temp { font-size: 16px; font-weight: 700; color: var(--bottom-sheet-text); }
 
         /* Modern AI Prediction Trigger Button */
-        /* --- EMERGENCY LIGHT BUTTON (Beacon Look) --- */
+        /* --- EMERGENCY LIGHT BUTTON (Steady Calm Button, No Blink) --- */
         .emergency-light-btn {
             position: relative;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 6px;
-            padding: 5px 11px;
+            padding: 5px 12px;
             height: 38px;
             border-radius: 20px;
-            background: radial-gradient(circle at 35% 35%, rgba(254, 202, 202, 0.25), rgba(220, 38, 38, 0.45));
-            border: 1.5px solid rgba(248, 113, 113, 0.7);
-            box-shadow: 0 0 16px rgba(239, 68, 68, 0.55), inset 0 0 10px rgba(254, 202, 202, 0.35);
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.38);
             cursor: pointer;
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
-            animation: emergencyBeaconStrobe 2s infinite ease-in-out;
+            transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
             outline: none;
             user-select: none;
         }
         .emergency-light-btn:hover {
-            transform: scale(1.08);
-            box-shadow: 0 0 24px rgba(239, 68, 68, 0.85), inset 0 0 14px rgba(254, 202, 202, 0.6);
-            border-color: #fca5a5;
+            transform: translateY(-1px);
+            background: rgba(239, 68, 68, 0.25);
+            border-color: rgba(239, 68, 68, 0.65);
+            box-shadow: 0 4px 14px rgba(239, 68, 68, 0.25);
         }
         .emergency-light-btn:active {
-            transform: scale(0.95);
+            transform: scale(0.96);
         }
         .beacon-icon {
-            font-size: 18px;
+            font-size: 16px;
             line-height: 1;
             display: inline-block;
-            animation: beaconSirenWobble 2s infinite ease-in-out;
-            filter: drop-shadow(0 0 4px #ef4444);
-        }
-        .beacon-pulse-ring {
-            position: absolute;
-            top: -3px;
-            left: -3px;
-            right: -3px;
-            bottom: -3px;
-            border-radius: 24px;
-            border: 1.5px solid rgba(239, 68, 68, 0.75);
-            animation: beaconPulseRing 2s infinite ease-out;
-            pointer-events: none;
         }
         .beacon-badge {
             font-size: 10px;
-            font-weight: 800;
+            font-weight: 700;
             letter-spacing: 0.5px;
             text-transform: uppercase;
             color: #ffffff;
-            background: rgba(220, 38, 38, 0.9);
-            padding: 2px 6px;
+            background: rgba(220, 38, 38, 0.85);
+            padding: 2px 7px;
             border-radius: 10px;
-            box-shadow: 0 0 8px rgba(239, 68, 68, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-        @keyframes emergencyBeaconStrobe {
-            0%, 100% {
-                box-shadow: 0 0 10px rgba(239, 68, 68, 0.4), inset 0 0 6px rgba(254, 202, 202, 0.2);
-                border-color: rgba(248, 113, 113, 0.6);
-            }
-            50% {
-                box-shadow: 0 0 24px rgba(239, 68, 68, 0.9), 0 0 35px rgba(245, 158, 11, 0.5), inset 0 0 12px rgba(254, 202, 202, 0.6);
-                border-color: rgba(254, 202, 202, 0.95);
-            }
-        }
-        @keyframes beaconPulseRing {
-            0% {
-                transform: scale(0.96);
-                opacity: 0.85;
-            }
-            70% {
-                transform: scale(1.26);
-                opacity: 0;
-            }
-            100% {
-                transform: scale(1.28);
-                opacity: 0;
-            }
-        }
-        @keyframes beaconSirenWobble {
-            0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(-7deg) scale(1.08); }
-            75% { transform: rotate(7deg) scale(1.08); }
+            border: 1px solid rgba(255, 255, 255, 0.25);
         }
 
         .btn-ai-prediction {
@@ -1147,7 +1103,6 @@
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <!-- EMERGENCY LIGHT BUTTON FOR COMMUNITY HAZARD REPORTS -->
                         <button class="emergency-light-btn" id="emergencyBeaconBtn" onclick="openCommunityReportsModal()" title="Community Hazard Reports & Emergency Live Feed">
-                            <span class="beacon-pulse-ring"></span>
                             <span class="beacon-icon">🚨</span>
                             <span class="beacon-badge" id="emergencyReportsBadge">Live</span>
                         </button>
