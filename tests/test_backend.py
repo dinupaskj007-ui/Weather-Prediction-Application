@@ -130,3 +130,33 @@ def test_community_reports_get_and_post(client):
     filtered_data = res_filtered.get_json()
     user_names = [r["user_name"] for r in filtered_data["reports"]]
     assert "Kasun Perera" in user_names
+
+
+def test_api_weather_7day_prediction(client):
+    """Test 7-day AI weather prediction attached to /api/weather."""
+    res = client.get("/api/weather?district=Colombo&province=Western")
+    assert res.status_code == 200
+    data = res.get_json()
+    assert "ai_7day_prediction" in data
+    pred = data["ai_7day_prediction"]
+    assert pred["status"] == "success"
+    assert "daily_predictions" in pred
+    assert len(pred["daily_predictions"]) == 7
+    assert "peak_rain_day" in pred
+    assert "best_outdoor_day" in pred
+    assert pred["overall_confidence"] >= 80.0
+    day0 = pred["daily_predictions"][0]
+    assert day0["day_name"] == "Today"
+    assert "rain_probability" in day0
+    assert "confidence_score" in day0
+    assert "ai_advisory" in day0
+
+def test_api_7day_forecast_endpoint(client):
+    """Test dedicated /api/forecast/7day endpoint."""
+    res = client.get("/api/forecast/7day?district=Kandy&province=Central")
+    assert res.status_code == 200
+    data = res.get_json()
+    assert data["status"] == "success"
+    assert data["district"] == "Kandy"
+    assert len(data["daily_predictions"]) == 7
+    assert data["overall_confidence"] >= 80.0
