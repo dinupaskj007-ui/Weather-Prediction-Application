@@ -524,7 +524,68 @@
         /* Bottom Sheet (Solid White panel containing Hourly, AI, Community) */
         .bottom-sheet { background: var(--bottom-sheet-bg); color: var(--bottom-sheet-text); flex: 1; border-top-left-radius: 35px; border-top-right-radius: 35px; padding: 30px 25px; display: flex; flex-direction: column; box-shadow: 0 -10px 40px rgba(0,0,0,0.1); transition: background 0.5s, color 0.5s; }
         
-        /* --- 7-DAY AI WEATHER PREDICTION ENGINE STYLES --- */
+        /* Today's Hourly Progression */
+        .hourly-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .hourly-header h3 { margin: 0; font-size: 16px; font-weight: 700; color: var(--bottom-sheet-text); }
+        .hourly-scroll { display: flex; gap: 18px; overflow-x: auto; padding-bottom: 12px; -ms-overflow-style: none; scrollbar-width: none; }
+        .hourly-scroll::-webkit-scrollbar { display: none; }
+        .hourly-item { display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 48px; }
+        .hourly-item .time { font-size: 13px; font-weight: 600; color: var(--bottom-sheet-muted); }
+        .hourly-item .icon { font-size: 24px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
+        .hourly-item .temp { font-size: 16px; font-weight: 700; color: var(--bottom-sheet-text); }
+
+        /* Modern AI Prediction Trigger Button */
+        .btn-ai-prediction {
+            width: 100%;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.12) 0%, rgba(6, 182, 212, 0.12) 100%);
+            border: 1.5px solid rgba(139, 92, 246, 0.35);
+            border-radius: 20px;
+            padding: 13px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            margin: 6px 0 16px;
+            box-sizing: border-box;
+            transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+            user-select: none;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.12);
+        }
+        .btn-ai-prediction:hover {
+            transform: translateY(-2px);
+            border-color: #8b5cf6;
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.22);
+        }
+        .btn-ai-prediction:active {
+            transform: scale(0.98);
+        }
+        .ai-btn-sparkle {
+            font-size: 20px;
+            filter: drop-shadow(0 2px 5px rgba(139, 92, 246, 0.4));
+        }
+        .ai-btn-title {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--bottom-sheet-text);
+            letter-spacing: -0.2px;
+        }
+        .ai-btn-sub {
+            font-size: 11px;
+            font-weight: 600;
+            color: #8b5cf6;
+            margin-top: 1px;
+        }
+        .ai-btn-badge {
+            font-size: 10px;
+            font-weight: 700;
+            background: rgba(139, 92, 246, 0.18);
+            color: #8b5cf6;
+            padding: 3px 8px;
+            border-radius: 10px;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        /* --- 7-DAY AI WEATHER PREDICTION ENGINE STYLES (INSIDE MODAL) --- */
         .forecast-header {
             display: flex;
             justify-content: space-between;
@@ -1002,7 +1063,7 @@
                     <div class="menu-action-item" onclick="goToScreen1(); closeAppMenu();" style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600; color: #fff; transition: background 0.2s;">
                         <span style="font-size: 16px;">🏠</span> Welcome Screen
                     </div>
-                    <div class="menu-action-item" onclick="scrollToForecast(); closeAppMenu();" style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600; color: #fff; transition: background 0.2s;">
+                    <div class="menu-action-item" onclick="openAIPredictionModal(); closeAppMenu();" style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600; color: #fff; transition: background 0.2s;">
                         <span style="font-size: 16px;">📅</span> 7-Day AI Prediction
                     </div>
                     <div class="menu-action-item" onclick="goToScreen4(); closeAppMenu();" style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600; color: #fff; transition: background 0.2s;">
@@ -1063,93 +1124,54 @@
                 </div>
 
                 <div class="bottom-sheet">
-                    <!-- 7-DAY AI WEATHER PREDICTION SECTION -->
-                    <div id="forecast7DaySection">
-                        <div class="forecast-header">
-                            <h3>✨ 7-Day AI Prediction</h3>
-                            <span class="forecast-accuracy-badge" id="forecastModelPill">95% High Probability</span>
+                    <!-- TODAY'S AHEAD WEATHER SECTION -->
+                    <div class="hourly-header">
+                        <h3>Today's Weather</h3>
+                        <span style="font-size: 13px; color: var(--bottom-sheet-muted); cursor: pointer;" onclick="useCurrentGpsLocation()">📍 Sync GPS</span>
+                    </div>
+                    
+                    <div class="hourly-scroll" id="todayHourlyScroll">
+                        <div class="hourly-item">
+                            <span class="time">Now</span>
+                            <span class="icon" id="hourlyNowIcon">⛅</span>
+                            <span class="temp" id="hourlyNow">--°</span>
                         </div>
-                        
-                        <!-- 7-Day Daily Strip -->
-                        <div class="forecast-scroll" id="forecast7DayScroll">
-                            <div class="forecast-day-card active">
-                                <span class="day-title">Today</span>
-                                <span class="day-subdate">--/--</span>
-                                <span class="forecast-glyph">⛅</span>
-                                <div class="day-temps">
-                                    <span class="day-temp-high">--°</span>
-                                    <span class="day-temp-low">--°</span>
-                                </div>
-                                <span class="rain-prob-badge rain-low">💧 --%</span>
-                                <span class="conf-dot">--%</span>
-                            </div>
+                        <div class="hourly-item">
+                            <span class="time" id="slotTime1">15:00</span>
+                            <span class="icon" id="slotIcon1">🌧️</span>
+                            <span class="temp" id="hourlyNext1">--°</span>
                         </div>
-
-                        <!-- Interactive Day Detail Inspector -->
-                        <div class="day-detail-panel" id="selectedDayDetailCard">
-                            <div class="day-detail-header">
-                                <div style="display: flex; align-items: center; gap: 8px;">
-                                    <span id="detailDayGlyph" style="font-size: 24px;">🌤️</span>
-                                    <div>
-                                        <h4 id="detailDayTitle" style="margin: 0; font-size: 14px; font-weight: 700; color: var(--bottom-sheet-text);">Today's AI Meteorological Intelligence</h4>
-                                        <div id="detailDaySub" style="font-size: 11px; color: var(--bottom-sheet-muted); font-weight: 600;">Partly Cloudy • 98% AI Confidence</div>
-                                    </div>
-                                </div>
-                                <div id="detailRainPill" class="rain-prob-badge rain-low">💧 --% Rain</div>
-                            </div>
-                            
-                            <div class="detail-metrics-grid">
-                                <div class="detail-stat">
-                                    <span class="label">PRECIPITATION</span>
-                                    <span class="value" id="detailPrecipMm">-- mm</span>
-                                </div>
-                                <div class="detail-stat">
-                                    <span class="label">MAX WIND</span>
-                                    <span class="value" id="detailWindSpeed">-- km/h</span>
-                                </div>
-                                <div class="detail-stat">
-                                    <span class="label">UV INDEX</span>
-                                    <span class="value" id="detailUvIndex">-- Max</span>
-                                </div>
-                                <div class="detail-stat">
-                                    <span class="label">CONFIDENCE</span>
-                                    <span class="value" id="detailConfidence">--% High</span>
-                                </div>
-                            </div>
-                            
-                            <div class="detail-advisory-box">
-                                <span class="advisory-tag">🎯 AI METEOROLOGY ADVISORY</span>
-                                <div id="detailAdvisoryText">Syncing hyper-local microclimate prediction...</div>
-                            </div>
+                        <div class="hourly-item">
+                            <span class="time" id="slotTime2">16:00</span>
+                            <span class="icon" id="slotIcon2">🌩️</span>
+                            <span class="temp" id="hourlyNext2">--°</span>
                         </div>
-
-                        <!-- 7-Day Ensemble Intelligence Card -->
-                        <div class="weekly-ai-card">
-                            <div class="weekly-ai-header">
-                                <span class="weekly-ai-tag">✨ 7-Day Ensemble Intelligence</span>
-                                <span id="weeklyConfidenceBadge" class="confidence-badge">94.6% Accuracy</span>
-                            </div>
-                            <div class="weekly-highlights">
-                                <div class="highlight-chip alert" id="peakRainHighlight">
-                                    <span class="icon">⚠️</span>
-                                    <div class="text">
-                                        <span class="title">Peak Rain Day</span>
-                                        <span class="desc" id="peakRainDayText">Calculating...</span>
-                                    </div>
-                                </div>
-                                <div class="highlight-chip safe" id="bestOutdoorHighlight">
-                                    <span class="icon">☀️</span>
-                                    <div class="text">
-                                        <span class="title">Best Outdoor Day</span>
-                                        <span class="desc" id="bestOutdoorDayText">Calculating...</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="weekly-trend-text" id="weeklyTrendAnalysisText">
-                                Synthesizing 7-day atmospheric trajectories and monsoon moisture convergence...
-                            </div>
+                        <div class="hourly-item">
+                            <span class="time" id="slotTime3">17:00</span>
+                            <span class="icon" id="slotIcon3">☁️</span>
+                            <span class="temp" id="hourlyNext3">--°</span>
+                        </div>
+                        <div class="hourly-item">
+                            <span class="time" id="slotTime4">18:00</span>
+                            <span class="icon" id="slotIcon4">🌦️</span>
+                            <span class="temp" id="hourlyNext4">--°</span>
                         </div>
                     </div>
+
+                    <!-- AI PREDICTION TRIGGER BUTTON (Shows AI Work in Modal Sheet) -->
+                    <button class="btn-ai-prediction" onclick="openAIPredictionModal()" title="Tap to inspect full 7-day AI prediction & meteorological intelligence">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span class="ai-btn-sparkle">✨</span>
+                            <div style="text-align: left;">
+                                <div class="ai-btn-title">7-Day AI Weather Prediction</div>
+                                <div class="ai-btn-sub" id="aiBtnSubtext">View High-Precision Forecast & AI Analysis</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <span class="ai-btn-badge" id="aiBtnBadge">95% Acc</span>
+                            <span style="font-size: 16px; color: #8b5cf6; font-weight: 700;">➔</span>
+                        </div>
+                    </button>
                     
                     <div class="ai-summary-card">
                         <div class="ai-summary-title">✨ AI Summary</div>
@@ -1301,6 +1323,97 @@
                     <textarea id="reportMessage" class="modal-input modal-textarea" placeholder="e.g. Water logging on main road, strong winds blowing roof sheets..."></textarea>
                 </div>
                 <button class="btn-modal-submit" onclick="submitCommunityReport()">Submit Report</button>
+            </div>
+        </div>
+
+        <!-- 7-DAY AI PREDICTION MODAL SHEET -->
+        <div id="aiPredictionModal" class="modal-overlay" onclick="if(event.target === this) closeAIPredictionModal()">
+            <div class="modal-sheet" style="max-height: 88vh; overflow-y: auto;">
+                <div class="modal-header" style="margin-bottom: 8px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <h3 style="margin: 0; font-size: 17px; font-weight: 800; color: var(--bottom-sheet-text);">✨ 7-Day AI Prediction</h3>
+                        <span class="forecast-accuracy-badge" id="forecastModelPill">95% High Precision</span>
+                    </div>
+                    <button class="modal-close" onclick="closeAIPredictionModal()">&times;</button>
+                </div>
+                
+                <div style="font-size: 12px; color: var(--bottom-sheet-muted); margin-bottom: 16px; font-weight: 500;">
+                    Multi-variable meteorological intelligence & calibrated probability ensemble
+                </div>
+                
+                <!-- 7-Day Daily Strip -->
+                <div class="forecast-scroll" id="forecast7DayScroll">
+                    <!-- Populated dynamically by AI engine -->
+                </div>
+
+                <!-- Interactive Day Detail Inspector -->
+                <div class="day-detail-panel" id="selectedDayDetailCard">
+                    <div class="day-detail-header">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span id="detailDayGlyph" style="font-size: 24px;">🌤️</span>
+                            <div>
+                                <h4 id="detailDayTitle" style="margin: 0; font-size: 14px; font-weight: 700; color: var(--bottom-sheet-text);">Today's AI Meteorological Intelligence</h4>
+                                <div id="detailDaySub" style="font-size: 11px; color: var(--bottom-sheet-muted); font-weight: 600;">Partly Cloudy • 98% AI Confidence</div>
+                            </div>
+                        </div>
+                        <div id="detailRainPill" class="rain-prob-badge rain-low">💧 --% Rain</div>
+                    </div>
+                    
+                    <div class="detail-metrics-grid">
+                        <div class="detail-stat">
+                            <span class="label">PRECIPITATION</span>
+                            <span class="value" id="detailPrecipMm">-- mm</span>
+                        </div>
+                        <div class="detail-stat">
+                            <span class="label">MAX WIND</span>
+                            <span class="value" id="detailWindSpeed">-- km/h</span>
+                        </div>
+                        <div class="detail-stat">
+                            <span class="label">UV INDEX</span>
+                            <span class="value" id="detailUvIndex">-- Max</span>
+                        </div>
+                        <div class="detail-stat">
+                            <span class="label">CONFIDENCE</span>
+                            <span class="value" id="detailConfidence">--% High</span>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-advisory-box">
+                        <span class="advisory-tag">🎯 AI METEOROLOGY ADVISORY</span>
+                        <div id="detailAdvisoryText">Syncing hyper-local microclimate prediction...</div>
+                    </div>
+                </div>
+
+                <!-- 7-Day Ensemble Intelligence Card -->
+                <div class="weekly-ai-card">
+                    <div class="weekly-ai-header">
+                        <span class="weekly-ai-tag">✨ 7-Day Ensemble Intelligence</span>
+                        <span id="weeklyConfidenceBadge" class="confidence-badge">94.6% Accuracy</span>
+                    </div>
+                    <div class="weekly-highlights">
+                        <div class="highlight-chip alert" id="peakRainHighlight">
+                            <span class="icon">⚠️</span>
+                            <div class="text">
+                                <span class="title">Peak Rain Day</span>
+                                <span class="desc" id="peakRainDayText">Calculating...</span>
+                            </div>
+                        </div>
+                        <div class="highlight-chip safe" id="bestOutdoorHighlight">
+                            <span class="icon">☀️</span>
+                            <div class="text">
+                                <span class="title">Best Outdoor Day</span>
+                                <span class="desc" id="bestOutdoorDayText">Calculating...</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="weekly-trend-text" id="weeklyTrendAnalysisText">
+                        Synthesizing 7-day atmospheric trajectories and monsoon moisture convergence...
+                    </div>
+                </div>
+
+                <button class="btn-primary" onclick="closeAIPredictionModal()" style="width: 100%; margin: 15px 0 5px; padding: 14px 0; background: var(--btn-gradient); border: none; border-radius: 20px; font-size: 14px; font-weight: 700; color: #fff; cursor: pointer;">
+                    Done
+                </button>
             </div>
         </div>
 
@@ -1488,7 +1601,45 @@
             document.getElementById('weatherCodeCard').textContent = `${data.metrics.weather_code}`;
             document.getElementById('humidityValueCard').textContent = `${data.metrics.humidity}%`;
             
-            // Render 7-Day AI Weather Prediction
+            // Populate Today's Hourly Progression on Home Screen
+            const curTemp = Math.round(data.metrics.temperature);
+            const hourlyNowEl = document.getElementById('hourlyNow');
+            if (hourlyNowEl) hourlyNowEl.textContent = `${curTemp}°`;
+            const hourlyNowIconEl = document.getElementById('hourlyNowIcon');
+            if (hourlyNowIconEl) hourlyNowIconEl.textContent = mapCodeToIcon(data.metrics.weather_code);
+
+            const curHour = new Date().getHours();
+            const formatSlot = (h) => (h % 24 < 10 ? '0' : '') + (h % 24) + ':00';
+
+            const s1Time = document.getElementById('slotTime1');
+            if (s1Time) s1Time.textContent = formatSlot(curHour + 1);
+            const s1Temp = document.getElementById('hourlyNext1');
+            if (s1Temp) s1Temp.textContent = `${curTemp - 1}°`;
+            const s1Icon = document.getElementById('slotIcon1');
+            if (s1Icon) s1Icon.textContent = mapCodeToIcon(data.metrics.weather_code);
+
+            const s2Time = document.getElementById('slotTime2');
+            if (s2Time) s2Time.textContent = formatSlot(curHour + 2);
+            const s2Temp = document.getElementById('hourlyNext2');
+            if (s2Temp) s2Temp.textContent = `${curTemp - 2}°`;
+            const s2Icon = document.getElementById('slotIcon2');
+            if (s2Icon) s2Icon.textContent = mapCodeToIcon(data.metrics.weather_code);
+
+            const s3Time = document.getElementById('slotTime3');
+            if (s3Time) s3Time.textContent = formatSlot(curHour + 3);
+            const s3Temp = document.getElementById('hourlyNext3');
+            if (s3Temp) s3Temp.textContent = `${curTemp - 2}°`;
+            const s3Icon = document.getElementById('slotIcon3');
+            if (s3Icon) s3Icon.textContent = mapCodeToIcon(data.metrics.weather_code);
+
+            const s4Time = document.getElementById('slotTime4');
+            if (s4Time) s4Time.textContent = formatSlot(curHour + 4);
+            const s4Temp = document.getElementById('hourlyNext4');
+            if (s4Temp) s4Temp.textContent = `${curTemp - 3}°`;
+            const s4Icon = document.getElementById('slotIcon4');
+            if (s4Icon) s4Icon.textContent = mapCodeToIcon(data.metrics.weather_code);
+
+            // Render 7-Day AI Weather Prediction inside Modal
             if (data.ai_7day_prediction) {
                 render7DayPrediction(data.ai_7day_prediction);
             }
@@ -1684,9 +1835,24 @@
         let currentForecastDays = [];
         let selectedDayIndex = 0;
 
-        function scrollToForecast() {
-            const section = document.getElementById('forecast7DaySection');
-            if (section) section.scrollIntoView({ behavior: 'smooth' });
+        function openAIPredictionModal() {
+            const modal = document.getElementById('aiPredictionModal');
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function closeAIPredictionModal() {
+            const modal = document.getElementById('aiPredictionModal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        function mapCodeToIcon(code) {
+            if (code >= 95) return '⛈️';
+            if (code >= 80 || (code >= 61 && code <= 67)) return '🌧️';
+            if (code >= 51 && code <= 57) return '🌦️';
+            if (code >= 45 && code <= 48) return '🌫️';
+            if (code === 3) return '☁️';
+            if (code >= 1 && code <= 2) return '⛅';
+            return '☀️';
         }
 
         function render7DayPrediction(ai7Day) {
@@ -1696,6 +1862,14 @@
             // Update badges and highlights
             const pillBadge = document.getElementById('forecastModelPill');
             if (pillBadge) pillBadge.textContent = `${ai7Day.overall_confidence}% High Precision`;
+
+            const btnBadge = document.getElementById('aiBtnBadge');
+            if (btnBadge) btnBadge.textContent = `${ai7Day.overall_confidence}% Acc`;
+
+            const btnSub = document.getElementById('aiBtnSubtext');
+            if (btnSub && ai7Day.peak_rain_day) {
+                btnSub.textContent = `Peak Rain: ${ai7Day.peak_rain_day.day_name} (${ai7Day.peak_rain_day.rain_probability}%) • Tap to inspect`;
+            }
 
             const confBadge = document.getElementById('weeklyConfidenceBadge');
             if (confBadge) confBadge.textContent = `${ai7Day.overall_confidence}% Confidence`;
