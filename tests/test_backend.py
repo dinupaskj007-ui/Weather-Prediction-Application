@@ -1,13 +1,24 @@
 import pytest
-import json
 from app import app
-from core.locations import find_nearest_district, search_locations, get_district_info
+from core.locations import find_nearest_district, search_locations
 
 @pytest.fixture
 def client():
     app.config["TESTING"] = True
     with app.test_client() as client:
         yield client
+
+
+def test_index_page(client):
+    """Test web root route serves the dashboard HTML with required widgets."""
+    res = client.get("/")
+    assert res.status_code == 200
+    html = res.get_data(as_text=True)
+    assert "Today's Weather" in html
+    assert "todayHourlyScroll" in html
+    assert "btn-ai-prediction" in html
+    assert "aiPredictionModal" in html
+    assert "openAIPredictionModal" in html
 
 def test_health_endpoint(client):
     """Test mobile health check endpoint."""

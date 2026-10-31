@@ -2,38 +2,56 @@ name: Python CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "working" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "working" ]
+  workflow_dispatch:
 
 jobs:
-  build:
+  test:
+    name: Test & Lint (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
 
     steps:
     - uses: actions/checkout@v4
-    
-    - name: Set up Python 3.11
+
+    - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
-        python-version: "3.11"
+        python-version: ${{ matrix.python-version }}
         cache: 'pip'
-        
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-        # Install linting and testing tools
         pip install flake8 pytest
-        
-    - name: Lint with flake8
-      run: |
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --exclude=venv --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings
-        flake8 . --exclude=venv --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-        
-    - name: Test with pytest
-      run: |
-        python -m pytest -v
 
+    - name: Lint with flake8 (syntax & undefined names)
+      run: |
+        # Stop the build if there are Python syntax errors or undefined variables/names
+        flake8 . --exclude=.git,__pycache__,venv,.venv,.pytest_cache,scratch --count --select=E9,F63,F7,F82 --show-source --statistics
+
+    - name: Lint with flake8 (style & complexity warnings)
+      run: |
+        # Informational check: treat warnings as non-fatal exit-zero
+        flake8 . --exclude=.git,__pycache__,venv,.venv,.pytest_cache,scratch --count --exit-zero --max-complexity=15 --max-line-length=127 --statistics
+
+    - name: Validate Service Worker Syntax
+      run: |
+        node --check static/sw.js
+
+    - name: Validate Frontend Assets & Template Integrity
+      run: |
+        python scripts/validate_frontend.py
+
+    - name: Test with pytest
+      env:
+        FLASK_ENV: testing
+        TESTING: "True"
+      run: |
+        python -m pytest -v --tb=short
