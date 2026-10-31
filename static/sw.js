@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sl-weather-v7';
+const CACHE_NAME = 'sl-weather-v8';
 const ASSETS_TO_CACHE = [
   '/',
   '/static/manifest.json',

@@ -19,6 +19,9 @@ def test_index_page(client):
     assert "btn-ai-prediction" in html
     assert "aiPredictionModal" in html
     assert "openAIPredictionModal" in html
+    assert "emergencyBeaconBtn" in html
+    assert "communityReportsModal" in html
+    assert "openCommunityReportsModal" in html
 
 def test_health_endpoint(client):
     """Test mobile health check endpoint."""
