@@ -1,6 +1,6 @@
 import pytest
 from app import app
-from core.locations import find_nearest_district, search_locations
+from core.locations import find_nearest_district, search_locations, get_city_info
 
 @pytest.fixture
 def client():
@@ -174,3 +174,45 @@ def test_api_7day_forecast_endpoint(client):
     assert data["district"] == "Kandy"
     assert len(data["daily_predictions"]) == 7
     assert data["overall_confidence"] >= 80.0
+
+
+def test_city_search_and_lookup():
+    """Test searching and looking up cities across Sri Lankan districts."""
+    # Negombo in Gampaha
+    res_negombo = search_locations("Negombo")
+    assert len(res_negombo) >= 1
+    assert res_negombo[0]["city"] == "Negombo"
+    assert res_negombo[0]["district"] == "Gampaha"
+    assert res_negombo[0]["province"] == "Western"
+
+    # Direct city lookup
+    info = get_city_info("Hikkaduwa")
+    assert info is not None
+    assert info["district"] == "Galle"
+    assert info["province"] == "Southern"
+
+    # Hatton in Nuwara Eliya
+    res_hatton = search_locations("Hatton")
+    assert len(res_hatton) >= 1
+    assert res_hatton[0]["district"] == "Nuwara Eliya"
+
+
+def test_api_weather_city(client):
+    """Test /api/weather with specific city query (Negombo, Gampaha District)."""
+    res = client.get("/api/weather?city=Negombo")
+    assert res.status_code == 200
+    data = res.get_json()
+    assert data["status"] == "success"
+    assert data["location"]["city"] == "Negombo"
+    assert data["location"]["district"] == "Gampaha"
+    assert data["location"]["province"] == "Western"
+    assert "metrics" in data
+
+
+def test_api_forecast_7day_city(client):
+    """Test /api/forecast/7day with specific city query (Kataragama)."""
+    res = client.get("/api/forecast/7day?city=Kataragama")
+    assert res.status_code == 200
+    data = res.get_json()
+    assert data["status"] == "success"
+    assert len(data["daily_predictions"]) == 7
