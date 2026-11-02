@@ -1,10 +1,12 @@
-import os
 import logging
 from flask import Flask, request, jsonify, render_template, send_from_directory
 from flask_cors import CORS
 import pybreaker
 
-from core.locations import SL_DISTRICTS, get_district_info, find_nearest_district, search_locations
+from core.locations import (
+    SL_DISTRICTS, SL_DISTRICT_CITIES, get_district_info, get_city_info, get_location_info,
+    find_nearest_district, search_locations
+)
 from core.weather_client import resolve_coordinates, fetch_weather_data, fetch_local_dmc_alerts
 from core.cache import init_db, get_cached_weather, set_cached_weather, add_community_report, get_community_reports
 from core.ai_service import synthesize_weather_context, generate_7day_ai_prediction
@@ -79,6 +81,7 @@ def api_weather():
     target_lon = None
     target_district = "Colombo"
     target_province = "Western"
+    target_city = None
     microclimate = "Urban Coastal"
     distance_km = None
 
@@ -97,30 +100,47 @@ def api_weather():
 
     # Case 2: District or City name provided
     else:
-        location_query = district or city or "Colombo"
-        location_query = location_query.strip()
-        local_info = get_district_info(location_query)
+        if city and city.strip():
+            city_query = city.strip()
+            city_match = get_city_info(city_query)
+            if city_match:
+                target_city = city_match["city"]
+                target_district = city_match["district"]
+                target_province = province.strip() if province else city_match["province"]
+                target_lat = city_match["lat"]
+                target_lon = city_match["lon"]
+                microclimate = city_match["microclimate"]
 
-        if local_info:
-            target_district = local_info["district"]
-            target_province = province.strip() if province else local_info["province"]
-            target_lat = local_info["lat"]
-            target_lon = local_info["lon"]
-            microclimate = local_info["microclimate"]
-        else:
-            try:
-                geo = resolve_coordinates(location_query)
-                target_district = geo.name
-                target_province = province.strip() if province else "Western"
-                target_lat = geo.latitude
-                target_lon = geo.longitude
-            except ValueError as e:
-                return jsonify({"error": str(e)}), 404
+        if not target_lat:
+            location_query = district or city or "Colombo"
+            location_query = location_query.strip()
+            loc_info = get_location_info(location_query)
+
+            if loc_info:
+                target_city = loc_info.get("city")
+                target_district = loc_info["district"]
+                target_province = province.strip() if province else loc_info["province"]
+                target_lat = loc_info["lat"]
+                target_lon = loc_info["lon"]
+                microclimate = loc_info["microclimate"]
+            else:
+                try:
+                    geo = resolve_coordinates(location_query)
+                    target_district = geo.name
+                    target_province = province.strip() if province else "Western"
+                    target_lat = geo.latitude
+                    target_lon = geo.longitude
+                except ValueError as e:
+                    return jsonify({"error": str(e)}), 404
 
     # Fetch weather data with Circuit Breaker & Offline SQLite Fallback
     weather_data = None
     is_cached = False
-    cache_key = f"{target_district.lower()}"
+    cache_key = (
+        f"{target_city.lower()}_{target_district.lower()}"
+        if target_city
+        else f"{target_district.lower()}"
+    )
 
     try:
         raw_weather = fetch_weather_data(target_lat, target_lon)
@@ -163,6 +183,7 @@ def api_weather():
         "status": "success",
         "source": "cache" if is_cached else "live",
         "location": {
+            "city": target_city,
             "district": target_district,
             "province": target_province,
             "microclimate": microclimate,
@@ -206,11 +227,13 @@ def api_7day_forecast():
     lon_str = request.args.get("lon")
     district = request.args.get("district")
     province = request.args.get("province")
+    city = request.args.get("city")
 
     target_lat = None
     target_lon = None
     target_district = "Colombo"
     target_province = "Western"
+    target_city = None
 
     if lat_str and lon_str:
         try:
@@ -222,22 +245,33 @@ def api_7day_forecast():
         except ValueError:
             return jsonify({"error": "Invalid coordinates"}), 400
     else:
-        loc = (district or "Colombo").strip()
-        local_info = get_district_info(loc)
-        if local_info:
-            target_district = local_info["district"]
-            target_province = province.strip() if province else local_info["province"]
-            target_lat = local_info["lat"]
-            target_lon = local_info["lon"]
-        else:
-            try:
-                geo = resolve_coordinates(loc)
-                target_district = geo.name
-                target_province = province.strip() if province else "Western"
-                target_lat = geo.latitude
-                target_lon = geo.longitude
-            except ValueError as e:
-                return jsonify({"error": str(e)}), 404
+        if city and city.strip():
+            city_match = get_city_info(city.strip())
+            if city_match:
+                target_city = city_match["city"]
+                target_district = city_match["district"]
+                target_province = province.strip() if province else city_match["province"]
+                target_lat = city_match["lat"]
+                target_lon = city_match["lon"]
+
+        if not target_lat:
+            loc = (district or city or "Colombo").strip()
+            local_info = get_location_info(loc)
+            if local_info:
+                target_city = local_info.get("city")
+                target_district = local_info["district"]
+                target_province = province.strip() if province else local_info["province"]
+                target_lat = local_info["lat"]
+                target_lon = local_info["lon"]
+            else:
+                try:
+                    geo = resolve_coordinates(loc)
+                    target_district = geo.name
+                    target_province = province.strip() if province else "Western"
+                    target_lat = geo.latitude
+                    target_lon = geo.longitude
+                except ValueError as e:
+                    return jsonify({"error": str(e)}), 404
 
     cache_key = f"{target_district.lower()}"
     try:
@@ -337,14 +371,19 @@ def api_reports():
 @app.route("/api/locations")
 def api_locations():
     """Returns all 25 Sri Lankan districts and microclimate descriptions for mobile caching."""
+    seen = set()
     locations_list = []
     for name, data in SL_DISTRICTS.items():
+        if name in seen or (name == "Moneragala" and "Monaragala" in seen):
+            continue
+        seen.add(name)
         locations_list.append({
             "district": name,
             "province": data["province"],
             "lat": data["lat"],
             "lon": data["lon"],
-            "microclimate": data["microclimate"]
+            "microclimate": data["microclimate"],
+            "cities": SL_DISTRICT_CITIES.get(name, [name])
         })
     return jsonify({
         "status": "success",

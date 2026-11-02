@@ -535,93 +535,49 @@
         .hourly-item .temp { font-size: 16px; font-weight: 700; color: var(--bottom-sheet-text); }
 
         /* Modern AI Prediction Trigger Button */
-        /* --- EMERGENCY LIGHT BUTTON (Beacon Look) --- */
+        /* --- EMERGENCY LIGHT BUTTON (Steady Calm Button, No Blink) --- */
         .emergency-light-btn {
             position: relative;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 6px;
-            padding: 5px 11px;
+            padding: 5px 12px;
             height: 38px;
             border-radius: 20px;
-            background: radial-gradient(circle at 35% 35%, rgba(254, 202, 202, 0.25), rgba(220, 38, 38, 0.45));
-            border: 1.5px solid rgba(248, 113, 113, 0.7);
-            box-shadow: 0 0 16px rgba(239, 68, 68, 0.55), inset 0 0 10px rgba(254, 202, 202, 0.35);
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.38);
             cursor: pointer;
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
-            animation: emergencyBeaconStrobe 2s infinite ease-in-out;
+            transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
             outline: none;
             user-select: none;
         }
         .emergency-light-btn:hover {
-            transform: scale(1.08);
-            box-shadow: 0 0 24px rgba(239, 68, 68, 0.85), inset 0 0 14px rgba(254, 202, 202, 0.6);
-            border-color: #fca5a5;
+            transform: translateY(-1px);
+            background: rgba(239, 68, 68, 0.25);
+            border-color: rgba(239, 68, 68, 0.65);
+            box-shadow: 0 4px 14px rgba(239, 68, 68, 0.25);
         }
         .emergency-light-btn:active {
-            transform: scale(0.95);
+            transform: scale(0.96);
         }
         .beacon-icon {
-            font-size: 18px;
+            font-size: 16px;
             line-height: 1;
             display: inline-block;
-            animation: beaconSirenWobble 2s infinite ease-in-out;
-            filter: drop-shadow(0 0 4px #ef4444);
-        }
-        .beacon-pulse-ring {
-            position: absolute;
-            top: -3px;
-            left: -3px;
-            right: -3px;
-            bottom: -3px;
-            border-radius: 24px;
-            border: 1.5px solid rgba(239, 68, 68, 0.75);
-            animation: beaconPulseRing 2s infinite ease-out;
-            pointer-events: none;
         }
         .beacon-badge {
             font-size: 10px;
-            font-weight: 800;
+            font-weight: 700;
             letter-spacing: 0.5px;
             text-transform: uppercase;
             color: #ffffff;
-            background: rgba(220, 38, 38, 0.9);
-            padding: 2px 6px;
+            background: rgba(220, 38, 38, 0.85);
+            padding: 2px 7px;
             border-radius: 10px;
-            box-shadow: 0 0 8px rgba(239, 68, 68, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-        @keyframes emergencyBeaconStrobe {
-            0%, 100% {
-                box-shadow: 0 0 10px rgba(239, 68, 68, 0.4), inset 0 0 6px rgba(254, 202, 202, 0.2);
-                border-color: rgba(248, 113, 113, 0.6);
-            }
-            50% {
-                box-shadow: 0 0 24px rgba(239, 68, 68, 0.9), 0 0 35px rgba(245, 158, 11, 0.5), inset 0 0 12px rgba(254, 202, 202, 0.6);
-                border-color: rgba(254, 202, 202, 0.95);
-            }
-        }
-        @keyframes beaconPulseRing {
-            0% {
-                transform: scale(0.96);
-                opacity: 0.85;
-            }
-            70% {
-                transform: scale(1.26);
-                opacity: 0;
-            }
-            100% {
-                transform: scale(1.28);
-                opacity: 0;
-            }
-        }
-        @keyframes beaconSirenWobble {
-            0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(-7deg) scale(1.08); }
-            75% { transform: rotate(7deg) scale(1.08); }
+            border: 1px solid rgba(255, 255, 255, 0.25);
         }
 
         .btn-ai-prediction {
@@ -1147,7 +1103,6 @@
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <!-- EMERGENCY LIGHT BUTTON FOR COMMUNITY HAZARD REPORTS -->
                         <button class="emergency-light-btn" id="emergencyBeaconBtn" onclick="openCommunityReportsModal()" title="Community Hazard Reports & Emergency Live Feed">
-                            <span class="beacon-pulse-ring"></span>
                             <span class="beacon-icon">🚨</span>
                             <span class="beacon-badge" id="emergencyReportsBadge">Live</span>
                         </button>
@@ -1618,7 +1573,7 @@
         }
 
         // --- API Integration (Mobile Ready) ---
-        async function fetchWeatherData(province, district) {
+        async function fetchWeatherData(province, district, city) {
             const loader = document.getElementById('loadingOverlay');
             document.getElementById('loadingText').textContent = "Syncing with Meteorological Data...";
             loader.style.display = 'flex';
@@ -1626,6 +1581,10 @@
             try {
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 9000);
+                let url = `/api/weather?province=${encodeURIComponent(province)}&district=${encodeURIComponent(district)}`;
+                if (city) {
+                    url += `&city=${encodeURIComponent(city)}`;
+                }
                 const response = await fetch(`/api/weather?province=${encodeURIComponent(province)}&district=${encodeURIComponent(district)}`, {
                     signal: controller.signal
                 });
@@ -1664,6 +1623,7 @@
                 
                 localStorage.setItem('sl_weather_province', data.location.province);
                 localStorage.setItem('sl_weather_district', data.location.district);
+                localStorage.removeItem('sl_weather_city');
                 
                 showScreen('screen2');
                 applyDataToUI(data);
@@ -1710,15 +1670,17 @@
             const name = localStorage.getItem('sl_weather_username') || "User";
             const dist = data.location.district;
             const prov = data.location.province;
+            const city = data.location.city;
             
             const gpsInfo = data.location.gps_distance_km !== null && data.location.gps_distance_km !== undefined 
                 ? ` (${data.location.gps_distance_km} km from center)` 
                 : "";
-            document.getElementById('dashboardLocationHeader').textContent = `${dist}, Sri Lanka${gpsInfo}`;
+            const locationDisplay = (city && city.toLowerCase() !== dist.toLowerCase())
+                ? `${city}, ${dist}, Sri Lanka${gpsInfo}`
+                : `${dist}, Sri Lanka${gpsInfo}`;
+            document.getElementById('dashboardLocationHeader').textContent = locationDisplay;
             
             // Stats
-            const temp = Math.round(data.metrics.temperature);
-            const prefix = temp > 0 ? "+" : "";
             document.getElementById('mainTemp').innerHTML = `${prefix}${temp}<span class="main-temp-unit">°</span>`;
             document.getElementById('mainCondition').textContent = mapCodeToText(data.metrics.weather_code);
             
@@ -1912,23 +1874,31 @@
 
             clearTimeout(searchTimeout);
             if (!query) {
-                // Restore defaults
+                // Restore popular quick-pick cities across provinces
                 container.innerHTML = `
-                    <div class="city-card glacier-panel" style="border-left: 4px solid #9ca3af;" onclick="overrideLocation('Central', 'Nuwara Eliya')">
-                        <div class="city-info"><h3>Nuwara Eliya</h3><span class="city-condition">Dense Mist</span></div>
-                        <div class="city-temp">14°</div>
+                    <div class="city-card glacier-panel" style="border-left: 4px solid #38bdf8;" onclick="overrideLocation('Western', 'Colombo', 'Colombo')">
+                        <div class="city-info"><h3>Colombo</h3><span class="city-condition">Commercial Capital • Urban Coastal</span></div>
+                        <div class="city-temp">Western</div>
                     </div>
-                    <div class="city-card glacier-panel" style="border-left: 4px solid #3b82f6;" onclick="overrideLocation('Central', 'Kandy')">
-                        <div class="city-info"><h3>Kandy</h3><span class="city-condition">Light Rain</span></div>
-                        <div class="city-temp">22°</div>
+                    <div class="city-card glacier-panel" style="border-left: 4px solid #06b6d4;" onclick="overrideLocation('Western', 'Gampaha', 'Negombo')">
+                        <div class="city-info"><h3>Negombo <span style="font-size: 11px; opacity: 0.75; font-weight: 500;">• Gampaha</span></h3><span class="city-condition">Coastal Lagoon City</span></div>
+                        <div class="city-temp">Western</div>
                     </div>
-                    <div class="city-card glacier-panel" style="border-left: 4px solid #f59e0b;" onclick="overrideLocation('Southern', 'Galle')">
-                        <div class="city-info"><h3>Galle</h3><span class="city-condition">Thundershowers</span></div>
-                        <div class="city-temp">29°</div>
+                    <div class="city-card glacier-panel" style="border-left: 4px solid #3b82f6;" onclick="overrideLocation('Central', 'Kandy', 'Kandy')">
+                        <div class="city-info"><h3>Kandy</h3><span class="city-condition">Hill Capital • Basin Mist</span></div>
+                        <div class="city-temp">Central</div>
                     </div>
-                    <div class="city-card glacier-panel" style="border-left: 4px solid #ef4444;" onclick="overrideLocation('Northern', 'Jaffna')">
-                        <div class="city-info"><h3>Jaffna</h3><span class="city-condition">Clear Sky</span></div>
-                        <div class="city-temp">33°</div>
+                    <div class="city-card glacier-panel" style="border-left: 4px solid #9ca3af;" onclick="overrideLocation('Central', 'Nuwara Eliya', 'Nuwara Eliya')">
+                        <div class="city-info"><h3>Nuwara Eliya</h3><span class="city-condition">Highland • Dense Mountain Fog</span></div>
+                        <div class="city-temp">Central</div>
+                    </div>
+                    <div class="city-card glacier-panel" style="border-left: 4px solid #f59e0b;" onclick="overrideLocation('Southern', 'Galle', 'Galle')">
+                        <div class="city-info"><h3>Galle</h3><span class="city-condition">Southern Maritime Coast</span></div>
+                        <div class="city-temp">Southern</div>
+                    </div>
+                    <div class="city-card glacier-panel" style="border-left: 4px solid #ef4444;" onclick="overrideLocation('Northern', 'Jaffna', 'Jaffna')">
+                        <div class="city-info"><h3>Jaffna</h3><span class="city-condition">Northern Peninsula</span></div>
+                        <div class="city-temp">Northern</div>
                     </div>
                 `;
                 return;
@@ -1939,20 +1909,28 @@
                     const res = await fetch(`/api/locations/search?q=${encodeURIComponent(query)}`);
                     const data = await res.json();
                     if (data.results && data.results.length > 0) {
-                        container.innerHTML = data.results.map(loc => `
-                            <div class="city-card glacier-panel" style="border-left: 4px solid #38bdf8;" onclick="overrideLocation('${loc.province}', '${loc.district}')">
-                                <div class="city-info">
-                                    <h3>${loc.district}</h3>
-                                    <span class="city-condition">${loc.province} Province • ${loc.microclimate}</span>
+                        container.innerHTML = data.results.map(loc => {
+                            const isCity = loc.type === 'city' && loc.city && loc.city.toLowerCase() !== loc.district.toLowerCase();
+                            const title = isCity 
+                                ? `${loc.city} <span style="font-size: 11px; opacity: 0.75; font-weight: 500;">• ${loc.district}</span>` 
+                                : loc.district;
+                            const clickCity = isCity ? loc.city : loc.district;
+                            const badgeLabel = isCity ? `${loc.district}` : `${loc.province}`;
+                            return `
+                                <div class="city-card glacier-panel" style="border-left: 4px solid #38bdf8;" onclick="overrideLocation('${loc.province}', '${loc.district}', '${clickCity}')">
+                                    <div class="city-info">
+                                        <h3>${title}</h3>
+                                        <span class="city-condition">${loc.microclimate}</span>
+                                    </div>
+                                    <div class="city-temp" style="font-size: 12px; font-weight: 700; color: #38bdf8;">${badgeLabel}</div>
                                 </div>
-                                <div class="city-temp" style="font-size: 24px;">📍</div>
-                            </div>
-                        `).join('');
+                            `;
+                        }).join('');
                     } else {
-                        container.innerHTML = `<div style="text-align:center; padding: 30px; color: var(--text-muted);">No matching Sri Lankan districts found.</div>`;
+                        container.innerHTML = `<div style="text-align: center; color: var(--bottom-sheet-muted); padding: 25px 10px; font-size: 13px;">No city or district found matching "<strong>${query}</strong>"</div>`;
                     }
                 } catch (e) {
-                    console.error("Search error:", e);
+                    console.error("Location search failed:", e);
                 }
             }, 250);
         }
@@ -1961,12 +1939,18 @@
             showScreen('screen2');
             const dist = localStorage.getItem('sl_weather_district') || "Colombo";
             const prov = localStorage.getItem('sl_weather_province') || "Western";
-            fetchWeatherData(prov, dist);
+            const city = localStorage.getItem('sl_weather_city') || "";
+            fetchWeatherData(prov, dist, city);
         }
         
-        function overrideLocation(prov, dist) {
+        function overrideLocation(prov, dist, city) {
             localStorage.setItem('sl_weather_province', prov);
             localStorage.setItem('sl_weather_district', dist);
+            if (city && city.toLowerCase() !== dist.toLowerCase()) {
+                localStorage.setItem('sl_weather_city', city);
+            } else {
+                localStorage.removeItem('sl_weather_city');
+            }
             goToScreen2();
         }
 
@@ -2129,6 +2113,7 @@
             localStorage.removeItem('sl_weather_username');
             localStorage.removeItem('sl_weather_province');
             localStorage.removeItem('sl_weather_district');
+            localStorage.removeItem('sl_weather_city');
             goToScreen1();
         }
 
