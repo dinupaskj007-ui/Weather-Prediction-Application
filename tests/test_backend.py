@@ -22,6 +22,10 @@ def test_index_page(client):
     assert "emergencyBeaconBtn" in html
     assert "communityReportsModal" in html
     assert "openCommunityReportsModal" in html
+    assert "loginScreen" in html
+    assert "userNameInput" in html
+    assert "userAddressInput" in html
+    assert "saveDataAndProceed" in html
 
 def test_health_endpoint(client):
     """Test mobile health check endpoint."""

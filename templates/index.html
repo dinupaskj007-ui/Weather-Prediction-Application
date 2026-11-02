@@ -1059,35 +1059,57 @@
             </div>
         </div>
 
-        <!-- SCREEN 1.5: SETUP -->
+        <!-- SCREEN 1.5: FIRST-TIME LOGIN & SETUP -->
         <div id="loginScreen" class="screen">
-            <div class="s1-content">
-                <div style="width: 85%; display: flex; justify-content: flex-start; margin-bottom: 12px;">
+            <div class="s1-content" style="max-height: 92vh; overflow-y: auto; padding: 25px 20px 40px; box-sizing: border-box;">
+                <div style="width: 100%; max-width: 380px; display: flex; justify-content: flex-start; margin-bottom: 12px;">
                     <button onclick="goToScreen1()" class="back-btn" style="font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; color: var(--text-muted); cursor: pointer; background: none; border: none; padding: 0;">
                         ‹ Back to Welcome
                     </button>
                 </div>
-                <div class="hero-text" style="margin-bottom: 25px;">
-                    Personalize your alerts.<br>
-                    <strong>WHERE ARE YOU?</strong>
+                
+                <div class="hero-text" style="margin-bottom: 8px; width: 100%; max-width: 380px; text-align: left;">
+                    Welcome to SL Climate.<br>
+                    <strong>CREATE YOUR PROFILE</strong>
                 </div>
-                <div class="input-group">
-                    <span class="input-label">First Name</span>
-                    <input type="text" id="userNameInput" class="form-input" placeholder="e.g. Kasun" autocomplete="off">
+                <div style="width: 100%; max-width: 380px; font-size: 13px; color: var(--text-muted); margin-bottom: 22px; line-height: 1.4; text-align: left;">
+                    Please enter your name and home address to set up hyper-local forecasts and emergency alerts.
                 </div>
-                <div class="input-group">
-                    <span class="input-label">Province</span>
+
+                <div class="input-group" style="width: 100%; max-width: 380px;">
+                    <span class="input-label">Full Name *</span>
+                    <input type="text" id="userNameInput" class="form-input" placeholder="e.g. Kasun Perera" autocomplete="name" required>
+                </div>
+
+                <div class="input-group" style="width: 100%; max-width: 380px;">
+                    <span class="input-label">Home Address *</span>
+                    <input type="text" id="userAddressInput" class="form-input" placeholder="e.g. No. 45, Galle Road, Colombo 03" autocomplete="street-address" required>
+                </div>
+
+                <div class="input-group" style="width: 100%; max-width: 380px;">
+                    <span class="input-label">Home Province *</span>
                     <select id="provinceSelect" class="form-input" onchange="updateDistricts()">
                         <option value="" disabled selected>Select Province</option>
                     </select>
                 </div>
-                <div class="input-group" style="margin-bottom: 35px;">
-                    <span class="input-label">District</span>
-                    <select id="districtSelect" class="form-input" disabled>
+
+                <div class="input-group" style="width: 100%; max-width: 380px;">
+                    <span class="input-label">Home District *</span>
+                    <select id="districtSelect" class="form-input" onchange="updateCities()" disabled>
                         <option value="" disabled selected>Select District</option>
                     </select>
                 </div>
-                <button class="btn-primary" onclick="saveDataAndProceed()">Continue</button>
+
+                <div class="input-group" style="width: 100%; max-width: 380px; margin-bottom: 28px;">
+                    <span class="input-label">Nearest City / Town</span>
+                    <select id="citySelect" class="form-input" disabled>
+                        <option value="" disabled selected>Select City / Town</option>
+                    </select>
+                </div>
+
+                <div style="width: 100%; max-width: 380px;">
+                    <button class="btn-primary" onclick="saveDataAndProceed()" style="width: 100%;">Complete Setup & Continue</button>
+                </div>
             </div>
         </div>
 
@@ -1111,7 +1133,19 @@
                 </div>
 
                 <!-- Sleek Glass App Menu Dropdown -->
-                <div id="appDropdownMenu" class="glacier-panel" style="display: none; position: absolute; top: 65px; left: 25px; width: 230px; z-index: 50; padding: 8px; box-shadow: 0 16px 40px rgba(0,0,0,0.45);">
+                <div id="appDropdownMenu" class="glacier-panel" style="display: none; position: absolute; top: 65px; left: 25px; width: 250px; z-index: 50; padding: 10px; box-shadow: 0 16px 40px rgba(0,0,0,0.5);">
+                    <!-- User Profile & Home Address Card -->
+                    <div id="menuUserProfileCard" style="padding: 10px 12px; margin-bottom: 8px; border-radius: 12px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);">
+                        <div style="font-size: 13px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 6px;">
+                            <span>👤</span> <span id="menuUserName">User</span>
+                        </div>
+                        <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px; display: flex; align-items: flex-start; gap: 5px; line-height: 1.3; word-break: break-word;">
+                            <span>🏠</span> <span id="menuUserAddress">Home address not configured</span>
+                        </div>
+                    </div>
+                    <div class="menu-action-item" onclick="openProfileModal(); closeAppMenu();" style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600; color: #fff; transition: background 0.2s;">
+                        <span style="font-size: 16px;">📝</span> Edit Profile & Address
+                    </div>
                     <div class="menu-action-item" onclick="goToScreen1(); closeAppMenu();" style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600; color: #fff; transition: background 0.2s;">
                         <span style="font-size: 16px;">🏠</span> Welcome Screen
                     </div>
@@ -1511,12 +1545,42 @@
             "Eastern": ["Batticaloa", "Ampara", "Trincomalee"],
             "North Western": ["Kurunegala", "Puttalam"],
             "North Central": ["Anuradhapura", "Polonnaruwa"],
-            "Uva": ["Badulla", "Moneragala"],
+            "Uva": ["Badulla", "Monaragala"],
             "Sabaragamuwa": ["Ratnapura", "Kegalle"]
+        };
+
+        const slDistrictCities = {
+            "Ampara": ["Ampara", "Kalmunai", "Akkaraipattu", "Sammanthurai", "Pottuvil"],
+            "Anuradhapura": ["Anuradhapura", "Kekirawa", "Tambuttegama", "Medawachchiya", "Eppawala"],
+            "Badulla": ["Badulla", "Bandarawela", "Haputale", "Mahiyanganaya", "Welimada"],
+            "Batticaloa": ["Batticaloa", "Kattankudy", "Eravur", "Valachchenai", "Kalkudah"],
+            "Colombo": ["Colombo", "Dehiwala-Mount Lavinia", "Moratuwa", "Sri Jayawardenepura Kotte", "Maharagama", "Nugegoda"],
+            "Galle": ["Galle", "Ambalangoda", "Hikkaduwa", "Elpitiya", "Karapitiya"],
+            "Gampaha": ["Gampaha", "Negombo", "Kelaniya", "Wattala", "Ja-Ela", "Minuwangoda", "Katunayake"],
+            "Hambantota": ["Hambantota", "Tangalle", "Tissamaharama", "Ambalantota", "Beliatta"],
+            "Jaffna": ["Jaffna", "Point Pedro", "Chavakachcheri", "Kankesanthurai", "Nallur"],
+            "Kalutara": ["Kalutara", "Panadura", "Horana", "Beruwala", "Aluthgama", "Matugama"],
+            "Kandy": ["Kandy", "Peradeniya", "Gampola", "Nawalapitiya", "Kadugannawa", "Katugastota"],
+            "Kegalle": ["Kegalle", "Mawanella", "Warakapola", "Rambukkana", "Ruwanwella"],
+            "Kilinochchi": ["Kilinochchi", "Pallai", "Paranthan", "Pooneryn"],
+            "Kurunegala": ["Kurunegala", "Kuliyapitiya", "Pannala", "Narammala", "Wariyapola"],
+            "Mannar": ["Mannar", "Pesalai", "Murunkan", "Silavathurai"],
+            "Matale": ["Matale", "Dambulla", "Galewela", "Rattota", "Ukuwela"],
+            "Matara": ["Matara", "Weligama", "Akuressa", "Dikwella", "Hakmana"],
+            "Monaragala": ["Monaragala", "Wellawaya", "Bibile", "Kataragama", "Buttala"],
+            "Moneragala": ["Monaragala", "Wellawaya", "Bibile", "Kataragama", "Buttala"],
+            "Mullaitivu": ["Mullaitivu", "Puthukkudiyiruppu", "Mankulam", "Oddusuddan"],
+            "Nuwara Eliya": ["Nuwara Eliya", "Hatton", "Talawakelle", "Nanu Oya", "Norwood"],
+            "Polonnaruwa": ["Polonnaruwa", "Kaduruwela", "Hingurakgoda", "Medirigiriya"],
+            "Puttalam": ["Puttalam", "Chilaw", "Wennappuwa", "Nattandiya", "Kalpitiya"],
+            "Ratnapura": ["Ratnapura", "Balangoda", "Embilipitiya", "Pelmadulla", "Eheliyagoda"],
+            "Trincomalee": ["Trincomalee", "Kinniya", "Mutur", "Kantalai", "Nilaveli"],
+            "Vavuniya": ["Vavuniya", "Cheddikulam", "Nedunkeni", "Pampaimadu"]
         };
 
         const provSelect = document.getElementById('provinceSelect');
         const distSelect = document.getElementById('districtSelect');
+        const citySelect = document.getElementById('citySelect');
 
         Object.keys(slData).forEach(prov => {
             let opt = document.createElement('option');
@@ -1528,7 +1592,11 @@
         function updateDistricts() {
             const selectedProv = provSelect.value;
             distSelect.innerHTML = '<option value="" disabled selected>Select District</option>';
-            if(selectedProv) {
+            if (citySelect) {
+                citySelect.innerHTML = '<option value="" disabled selected>Select City / Town</option>';
+                citySelect.disabled = true;
+            }
+            if(selectedProv && slData[selectedProv]) {
                 distSelect.disabled = false;
                 slData[selectedProv].forEach(dist => {
                     let opt = document.createElement('option');
@@ -1541,6 +1609,23 @@
             }
         }
 
+        function updateCities() {
+            if (!citySelect) return;
+            const selectedDist = distSelect.value;
+            citySelect.innerHTML = '<option value="" disabled selected>Select City / Town</option>';
+            if (selectedDist && slDistrictCities[selectedDist]) {
+                citySelect.disabled = false;
+                slDistrictCities[selectedDist].forEach(city => {
+                    let opt = document.createElement('option');
+                    opt.value = city;
+                    opt.textContent = city;
+                    citySelect.appendChild(opt);
+                });
+            } else {
+                citySelect.disabled = true;
+            }
+        }
+
         // --- Navigation Logic ---
         function showScreen(screenId) {
             document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
@@ -1549,27 +1634,84 @@
 
         function handleInitialCheck() {
             const savedName = localStorage.getItem('sl_weather_username');
-            if (!savedName) {
-                localStorage.setItem('sl_weather_username', 'Explorer');
-                localStorage.setItem('sl_weather_province', 'Western');
-                localStorage.setItem('sl_weather_district', 'Colombo');
+            const savedAddress = localStorage.getItem('sl_weather_address');
+            if (!savedName || !savedAddress) {
+                // First-time login: show profile and home address creation screen
+                showScreen('loginScreen');
+            } else {
+                goToScreen2();
             }
-            goToScreen2();
         }
 
         function saveDataAndProceed() {
             const name = document.getElementById('userNameInput').value.trim();
+            const address = document.getElementById('userAddressInput').value.trim();
             const prov = provSelect.value;
             const dist = distSelect.value;
+            const city = (citySelect && citySelect.value) ? citySelect.value : "";
             
-            if (name && prov && dist) {
-                localStorage.setItem('sl_weather_username', name);
-                localStorage.setItem('sl_weather_province', prov);
-                localStorage.setItem('sl_weather_district', dist);
-                goToScreen2();
-            } else {
-                alert("Please fill in all details.");
+            if (!name) {
+                alert("Please enter your name.");
+                document.getElementById('userNameInput').focus();
+                return;
             }
+            if (!address) {
+                alert("Please enter your home address.");
+                document.getElementById('userAddressInput').focus();
+                return;
+            }
+            if (!prov) {
+                alert("Please select your province.");
+                provSelect.focus();
+                return;
+            }
+            if (!dist) {
+                alert("Please select your district.");
+                distSelect.focus();
+                return;
+            }
+
+            localStorage.setItem('sl_weather_username', name);
+            localStorage.setItem('sl_weather_address', address);
+            localStorage.setItem('sl_weather_province', prov);
+            localStorage.setItem('sl_weather_district', dist);
+            if (city && city.toLowerCase() !== dist.toLowerCase()) {
+                localStorage.setItem('sl_weather_city', city);
+            } else {
+                localStorage.removeItem('sl_weather_city');
+            }
+
+            // Sync menu card display
+            const menuName = document.getElementById('menuUserName');
+            const menuAddr = document.getElementById('menuUserAddress');
+            if (menuName) menuName.textContent = name;
+            if (menuAddr) menuAddr.textContent = address;
+
+            goToScreen2();
+        }
+
+        function openProfileModal() {
+            const savedName = localStorage.getItem('sl_weather_username') || "";
+            const savedAddress = localStorage.getItem('sl_weather_address') || "";
+            const savedProv = localStorage.getItem('sl_weather_province') || "";
+            const savedDist = localStorage.getItem('sl_weather_district') || "";
+            const savedCity = localStorage.getItem('sl_weather_city') || "";
+
+            document.getElementById('userNameInput').value = savedName;
+            document.getElementById('userAddressInput').value = savedAddress;
+            
+            if (savedProv) {
+                provSelect.value = savedProv;
+                updateDistricts();
+                if (savedDist) {
+                    distSelect.value = savedDist;
+                    updateCities();
+                    if (savedCity && citySelect) {
+                        citySelect.value = savedCity;
+                    }
+                }
+            }
+            showScreen('loginScreen');
         }
 
         // --- API Integration (Mobile Ready) ---
@@ -1668,9 +1810,15 @@
 
         function applyDataToUI(data) {
             const name = localStorage.getItem('sl_weather_username') || "User";
+            const address = localStorage.getItem('sl_weather_address') || "";
             const dist = data.location.district;
             const prov = data.location.province;
             const city = data.location.city;
+
+            const menuNameEl = document.getElementById('menuUserName');
+            const menuAddressEl = document.getElementById('menuUserAddress');
+            if (menuNameEl) menuNameEl.textContent = name;
+            if (menuAddressEl) menuAddressEl.textContent = address || "Not configured";
             
             const gpsInfo = data.location.gps_distance_km !== null && data.location.gps_distance_km !== undefined 
                 ? ` (${data.location.gps_distance_km} km from center)` 
@@ -2111,9 +2259,14 @@
 
         function resetUserSession() {
             localStorage.removeItem('sl_weather_username');
+            localStorage.removeItem('sl_weather_address');
             localStorage.removeItem('sl_weather_province');
             localStorage.removeItem('sl_weather_district');
             localStorage.removeItem('sl_weather_city');
+            const nameIn = document.getElementById('userNameInput');
+            const addrIn = document.getElementById('userAddressInput');
+            if (nameIn) nameIn.value = '';
+            if (addrIn) addrIn.value = '';
             goToScreen1();
         }
 
