@@ -429,6 +429,157 @@
         .form-input:focus { border-color: #fff; box-shadow: 0 0 0 2px rgba(255,255,255,0.2); }
         select.form-input option { background: #12132e; color: #fff; }
 
+        
+        /* --- SCREEN 1 & WELCOME REDESIGN (Reference UI Match) --- */
+        .welcome-screen-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+            padding: 24px 22px 32px;
+            margin-top: 0;
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            min-height: 100%;
+            box-sizing: border-box;
+        }
+
+        .welcome-header-wrap {
+            width: 100%;
+            margin-top: 10px;
+            margin-bottom: 5px;
+        }
+
+        .welcome-heading {
+            font-size: clamp(24px, 5.8vw, 30px);
+            font-weight: 700;
+            line-height: 1.25;
+            color: #ffffff;
+            margin: 0;
+            letter-spacing: -0.3px;
+            text-align: center;
+            text-shadow: 0 2px 14px rgba(0, 0, 0, 0.45);
+        }
+
+        .weather-art-stage {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 320px;
+            margin: 10px auto;
+            animation: floatWeatherArt 5s ease-in-out infinite;
+        }
+
+        @keyframes floatWeatherArt {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        .weather-art-glow-ambient {
+            position: absolute;
+            top: 25%;
+            left: 20%;
+            width: 60%;
+            height: 50%;
+            background: radial-gradient(circle, rgba(245, 158, 11, 0.22) 0%, rgba(96, 165, 250, 0.12) 60%, transparent 80%);
+            filter: blur(28px);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .weather-art-svg {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 290px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            filter: drop-shadow(0 14px 26px rgba(0, 0, 0, 0.5));
+        }
+
+        .welcome-subheading {
+            font-size: 14.5px;
+            font-weight: 400;
+            line-height: 1.45;
+            color: rgba(255, 255, 255, 0.7);
+            text-align: center;
+            max-width: 295px;
+            margin: 0 auto 24px;
+            letter-spacing: 0.1px;
+            text-shadow: 0 1px 6px rgba(0, 0, 0, 0.4);
+        }
+
+        .btn-get-started {
+            display: block;
+            width: 100%;
+            max-width: 340px;
+            padding: 17px 20px;
+            margin: 0 auto;
+            background: linear-gradient(180deg, #F5A623 0%, #D97706 100%);
+            border: 1px solid rgba(255, 225, 130, 0.45);
+            border-radius: 28px;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(245, 166, 35, 0.4), 0 2px 6px rgba(0, 0, 0, 0.25);
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease, filter 0.2s ease;
+            position: relative;
+            z-index: 10;
+            text-align: center;
+        }
+
+        .btn-get-started:hover {
+            filter: brightness(1.06);
+            box-shadow: 0 12px 30px rgba(245, 166, 35, 0.52), 0 3px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-get-started:active {
+            transform: scale(0.97);
+            filter: brightness(0.95);
+        }
+
+        .btn-gps-secondary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 20px;
+            padding: 9px 18px;
+            color: rgba(255, 255, 255, 0.75);
+            font-size: 12.5px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .btn-gps-secondary:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, 0.28);
+        }
+
+        .btn-gps-secondary:active {
+            transform: scale(0.96);
+        }
+
         /* --- SCREEN 2: REFERENCE UI DASHBOARD --- */
         .s2-content { flex: 1; display: flex; flex-direction: column; width: 100%; position: relative; }
         
@@ -1040,75 +1191,215 @@
             </div>
         </div>
 
-        <!-- SCREEN 1: ONBOARDING -->
+                <!-- SCREEN 1: ONBOARDING / WELCOME -->
         <div id="screen1" class="screen active">
-            <div class="s1-content">
-                <div class="glacier-weather-badge">
-                    <div class="badge-ring"></div>
-                    <div class="badge-core">
-                        <span id="heroWeatherGlyph">🌤️</span>
-                    </div>
-                    <div class="badge-status" id="heroConditionLabel">PRECISION RADAR</div>
+            <div class="s1-content welcome-screen-content">
+                <!-- Main Header Matching User Reference -->
+                <div class="welcome-header-wrap">
+                    <h1 class="welcome-heading">Discover The<br>Weather In Your City</h1>
                 </div>
-                <div class="hero-text">
-                    DISCOVER CLIMATE PRECISION,
-                    <strong>SRI LANKA.</strong>
+
+                <!-- 3D Weather Graphic (Sun, Cloud, Lightning, Rain) -->
+                <div class="weather-art-stage">
+                    <div class="weather-art-glow-ambient"></div>
+                    <svg class="weather-art-svg" viewBox="0 0 320 310" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Sri Lanka 3D Weather Illustration">
+                        <defs>
+                            <!-- Sun Gradients & Effects -->
+                            <radialGradient id="sunGradMain" cx="36%" cy="32%" r="68%">
+                                <stop offset="0%" stop-color="#FFFDE8"/>
+                                <stop offset="25%" stop-color="#FFE144"/>
+                                <stop offset="70%" stop-color="#F59E0B"/>
+                                <stop offset="100%" stop-color="#D97706"/>
+                            </radialGradient>
+                            <filter id="sunGlowFilter" x="-40%" y="-40%" width="180%" height="180%">
+                                <feGaussianBlur stdDeviation="16" result="glow"/>
+                                <feComposite in="SourceGraphic" in2="glow" operator="over"/>
+                            </filter>
+
+                            <!-- 3D Cloud Puffs Gradients (Clay volumetric lighting) -->
+                            <radialGradient id="cloudPuffHigh" cx="35%" cy="30%" r="70%">
+                                <stop offset="0%" stop-color="#FFFFFF"/>
+                                <stop offset="45%" stop-color="#F8FAFC"/>
+                                <stop offset="80%" stop-color="#E2E8F0"/>
+                                <stop offset="100%" stop-color="#CBD5E1"/>
+                            </radialGradient>
+                            <radialGradient id="cloudPuffMid" cx="38%" cy="32%" r="68%">
+                                <stop offset="0%" stop-color="#FFFFFF"/>
+                                <stop offset="55%" stop-color="#F1F5F9"/>
+                                <stop offset="85%" stop-color="#DDE3EA"/>
+                                <stop offset="100%" stop-color="#C5CFDC"/>
+                            </radialGradient>
+                            <radialGradient id="cloudPuffShade" cx="42%" cy="32%" r="65%">
+                                <stop offset="0%" stop-color="#F8FAFC"/>
+                                <stop offset="60%" stop-color="#E2E8F0"/>
+                                <stop offset="88%" stop-color="#CBD5E1"/>
+                                <stop offset="100%" stop-color="#B8C5D6"/>
+                            </radialGradient>
+
+                            <!-- Drop shadow for the cloud assembly -->
+                            <filter id="cloudSoftShadow" x="-25%" y="-20%" width="150%" height="160%">
+                                <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#02040b" flood-opacity="0.55"/>
+                            </filter>
+
+                            <!-- Lightning Bolt Gradients & Glow -->
+                            <linearGradient id="boltGradMain" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#FFF566"/>
+                                <stop offset="35%" stop-color="#FBBF24"/>
+                                <stop offset="75%" stop-color="#F59E0B"/>
+                                <stop offset="100%" stop-color="#D97706"/>
+                            </linearGradient>
+                            <linearGradient id="boltHighlight" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#FFFBEB" stop-opacity="0.95"/>
+                                <stop offset="100%" stop-color="#FDE68A" stop-opacity="0.2"/>
+                            </linearGradient>
+                            <filter id="boltGlowFilter" x="-30%" y="-30%" width="160%" height="160%">
+                                <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#F59E0B" flood-opacity="0.6"/>
+                            </filter>
+
+                            <!-- Raindrop Gradients -->
+                            <linearGradient id="dropGrad1" x1="20%" y1="0%" x2="80%" y2="100%">
+                                <stop offset="0%" stop-color="#93C5FD"/>
+                                <stop offset="45%" stop-color="#60A5FA"/>
+                                <stop offset="100%" stop-color="#2563EB"/>
+                            </linearGradient>
+                            <linearGradient id="dropHighlight" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.8"/>
+                                <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+                            </linearGradient>
+                            <filter id="dropShadowFilter" x="-30%" y="-30%" width="160%" height="160%">
+                                <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#1D4ED8" flood-opacity="0.35"/>
+                            </filter>
+                        </defs>
+
+                        <!-- 1. SUN (Upper Right Behind Cloud) -->
+                        <g class="sun-group">
+                            <!-- Sun Ray Accent Top-Left -->
+                            <rect x="135" y="72" width="18" height="8" rx="4" fill="#F59E0B" transform="rotate(-36 135 72)"/>
+                            <!-- Sun Ambient Halo -->
+                            <circle cx="206" cy="116" r="62" fill="#F59E0B" opacity="0.3" filter="url(#sunGlowFilter)"/>
+                            <!-- Main 3D Sun Sphere -->
+                            <circle cx="206" cy="116" r="50" fill="url(#sunGradMain)"/>
+                            <!-- Specular 3D Highlight on Sun -->
+                            <ellipse cx="192" cy="98" rx="18" ry="12" fill="#FFFFFF" opacity="0.55" transform="rotate(-28 192 98)"/>
+                        </g>
+
+                        <!-- 2. LIGHTNING BOLT (Striking down from underside of cloud) -->
+                        <g class="lightning-group" filter="url(#boltGlowFilter)">
+                            <path d="M 164 175 L 138 232 L 158 232 L 137 296 L 178 222 L 156 222 L 174 175 Z" fill="url(#boltGradMain)"/>
+                            <path d="M 164 175 L 138 232 L 158 232 L 137 296 L 149 242 L 158 222 L 168 180 Z" fill="url(#boltHighlight)"/>
+                        </g>
+
+                        <!-- 3. 3D RAINDROPS -->
+                        <!-- Drop 1: Left Mid -->
+                        <g transform="translate(100, 222) rotate(12)" filter="url(#dropShadowFilter)">
+                            <path d="M 0 -12 C 4 -6, 7 0, 7 5 C 7 9, 3.8 12, 0 12 C -3.8 12, -7 9, -7 5 C -7 0, -4 -6, 0 -12 Z" fill="url(#dropGrad1)"/>
+                            <path d="M -1 -7 C 1 -4, 2.5 -1, 2.5 3 C 2.5 5, 1.5 7, 0 8 C -1.5 7, -2.5 5, -2.5 3 C -2.5 -1, -1.8 -4, -1 -7 Z" fill="url(#dropHighlight)"/>
+                        </g>
+                        <!-- Drop 2: Left Bottom -->
+                        <g transform="translate(122, 266) rotate(14)" filter="url(#dropShadowFilter)">
+                            <path d="M 0 -13 C 4.5 -6, 7.5 0, 7.5 5.5 C 7.5 9.8, 4.1 13, 0 13 C -4.1 13, -7.5 9.8, -7.5 5.5 C -7.5 0, -4.5 -6, 0 -13 Z" fill="url(#dropGrad1)"/>
+                            <path d="M -1 -8 C 1 -5, 2.6 -1, 2.6 3.5 C 2.6 5.5, 1.5 7.5, 0 8.5 C -1.5 7.5, -2.6 5.5, -2.6 3.5 C -2.6 -1, -1.8 -5, -1 -8 Z" fill="url(#dropHighlight)"/>
+                        </g>
+                        <!-- Drop 3: Right Mid -->
+                        <g transform="translate(208, 224) rotate(12)" filter="url(#dropShadowFilter)">
+                            <path d="M 0 -12 C 4 -6, 7 0, 7 5 C 7 9, 3.8 12, 0 12 C -3.8 12, -7 9, -7 5 C -7 0, -4 -6, 0 -12 Z" fill="url(#dropGrad1)"/>
+                            <path d="M -1 -7 C 1 -4, 2.5 -1, 2.5 3 C 2.5 5, 1.5 7, 0 8 C -1.5 7, -2.5 5, -2.5 3 C -2.5 -1, -1.8 -4, -1 -7 Z" fill="url(#dropHighlight)"/>
+                        </g>
+                        <!-- Drop 4: Right Bottom -->
+                        <g transform="translate(188, 268) rotate(14)" filter="url(#dropShadowFilter)">
+                            <path d="M 0 -11 C 3.8 -5.5, 6.5 0, 6.5 4.8 C 6.5 8.5, 3.5 11, 0 11 C -3.5 11, -6.5 8.5, -6.5 4.8 C -6.5 0, -3.8 -5.5, 0 -11 Z" fill="url(#dropGrad1)"/>
+                            <path d="M -1 -6 C 0.8 -4, 2.2 -1, 2.2 3 C 2.2 4.8, 1.2 6.5, 0 7.5 C -1.2 6.5, -2.2 4.8, -2.2 3 C -2.2 -1, -1.5 -4, -1 -6 Z" fill="url(#dropHighlight)"/>
+                        </g>
+
+                        <!-- 4. 3D PUFFY VOLUMETRIC CLOUD (Claymorphic) -->
+                        <g class="cloud-group" filter="url(#cloudSoftShadow)">
+                            <circle cx="106" cy="165" r="46" fill="url(#cloudPuffShade)"/>
+                            <circle cx="236" cy="168" r="42" fill="url(#cloudPuffShade)"/>
+                            <rect x="106" y="160" width="130" height="50" rx="25" fill="url(#cloudPuffShade)"/>
+
+                            <circle cx="145" cy="122" r="50" fill="url(#cloudPuffHigh)"/>
+                            <circle cx="200" cy="132" r="46" fill="url(#cloudPuffHigh)"/>
+                            <circle cx="112" cy="154" r="42" fill="url(#cloudPuffMid)"/>
+                            <circle cx="230" cy="158" r="39" fill="url(#cloudPuffMid)"/>
+
+                            <circle cx="166" cy="166" r="54" fill="url(#cloudPuffMid)"/>
+                            <circle cx="130" cy="180" r="40" fill="url(#cloudPuffHigh)"/>
+                            <circle cx="204" cy="180" r="38" fill="url(#cloudPuffHigh)"/>
+
+                            <ellipse cx="142" cy="106" rx="28" ry="14" fill="#FFFFFF" opacity="0.65" transform="rotate(-12 142 106)"/>
+                            <ellipse cx="196" cy="116" rx="22" ry="10" fill="#FFFFFF" opacity="0.55" transform="rotate(8 196 116)"/>
+                            <ellipse cx="162" cy="148" rx="24" ry="12" fill="#FFFFFF" opacity="0.4" transform="rotate(-6 162 148)"/>
+                        </g>
+                    </svg>
                 </div>
-                <button class="btn-primary" onclick="handleInitialCheck()">Check now</button>
-                <button class="gps-pill-btn" onclick="useCurrentGpsLocation()" style="margin-top: 5px;">📍 Use Current GPS Location</button>
+
+                <!-- Subtitle matching reference -->
+                <p class="welcome-subheading">
+                    Get to know your weather maps and radar precipitation forecast
+                </p>
+
+                <!-- Action button matching reference -->
+                <div class="welcome-actions-wrap" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+                    <button class="btn-get-started" onclick="handleInitialCheck()">GET STARTED</button>
+                    <button class="btn-gps-secondary" onclick="useCurrentGpsLocation()">
+                        <span>📍</span> Use Current GPS Location
+                    </button>
+                </div>
             </div>
         </div>
 
         <!-- SCREEN 1.5: FIRST-TIME LOGIN & SETUP -->
         <div id="loginScreen" class="screen">
-            <div class="s1-content" style="max-height: 92vh; overflow-y: auto; padding: 25px 20px 40px; box-sizing: border-box;">
-                <div style="width: 100%; max-width: 380px; display: flex; justify-content: flex-start; margin-bottom: 12px;">
+            <div class="s1-content login-screen-content" style="max-height: 92vh; overflow-y: auto; padding: 25px 20px 40px; box-sizing: border-box;">
+                <div style="width: 100%; max-width: 380px; display: flex; justify-content: flex-start; margin-bottom: 14px;">
                     <button onclick="goToScreen1()" class="back-btn" style="font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; color: var(--text-muted); cursor: pointer; background: none; border: none; padding: 0;">
                         ‹ Back to Welcome
                     </button>
                 </div>
                 
-                <div class="hero-text" style="margin-bottom: 8px; width: 100%; max-width: 380px; text-align: left;">
-                    Welcome to SL Climate.<br>
-                    <strong>CREATE YOUR PROFILE</strong>
-                </div>
-                <div style="width: 100%; max-width: 380px; font-size: 13px; color: var(--text-muted); margin-bottom: 22px; line-height: 1.4; text-align: left;">
-                    Please enter your name and home address to set up hyper-local forecasts and emergency alerts.
-                </div>
+                <div class="glacier-panel" style="width: 100%; max-width: 380px; padding: 26px 22px; box-sizing: border-box; text-align: left; margin: 0 auto;">
+                    <div style="text-align: center; margin-bottom: 22px;">
+                        <div style="width: 48px; height: 48px; margin: 0 auto 12px; border-radius: 50%; background: linear-gradient(135deg, rgba(245,158,11,0.22), rgba(96,165,250,0.18)); border: 1px solid rgba(245,158,11,0.35); display: flex; align-items: center; justify-content: center; font-size: 22px;">
+                            🌦️
+                        </div>
+                        <h2 style="font-size: 20px; font-weight: 700; color: #ffffff; margin: 0 0 6px 0; letter-spacing: -0.2px;">Complete Profile</h2>
+                        <p style="font-size: 12.5px; color: var(--text-muted); margin: 0; line-height: 1.45;">Enter your name and home address to set up hyper-local forecasts and emergency alerts.</p>
+                    </div>
 
-                <div class="input-group" style="width: 100%; max-width: 380px;">
-                    <span class="input-label">Full Name *</span>
-                    <input type="text" id="userNameInput" class="form-input" placeholder="e.g. Kasun Perera" autocomplete="name" required>
-                </div>
+                    <div class="input-group" style="width: 100%;">
+                        <span class="input-label">Full Name *</span>
+                        <input type="text" id="userNameInput" class="form-input" placeholder="e.g. Kasun Perera" autocomplete="name" required>
+                    </div>
 
-                <div class="input-group" style="width: 100%; max-width: 380px;">
-                    <span class="input-label">Home Address *</span>
-                    <input type="text" id="userAddressInput" class="form-input" placeholder="e.g. No. 45, Galle Road, Colombo 03" autocomplete="street-address" required>
-                </div>
+                    <div class="input-group" style="width: 100%;">
+                        <span class="input-label">Home Address *</span>
+                        <input type="text" id="userAddressInput" class="form-input" placeholder="e.g. No. 45, Galle Road, Colombo 03" autocomplete="street-address" required>
+                    </div>
 
-                <div class="input-group" style="width: 100%; max-width: 380px;">
-                    <span class="input-label">Home Province *</span>
-                    <select id="provinceSelect" class="form-input" onchange="updateDistricts()">
-                        <option value="" disabled selected>Select Province</option>
-                    </select>
-                </div>
+                    <div class="input-group" style="width: 100%;">
+                        <span class="input-label">Home Province *</span>
+                        <select id="provinceSelect" class="form-input" onchange="updateDistricts()">
+                            <option value="" disabled selected>Select Province</option>
+                        </select>
+                    </div>
 
-                <div class="input-group" style="width: 100%; max-width: 380px;">
-                    <span class="input-label">Home District *</span>
-                    <select id="districtSelect" class="form-input" onchange="updateCities()" disabled>
-                        <option value="" disabled selected>Select District</option>
-                    </select>
-                </div>
+                    <div class="input-group" style="width: 100%;">
+                        <span class="input-label">Home District *</span>
+                        <select id="districtSelect" class="form-input" onchange="updateCities()" disabled>
+                            <option value="" disabled selected>Select District</option>
+                        </select>
+                    </div>
 
-                <div class="input-group" style="width: 100%; max-width: 380px; margin-bottom: 28px;">
-                    <span class="input-label">Nearest City / Town</span>
-                    <select id="citySelect" class="form-input" disabled>
-                        <option value="" disabled selected>Select City / Town</option>
-                    </select>
-                </div>
+                    <div class="input-group" style="width: 100%; margin-bottom: 24px;">
+                        <span class="input-label">Nearest City / Town</span>
+                        <select id="citySelect" class="form-input" disabled>
+                            <option value="" disabled selected>Select City / Town</option>
+                        </select>
+                    </div>
 
-                <div style="width: 100%; max-width: 380px;">
-                    <button class="btn-primary" onclick="saveDataAndProceed()" style="width: 100%;">Complete Setup & Continue</button>
+                    <button class="btn-get-started" onclick="saveDataAndProceed()" style="width: 100%; font-size: 15px; padding: 16px 0; border-radius: 24px;">
+                        COMPLETE SETUP & CONTINUE
+                    </button>
                 </div>
             </div>
         </div>
