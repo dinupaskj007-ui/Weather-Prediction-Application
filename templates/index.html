@@ -1405,7 +1405,7 @@
                     </div>
 
                     <button class="btn-get-started" onclick="saveDataAndProceed()" style="width: 100%; font-size: 15px; padding: 16px 0; border-radius: 24px;">
-                        COMPLETE SETUP & CONTINUE
+                        CONTINUE
                     </button>
                 </div>
             </div>
@@ -1426,7 +1426,12 @@
                             <span class="beacon-icon">🚨</span>
                             <span class="beacon-badge" id="emergencyReportsBadge">Live</span>
                         </button>
-                        <div class="nav-icon" onclick="goToScreen4()" title="Add / Search Location">+</div>
+                        <div class="nav-icon" onclick="goToScreen4()" title="Search Weather by District or City" aria-label="Search Location">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: block;">
+                                <circle cx="11" cy="11" r="7.5"></circle>
+                                <line x1="21" y1="21" x2="16.5" y2="16.5"></line>
+                            </svg>
+                        </div>
                     </div>
                 </div>
 
@@ -1454,7 +1459,7 @@
                         <span style="font-size: 16px;">🚨</span> Community Reports
                     </div>
                     <div class="menu-action-item" onclick="goToScreen4(); closeAppMenu();" style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600; color: #fff; transition: background 0.2s;">
-                        <span style="font-size: 16px;">📍</span> Choose District
+                        <span style="font-size: 16px;">🔍</span> Search District or City
                     </div>
                     <div class="menu-action-item" onclick="goToScreen3(); closeAppMenu();" style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600; color: #fff; transition: background 0.2s;">
                         <span style="font-size: 16px;">⚡</span> Risk & DMC Alerts
