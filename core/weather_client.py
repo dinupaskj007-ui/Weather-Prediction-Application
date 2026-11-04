@@ -26,9 +26,16 @@ class DailyForecast(BaseModel):
     uv_index_max: Optional[List[float]] = None
     wind_speed_10m_max: Optional[List[float]] = None
 
+class HourlyForecast(BaseModel):
+    time: List[str]
+    temperature_2m: List[float]
+    weather_code: List[int]
+    precipitation_probability: Optional[List[int]] = None
+
 class WeatherResponseSchema(BaseModel):
     current: CurrentWeather
     daily: DailyForecast
+    hourly: Optional[HourlyForecast] = None
     timezone: str
 
 class CityGeo(BaseModel):
@@ -144,6 +151,7 @@ def fetch_weather_data(lat: float, lon: float) -> dict:
     url = (
         f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}"
         "&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m"
+        "&hourly=temperature_2m,weather_code,precipitation_probability"
         "&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,weather_code,uv_index_max,wind_speed_10m_max"
         "&timezone=Asia/Colombo"
     )

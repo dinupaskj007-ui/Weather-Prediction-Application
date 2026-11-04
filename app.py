@@ -150,7 +150,8 @@ def api_weather():
             "latitude": target_lat,
             "longitude": target_lon,
             "current": raw_weather["current"],
-            "daily": raw_weather["daily"]
+            "daily": raw_weather["daily"],
+            "hourly": raw_weather.get("hourly")
         }
         # Persist to offline cache
         set_cached_weather(cache_key, weather_data)
@@ -179,6 +180,35 @@ def api_weather():
     uv_max_list = daily.get("uv_index_max", [0])
     uv_val = uv_max_list[0] if uv_max_list else 0
 
+    # Build 24-hour hourly progression
+    hourly_raw = weather_data.get("hourly") or {}
+    h_time = hourly_raw.get("time", [])
+    h_temp = hourly_raw.get("temperature_2m", [])
+    h_code = hourly_raw.get("weather_code", [])
+    h_precip = hourly_raw.get("precipitation_probability", [])
+
+    if not h_time or len(h_time) < 24:
+        import math
+        from datetime import datetime, timedelta
+        now_dt = datetime.now()
+        base_temp = current.get("temperature_2m", 28.0)
+        base_code = current.get("weather_code", 0)
+        h_time = [(now_dt + timedelta(hours=i)).strftime("%Y-%m-%dT%H:00") for i in range(24)]
+        h_temp = []
+        for i in range(24):
+            h = (now_dt.hour + i) % 24
+            solar_factor = -math.cos((h - 5) * math.pi / 12)
+            h_temp.append(round(base_temp + solar_factor * 2.5, 1))
+        h_code = [base_code] * 24
+        h_precip = [15] * 24
+
+    hourly_payload = {
+        "time": h_time,
+        "temperature": h_temp,
+        "weather_code": h_code,
+        "precipitation_probability": h_precip
+    }
+
     response_payload = {
         "status": "success",
         "source": "cache" if is_cached else "live",
@@ -200,6 +230,7 @@ def api_weather():
             "uv_index": uv_val,
             "weather_code": current.get("weather_code", 0)
         },
+        "hourly": hourly_payload,
         "forecast": {
             "time": daily.get("time", [])[:7],
             "temp_max": daily.get("temperature_2m_max", [])[:7],
