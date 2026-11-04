@@ -650,12 +650,55 @@
         /* Today's Hourly Progression */
         .hourly-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
         .hourly-header h3 { margin: 0; font-size: 16px; font-weight: 700; color: var(--bottom-sheet-text); }
-        .hourly-scroll { display: flex; gap: 18px; overflow-x: auto; padding-bottom: 12px; -ms-overflow-style: none; scrollbar-width: none; }
+        .hourly-scroll {
+            display: flex;
+            gap: 16px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding: 4px 2px 14px;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
+        }
         .hourly-scroll::-webkit-scrollbar { display: none; }
-        .hourly-item { display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 48px; }
-        .hourly-item .time { font-size: 13px; font-weight: 600; color: var(--bottom-sheet-muted); }
-        .hourly-item .icon { font-size: 24px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
-        .hourly-item .temp { font-size: 16px; font-weight: 700; color: var(--bottom-sheet-text); }
+        .hourly-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            min-width: 52px;
+            flex-shrink: 0;
+            padding: 4px 6px;
+            border-radius: 12px;
+            transition: transform 0.2s ease, background 0.2s ease;
+            user-select: none;
+        }
+        .hourly-item:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .hourly-item .time {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--bottom-sheet-muted);
+            white-space: nowrap;
+        }
+        .hourly-item.is-now .time {
+            color: #38bdf8;
+            font-weight: 800;
+        }
+        .hourly-item .icon {
+            font-size: 24px;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.12));
+            line-height: 1;
+        }
+        .hourly-item .temp {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--bottom-sheet-text);
+            white-space: nowrap;
+        }
 
         /* Modern AI Prediction Trigger Button */
         /* --- EMERGENCY LIGHT BUTTON (Steady Calm Button, No Blink) --- */
@@ -1475,30 +1518,10 @@
                     </div>
                     
                     <div class="hourly-scroll" id="todayHourlyScroll">
-                        <div class="hourly-item">
+                        <div class="hourly-item is-now">
                             <span class="time">Now</span>
-                            <span class="icon" id="hourlyNowIcon">⛅</span>
-                            <span class="temp" id="hourlyNow">--°</span>
-                        </div>
-                        <div class="hourly-item">
-                            <span class="time" id="slotTime1">15:00</span>
-                            <span class="icon" id="slotIcon1">🌧️</span>
-                            <span class="temp" id="hourlyNext1">--°</span>
-                        </div>
-                        <div class="hourly-item">
-                            <span class="time" id="slotTime2">16:00</span>
-                            <span class="icon" id="slotIcon2">🌩️</span>
-                            <span class="temp" id="hourlyNext2">--°</span>
-                        </div>
-                        <div class="hourly-item">
-                            <span class="time" id="slotTime3">17:00</span>
-                            <span class="icon" id="slotIcon3">☁️</span>
-                            <span class="temp" id="hourlyNext3">--°</span>
-                        </div>
-                        <div class="hourly-item">
-                            <span class="time" id="slotTime4">18:00</span>
-                            <span class="icon" id="slotIcon4">🌦️</span>
-                            <span class="temp" id="hourlyNext4">--°</span>
+                            <span class="icon">⛅</span>
+                            <span class="temp">--°</span>
                         </div>
                     </div>
 
@@ -2056,6 +2079,75 @@
             return "It's a Storm";
         }
 
+        function renderToday24Hours(data) {
+            const container = document.getElementById('todayHourlyScroll');
+            if (!container) return;
+
+            const hourly = data.hourly || {};
+            const times = hourly.time || [];
+            const temps = hourly.temperature || [];
+            const codes = hourly.weather_code || [];
+            const precips = hourly.precipitation_probability || [];
+
+            const now = new Date();
+            const curHour = now.getHours();
+            const formatHour = (h) => ((h % 24 < 10 ? '0' : '') + (h % 24) + ':00');
+
+            // Find index in times matching the current hour of today
+            let startIdx = 0;
+            if (times.length > 0) {
+                const todayStr = now.toLocaleDateString('en-CA');
+                const foundIdx = times.findIndex(t => {
+                    return t.startsWith(todayStr) && parseInt(t.slice(11, 13), 10) === curHour;
+                });
+                if (foundIdx !== -1) {
+                    startIdx = foundIdx;
+                } else {
+                    const altIdx = times.findIndex(t => parseInt(t.slice(11, 13), 10) === curHour);
+                    if (altIdx !== -1) startIdx = altIdx;
+                }
+            }
+
+            let html = '';
+            for (let i = 0; i < 24; i++) {
+                const idx = startIdx + i;
+                const isNow = i === 0;
+                
+                let timeLabel = '';
+                let tempVal = Math.round(data.metrics.temperature);
+                let codeVal = data.metrics.weather_code;
+                let rainProb = 0;
+
+                if (idx < times.length) {
+                    const timeStr = times[idx];
+                    const h = parseInt(timeStr.slice(11, 13), 10);
+                    timeLabel = isNow ? 'Now' : formatHour(h);
+                    if (temps[idx] !== undefined) tempVal = Math.round(temps[idx]);
+                    if (codes[idx] !== undefined) codeVal = codes[idx];
+                    if (precips[idx] !== undefined) rainProb = precips[idx];
+                } else {
+                    const h = (curHour + i) % 24;
+                    timeLabel = isNow ? 'Now' : formatHour(h);
+                    const cycleFactor = -Math.cos((h - 5) * Math.PI / 12);
+                    tempVal = Math.round(data.metrics.temperature + cycleFactor * 2.5);
+                }
+
+                const icon = mapCodeToIcon(codeVal);
+                const isNowClass = isNow ? ' is-now' : '';
+                const condText = mapCodeToText(codeVal);
+
+                html += `
+                    <div class="hourly-item${isNowClass}" title="${timeLabel}: ${tempVal}°C • ${condText}${rainProb > 0 ? ` (${rainProb}% rain)` : ''}">
+                        <span class="time">${timeLabel}</span>
+                        <span class="icon">${icon}</span>
+                        <span class="temp">${tempVal}°</span>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+        }
+
         function applyDataToUI(data) {
             const name = localStorage.getItem('sl_weather_username') || "User";
             const dist = data.location.district;
@@ -2086,43 +2178,8 @@
             document.getElementById('weatherCodeCard').textContent = `${data.metrics.weather_code}`;
             document.getElementById('humidityValueCard').textContent = `${data.metrics.humidity}%`;
             
-            // Populate Today's Hourly Progression on Home Screen
-            const curTemp = Math.round(data.metrics.temperature);
-            const hourlyNowEl = document.getElementById('hourlyNow');
-            if (hourlyNowEl) hourlyNowEl.textContent = `${curTemp}°`;
-            const hourlyNowIconEl = document.getElementById('hourlyNowIcon');
-            if (hourlyNowIconEl) hourlyNowIconEl.textContent = mapCodeToIcon(data.metrics.weather_code);
-
-            const curHour = new Date().getHours();
-            const formatSlot = (h) => (h % 24 < 10 ? '0' : '') + (h % 24) + ':00';
-
-            const s1Time = document.getElementById('slotTime1');
-            if (s1Time) s1Time.textContent = formatSlot(curHour + 1);
-            const s1Temp = document.getElementById('hourlyNext1');
-            if (s1Temp) s1Temp.textContent = `${curTemp - 1}°`;
-            const s1Icon = document.getElementById('slotIcon1');
-            if (s1Icon) s1Icon.textContent = mapCodeToIcon(data.metrics.weather_code);
-
-            const s2Time = document.getElementById('slotTime2');
-            if (s2Time) s2Time.textContent = formatSlot(curHour + 2);
-            const s2Temp = document.getElementById('hourlyNext2');
-            if (s2Temp) s2Temp.textContent = `${curTemp - 2}°`;
-            const s2Icon = document.getElementById('slotIcon2');
-            if (s2Icon) s2Icon.textContent = mapCodeToIcon(data.metrics.weather_code);
-
-            const s3Time = document.getElementById('slotTime3');
-            if (s3Time) s3Time.textContent = formatSlot(curHour + 3);
-            const s3Temp = document.getElementById('hourlyNext3');
-            if (s3Temp) s3Temp.textContent = `${curTemp - 2}°`;
-            const s3Icon = document.getElementById('slotIcon3');
-            if (s3Icon) s3Icon.textContent = mapCodeToIcon(data.metrics.weather_code);
-
-            const s4Time = document.getElementById('slotTime4');
-            if (s4Time) s4Time.textContent = formatSlot(curHour + 4);
-            const s4Temp = document.getElementById('hourlyNext4');
-            if (s4Temp) s4Temp.textContent = `${curTemp - 3}°`;
-            const s4Icon = document.getElementById('slotIcon4');
-            if (s4Icon) s4Icon.textContent = mapCodeToIcon(data.metrics.weather_code);
+            // Populate Today's 24-Hour Weather Progression (Horizontally Scrollable)
+            renderToday24Hours(data);
 
             // Render 7-Day AI Weather Prediction inside Modal
             if (data.ai_7day_prediction) {

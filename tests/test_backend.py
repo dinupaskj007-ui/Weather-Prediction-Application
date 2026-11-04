@@ -94,6 +94,9 @@ def test_api_weather_district(client):
     assert "temperature" in data["metrics"]
     assert "dmc_alert" in data
     assert "ai_insights" in data
+    assert "hourly" in data
+    assert len(data["hourly"]["time"]) >= 24
+    assert len(data["hourly"]["temperature"]) >= 24
 
 def test_api_weather_gps_coordinates(client):
     """Test /api/weather with mobile GPS coordinates."""
