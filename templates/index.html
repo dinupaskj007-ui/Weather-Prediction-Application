@@ -1982,12 +1982,12 @@
             
             try {
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 9000);
+                const timeoutId = setTimeout(() => controller.abort(), 20000);
                 let url = `/api/weather?province=${encodeURIComponent(province)}&district=${encodeURIComponent(district)}`;
                 if (city) {
                     url += `&city=${encodeURIComponent(city)}`;
                 }
-                const response = await fetch(`/api/weather?province=${encodeURIComponent(province)}&district=${encodeURIComponent(district)}`, {
+                const response = await fetch(url, {
                     signal: controller.signal
                 });
                 clearTimeout(timeoutId);
@@ -2003,6 +2003,7 @@
                 
             } catch (error) {
                 console.error("Failed to fetch weather:", error);
+                document.getElementById('mainCondition').textContent = "Offline or Syncing...";
                 document.getElementById('aiSummaryText').textContent = "Live telemetry synced. Meteorological readings active.";
             } finally {
                 loader.style.display = 'none';
@@ -2089,6 +2090,8 @@
             document.getElementById('dashboardLocationHeader').textContent = locationDisplay;
             
             // Stats
+            const temp = Math.round(data.metrics.temperature);
+            const prefix = temp > 0 ? "+" : "";
             document.getElementById('mainTemp').innerHTML = `${prefix}${temp}<span class="main-temp-unit">°</span>`;
             document.getElementById('mainCondition').textContent = mapCodeToText(data.metrics.weather_code);
             
