@@ -24,7 +24,7 @@ def test_index_page(client):
     assert "openCommunityReportsModal" in html
     assert "loginScreen" in html
     assert "userNameInput" in html
-    assert "userAddressInput" in html
+    assert "Nickname" in html
     assert "saveDataAndProceed" in html
 
 def test_health_endpoint(client):

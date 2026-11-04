@@ -56,7 +56,6 @@ def validate_index_html(html_path: Path):
         "screen4",
         "loginScreen",
         "userNameInput",
-        "userAddressInput",
         "todayHourlyScroll",
         "btn-ai-prediction",
         "aiPredictionModal",

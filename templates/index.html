@@ -1331,18 +1331,13 @@
                         <div style="width: 48px; height: 48px; margin: 0 auto 12px; border-radius: 50%; background: linear-gradient(135deg, rgba(245,158,11,0.22), rgba(96,165,250,0.18)); border: 1px solid rgba(245,158,11,0.35); display: flex; align-items: center; justify-content: center; font-size: 22px;">
                             🌦️
                         </div>
-                        <h2 style="font-size: 20px; font-weight: 700; color: #ffffff; margin: 0 0 6px 0; letter-spacing: -0.2px;">Complete Profile</h2>
-                        <p style="font-size: 12.5px; color: var(--text-muted); margin: 0; line-height: 1.45;">Enter your name and home address to set up hyper-local forecasts and emergency alerts.</p>
+                        <h2 style="font-size: 20px; font-weight: 700; color: #ffffff; margin: 0 0 6px 0; letter-spacing: -0.2px;">Choose Your Nickname</h2>
+                        <p style="font-size: 12.5px; color: var(--text-muted); margin: 0; line-height: 1.45;">Enter a nickname and select your home location for personalized weather alerts.</p>
                     </div>
 
                     <div class="input-group" style="width: 100%;">
-                        <span class="input-label">Full Name *</span>
-                        <input type="text" id="userNameInput" class="form-input" placeholder="e.g. Kasun Perera" autocomplete="name" required>
-                    </div>
-
-                    <div class="input-group" style="width: 100%;">
-                        <span class="input-label">Home Address *</span>
-                        <input type="text" id="userAddressInput" class="form-input" placeholder="e.g. No. 45, Galle Road, Colombo 03" autocomplete="street-address" required>
+                        <span class="input-label">Nickname *</span>
+                        <input type="text" id="userNameInput" class="form-input" placeholder="e.g. Kasun, Kasa, Sandy" autocomplete="nickname" required>
                     </div>
 
                     <div class="input-group" style="width: 100%;">
@@ -1394,17 +1389,17 @@
 
                 <!-- Sleek Glass App Menu Dropdown -->
                 <div id="appDropdownMenu" class="glacier-panel" style="display: none; position: absolute; top: 65px; left: 25px; width: 250px; z-index: 50; padding: 10px; box-shadow: 0 16px 40px rgba(0,0,0,0.5);">
-                    <!-- User Profile & Home Address Card -->
+                    <!-- User Profile Card -->
                     <div id="menuUserProfileCard" style="padding: 10px 12px; margin-bottom: 8px; border-radius: 12px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);">
                         <div style="font-size: 13px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 6px;">
                             <span>👤</span> <span id="menuUserName">User</span>
                         </div>
                         <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px; display: flex; align-items: flex-start; gap: 5px; line-height: 1.3; word-break: break-word;">
-                            <span>🏠</span> <span id="menuUserAddress">Home address not configured</span>
+                            <span>📍</span> <span id="menuUserLocation">Sri Lanka</span>
                         </div>
                     </div>
                     <div class="menu-action-item" onclick="openProfileModal(); closeAppMenu();" style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600; color: #fff; transition: background 0.2s;">
-                        <span style="font-size: 16px;">📝</span> Edit Profile & Address
+                        <span style="font-size: 16px;">📝</span> Edit Profile
                     </div>
                     <div class="menu-action-item" onclick="goToScreen1(); closeAppMenu();" style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600; color: #fff; transition: background 0.2s;">
                         <span style="font-size: 16px;">🏠</span> Welcome Screen
@@ -1894,9 +1889,9 @@
 
         function handleInitialCheck() {
             const savedName = localStorage.getItem('sl_weather_username');
-            const savedAddress = localStorage.getItem('sl_weather_address');
-            if (!savedName || !savedAddress) {
-                // First-time login: show profile and home address creation screen
+            const savedDist = localStorage.getItem('sl_weather_district');
+            if (!savedName || !savedDist) {
+                // First-time login: show nickname and location setup screen
                 showScreen('loginScreen');
             } else {
                 goToScreen2();
@@ -1905,19 +1900,13 @@
 
         function saveDataAndProceed() {
             const name = document.getElementById('userNameInput').value.trim();
-            const address = document.getElementById('userAddressInput').value.trim();
             const prov = provSelect.value;
             const dist = distSelect.value;
             const city = (citySelect && citySelect.value) ? citySelect.value : "";
             
             if (!name) {
-                alert("Please enter your name.");
+                alert("Please enter your nickname.");
                 document.getElementById('userNameInput').focus();
-                return;
-            }
-            if (!address) {
-                alert("Please enter your home address.");
-                document.getElementById('userAddressInput').focus();
                 return;
             }
             if (!prov) {
@@ -1932,7 +1921,6 @@
             }
 
             localStorage.setItem('sl_weather_username', name);
-            localStorage.setItem('sl_weather_address', address);
             localStorage.setItem('sl_weather_province', prov);
             localStorage.setItem('sl_weather_district', dist);
             if (city && city.toLowerCase() !== dist.toLowerCase()) {
@@ -1943,22 +1931,21 @@
 
             // Sync menu card display
             const menuName = document.getElementById('menuUserName');
-            const menuAddr = document.getElementById('menuUserAddress');
+            const menuLoc = document.getElementById('menuUserLocation');
             if (menuName) menuName.textContent = name;
-            if (menuAddr) menuAddr.textContent = address;
+            if (menuLoc) menuLoc.textContent = (city && city.toLowerCase() !== dist.toLowerCase()) ? `${city}, ${dist}` : `${dist}, Sri Lanka`;
 
             goToScreen2();
         }
 
         function openProfileModal() {
             const savedName = localStorage.getItem('sl_weather_username') || "";
-            const savedAddress = localStorage.getItem('sl_weather_address') || "";
             const savedProv = localStorage.getItem('sl_weather_province') || "";
             const savedDist = localStorage.getItem('sl_weather_district') || "";
             const savedCity = localStorage.getItem('sl_weather_city') || "";
 
-            document.getElementById('userNameInput').value = savedName;
-            document.getElementById('userAddressInput').value = savedAddress;
+            const nameIn = document.getElementById('userNameInput');
+            if (nameIn) nameIn.value = savedName;
             
             if (savedProv) {
                 provSelect.value = savedProv;
@@ -2071,15 +2058,14 @@
 
         function applyDataToUI(data) {
             const name = localStorage.getItem('sl_weather_username') || "User";
-            const address = localStorage.getItem('sl_weather_address') || "";
             const dist = data.location.district;
             const prov = data.location.province;
             const city = data.location.city;
 
             const menuNameEl = document.getElementById('menuUserName');
-            const menuAddressEl = document.getElementById('menuUserAddress');
+            const menuLocEl = document.getElementById('menuUserLocation');
             if (menuNameEl) menuNameEl.textContent = name;
-            if (menuAddressEl) menuAddressEl.textContent = address || "Not configured";
+            if (menuLocEl) menuLocEl.textContent = (city && city.toLowerCase() !== dist.toLowerCase()) ? `${city}, ${dist}` : `${dist}, Sri Lanka`;
             
             const gpsInfo = data.location.gps_distance_km !== null && data.location.gps_distance_km !== undefined 
                 ? ` (${data.location.gps_distance_km} km from center)` 
@@ -2527,9 +2513,7 @@
             localStorage.removeItem('sl_weather_district');
             localStorage.removeItem('sl_weather_city');
             const nameIn = document.getElementById('userNameInput');
-            const addrIn = document.getElementById('userAddressInput');
             if (nameIn) nameIn.value = '';
-            if (addrIn) addrIn.value = '';
             goToScreen1();
         }
 
