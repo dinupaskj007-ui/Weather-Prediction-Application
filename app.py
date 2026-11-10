@@ -438,5 +438,22 @@ def api_search_locations():
     })
 
 if __name__ == "__main__":
+    import os
+    import socket
+
+    preferred_port = int(os.environ.get("PORT", 5000))
+    port = preferred_port
+    
+    # Check preferred port; if occupied or reserved, gracefully bind to next available port
+    for candidate in [preferred_port, 5000, 5005, 5050, 8080, 8000]:
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.bind(("0.0.0.0", candidate))
+            s.close()
+            port = candidate
+            break
+        except OSError:
+            continue
+
     # Host on 0.0.0.0 so all mobile devices on the network can connect
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    app.run(debug=True, host="0.0.0.0", port=port)
