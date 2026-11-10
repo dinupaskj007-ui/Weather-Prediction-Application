@@ -1363,10 +1363,12 @@
         <!-- SCREEN 1.5: FIRST-TIME LOGIN & SETUP -->
         <div id="loginScreen" class="screen">
             <div class="s1-content login-screen-content" style="max-height: 92vh; overflow-y: auto; padding: 25px 20px 40px; box-sizing: border-box;">
-                <div style="width: 100%; max-width: 380px; display: flex; justify-content: flex-start; margin-bottom: 14px;">
-                    <button onclick="goToScreen1()" class="back-btn" style="font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; color: var(--text-muted); cursor: pointer; background: none; border: none; padding: 0;">
-                        ‹ Back to Welcome
+                <div class="login-nav-header" style="width: 100%; max-width: 380px; margin: 0 auto 14px; display: flex; align-items: center; justify-content: space-between;">
+                    <button id="loginBackBtn" onclick="handleLoginBack()" class="back-btn" style="font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; color: #ffffff; cursor: pointer; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 20px; padding: 7px 16px; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.16)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">
+                        <span style="font-size: 20px; line-height: 1; font-weight: 300;">‹</span>
+                        <span id="loginBackBtnLabel">Back to Dashboard</span>
                     </button>
+                    <span id="loginScreenModeTag" style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #38bdf8; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 12px; padding: 4px 10px;">Setup</span>
                 </div>
                 
                 <div class="glacier-panel" style="width: 100%; max-width: 380px; padding: 26px 22px; box-sizing: border-box; text-align: left; margin: 0 auto;">
@@ -1374,8 +1376,8 @@
                         <div style="width: 48px; height: 48px; margin: 0 auto 12px; border-radius: 50%; background: linear-gradient(135deg, rgba(245,158,11,0.22), rgba(96,165,250,0.18)); border: 1px solid rgba(245,158,11,0.35); display: flex; align-items: center; justify-content: center; font-size: 22px;">
                             🌦️
                         </div>
-                        <h2 style="font-size: 20px; font-weight: 700; color: #ffffff; margin: 0 0 6px 0; letter-spacing: -0.2px;">Choose Your Nickname</h2>
-                        <p style="font-size: 12.5px; color: var(--text-muted); margin: 0; line-height: 1.45;">Enter a nickname and select your home location for personalized weather alerts.</p>
+                        <h2 id="loginScreenTitle" style="font-size: 20px; font-weight: 700; color: #ffffff; margin: 0 0 6px 0; letter-spacing: -0.2px;">Choose Your Nickname</h2>
+                        <p id="loginScreenSubtitle" style="font-size: 12.5px; color: var(--text-muted); margin: 0; line-height: 1.45;">Enter a nickname and select your home location for personalized weather alerts.</p>
                     </div>
 
                     <div class="input-group" style="width: 100%;">
@@ -1882,11 +1884,30 @@
             setTimeout(() => document.getElementById(screenId).classList.add('active'), 50);
         }
 
+        let isEditProfileMode = false;
+
+        function handleLoginBack() {
+            if (isEditProfileMode || (localStorage.getItem('sl_weather_username') && localStorage.getItem('sl_weather_district'))) {
+                goToScreen2();
+            } else {
+                goToScreen1();
+            }
+        }
+
         function handleInitialCheck() {
             const savedName = localStorage.getItem('sl_weather_username');
             const savedDist = localStorage.getItem('sl_weather_district');
             if (!savedName || !savedDist) {
                 // First-time login: show nickname and location setup screen
+                isEditProfileMode = false;
+                const backLabel = document.getElementById('loginBackBtnLabel');
+                if (backLabel) backLabel.textContent = "Back to Welcome";
+                const modeTag = document.getElementById('loginScreenModeTag');
+                if (modeTag) modeTag.textContent = "Setup";
+                const screenTitle = document.getElementById('loginScreenTitle');
+                if (screenTitle) screenTitle.textContent = "Choose Your Nickname";
+                const screenSub = document.getElementById('loginScreenSubtitle');
+                if (screenSub) screenSub.textContent = "Enter a nickname and select your home location for personalized weather alerts.";
                 showScreen('loginScreen');
             } else {
                 goToScreen2();
@@ -1935,6 +1956,7 @@
         }
 
         function openProfileModal() {
+            isEditProfileMode = true;
             const savedName = localStorage.getItem('sl_weather_username') || "";
             const savedProv = localStorage.getItem('sl_weather_province') || "";
             const savedDist = localStorage.getItem('sl_weather_district') || "";
@@ -1954,6 +1976,17 @@
                     }
                 }
             }
+
+            // Update UI for Edit Profile mode
+            const backLabel = document.getElementById('loginBackBtnLabel');
+            if (backLabel) backLabel.textContent = "Back to Dashboard";
+            const modeTag = document.getElementById('loginScreenModeTag');
+            if (modeTag) modeTag.textContent = "Edit Profile";
+            const screenTitle = document.getElementById('loginScreenTitle');
+            if (screenTitle) screenTitle.textContent = "Edit Your Profile";
+            const screenSub = document.getElementById('loginScreenSubtitle');
+            if (screenSub) screenSub.textContent = "Update your nickname or home location for personalized weather alerts.";
+
             showScreen('loginScreen');
         }
 
