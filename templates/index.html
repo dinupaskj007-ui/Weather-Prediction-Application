@@ -1536,10 +1536,7 @@
                             <span class="ai-btn-sparkle">✨</span>
                             <span class="ai-btn-title">7-Day AI Weather Prediction</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px;">
-                            <span class="ai-btn-badge" id="aiBtnBadge">95% Acc</span>
-                            <span style="font-size: 16px; color: #8b5cf6; font-weight: 700;">➔</span>
-                        </div>
+                        <span style="font-size: 16px; color: #8b5cf6; font-weight: 700;">➔</span>
                     </button>
                     
                     <div class="ai-summary-card">
@@ -2513,8 +2510,6 @@
             const pillBadge = document.getElementById('forecastModelPill');
             if (pillBadge) pillBadge.textContent = `${ai7Day.overall_confidence}% High Precision`;
 
-            const btnBadge = document.getElementById('aiBtnBadge');
-            if (btnBadge) btnBadge.textContent = `${ai7Day.overall_confidence}% Acc`;
 
 
             const confBadge = document.getElementById('weeklyConfidenceBadge');
