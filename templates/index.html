@@ -1534,10 +1534,7 @@
                     <button class="btn-ai-prediction" onclick="openAIPredictionModal()" title="Tap to inspect full 7-day AI prediction & meteorological intelligence">
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <span class="ai-btn-sparkle">✨</span>
-                            <div style="text-align: left;">
-                                <div class="ai-btn-title">7-Day AI Weather Prediction</div>
-                                <div class="ai-btn-sub" id="aiBtnSubtext">View High-Precision Forecast & AI Analysis</div>
-                            </div>
+                            <span class="ai-btn-title">7-Day AI Weather Prediction</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px;">
                             <span class="ai-btn-badge" id="aiBtnBadge">95% Acc</span>
@@ -2519,10 +2516,6 @@
             const btnBadge = document.getElementById('aiBtnBadge');
             if (btnBadge) btnBadge.textContent = `${ai7Day.overall_confidence}% Acc`;
 
-            const btnSub = document.getElementById('aiBtnSubtext');
-            if (btnSub && ai7Day.peak_rain_day) {
-                btnSub.textContent = `Peak Rain: ${ai7Day.peak_rain_day.day_name} (${ai7Day.peak_rain_day.rain_probability}%) • Tap to inspect`;
-            }
 
             const confBadge = document.getElementById('weeklyConfidenceBadge');
             if (confBadge) confBadge.textContent = `${ai7Day.overall_confidence}% Confidence`;
