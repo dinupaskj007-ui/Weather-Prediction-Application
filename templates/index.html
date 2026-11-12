@@ -796,7 +796,7 @@
             border: 1px solid rgba(139, 92, 246, 0.3);
         }
 
-        /* --- 7-DAY AI WEATHER PREDICTION ENGINE STYLES (INSIDE MODAL) --- */
+        /* --- 10-DAY AI WEATHER PREDICTION ENGINE STYLES (INSIDE MODAL) --- */
         .forecast-header {
             display: flex;
             justify-content: space-between;
@@ -826,76 +826,89 @@
 
         .forecast-scroll {
             display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            padding: 4px 2px 14px;
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-            scroll-snap-type: x mandatory;
+            flex-direction: column;
+            gap: 0;
+            padding: 0 0 10px;
         }
-        .forecast-scroll::-webkit-scrollbar { display: none; }
 
         .forecast-day-card {
-            min-width: 84px;
-            flex-shrink: 0;
-            scroll-snap-align: start;
-            background: var(--bottom-sheet-card);
-            border: 1.5px solid transparent;
-            border-radius: 18px;
-            padding: 12px 8px;
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             align-items: center;
-            gap: 6px;
+            padding: 14px 4px;
             cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
-            position: relative;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+            transition: background 0.2s;
             user-select: none;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            gap: 0;
         }
+        .forecast-day-card:last-child { border-bottom: none; }
         .forecast-day-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(0,0,0,0.07);
+            background: rgba(255,255,255,0.04);
         }
         .forecast-day-card.active {
-            background: linear-gradient(155deg, rgba(139, 92, 246, 0.12) 0%, rgba(6, 182, 212, 0.14) 100%);
-            border-color: #8b5cf6;
-            box-shadow: 0 6px 18px rgba(139, 92, 246, 0.22);
-            transform: translateY(-2px);
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(6, 182, 212, 0.08) 100%);
         }
 
         .day-title {
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 700;
             color: var(--bottom-sheet-text);
+            width: 52px;
+            flex-shrink: 0;
         }
-        .day-subdate {
-            font-size: 10px;
+        .day-subdate { display: none; }
+        .forecast-glyph {
+            font-size: 22px;
+            line-height: 1;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+            width: 34px;
+            flex-shrink: 0;
+            text-align: center;
+        }
+        .day-rain-pct {
+            font-size: 12px;
+            font-weight: 600;
+            color: #60a5fa;
+            width: 36px;
+            flex-shrink: 0;
+            text-align: center;
+        }
+        .day-temp-low-val {
+            font-size: 14px;
             font-weight: 600;
             color: var(--bottom-sheet-muted);
-            margin-top: -4px;
+            width: 34px;
+            flex-shrink: 0;
+            text-align: right;
         }
-        .forecast-glyph {
-            font-size: 26px;
-            line-height: 1;
-            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.12));
-            margin: 2px 0;
+        .day-temp-bar-wrapper {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255,255,255,0.08);
+            margin: 0 10px;
+            position: relative;
+            overflow: hidden;
         }
-        .day-temps {
-            display: flex;
-            gap: 4px;
-            align-items: baseline;
-            font-size: 13px;
+        .day-temp-bar-fill {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            border-radius: 3px;
         }
-        .day-temp-high {
-            font-weight: 800;
+        .day-temp-high-val {
+            font-size: 14px;
+            font-weight: 700;
             color: var(--bottom-sheet-text);
+            width: 34px;
+            flex-shrink: 0;
+            text-align: right;
         }
-        .day-temp-low {
-            font-weight: 500;
-            color: var(--bottom-sheet-muted);
-            font-size: 11px;
-        }
+
+        /* Hide old vertical-card elements */
+        .day-temps { display: none; }
+        .conf-dot { display: none; }
 
         .rain-prob-badge {
             font-size: 10px;
@@ -996,7 +1009,7 @@
             margin-bottom: 3px;
         }
 
-        /* 7-Day Ensemble Intelligence Card */
+        /* 10-Day Ensemble Intelligence Card */
         .weekly-ai-card {
             background: linear-gradient(145deg, rgba(139, 92, 246, 0.08) 0%, rgba(6, 182, 212, 0.06) 100%);
             border: 1px solid rgba(139, 92, 246, 0.2);
@@ -1455,7 +1468,7 @@
                         <span style="font-size: 16px;">🏠</span> Welcome Screen
                     </div>
                     <div class="menu-action-item" onclick="openAIPredictionModal(); closeAppMenu();" style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600; color: #fff; transition: background 0.2s;">
-                        <span style="font-size: 16px;">📅</span> 7-Day AI Prediction
+                        <span style="font-size: 16px;">📅</span> 10-Day AI Prediction
                     </div>
                     <div class="menu-action-item" onclick="openCommunityReportsModal(); closeAppMenu();" style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600; color: #fff; transition: background 0.2s;">
                         <span style="font-size: 16px;">🚨</span> Community Reports
@@ -1533,10 +1546,10 @@
                     </div>
 
                     <!-- AI PREDICTION TRIGGER BUTTON (Shows AI Work in Modal Sheet) -->
-                    <button class="btn-ai-prediction" onclick="openAIPredictionModal()" title="Tap to inspect full 7-day AI prediction & meteorological intelligence">
+                    <button class="btn-ai-prediction" onclick="openAIPredictionModal()" title="Tap to inspect full 10-day AI prediction & meteorological intelligence">
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <span class="ai-btn-sparkle">✨</span>
-                            <span class="ai-btn-title">7-Day AI Weather Prediction</span>
+                            <span class="ai-btn-title">10-Day AI Weather Prediction</span>
                         </div>
                         <span style="font-size: 16px; color: #8b5cf6; font-weight: 700;">➔</span>
                     </button>
@@ -1655,7 +1668,7 @@
             </div>
         </div>
 
-        <!-- 7-DAY AI PREDICTION MODAL SHEET -->
+        <!-- 10-DAY AI PREDICTION MODAL SHEET -->
         <!-- DEDICATED COMMUNITY REPORTS & EMERGENCY RADAR MODAL -->
         <div id="communityReportsModal" class="modal-overlay" onclick="if(event.target === this) closeCommunityReportsModal()">
             <div class="modal-sheet" style="max-height: 86vh; overflow-y: auto;">
@@ -1698,7 +1711,7 @@
             <div class="modal-sheet" style="max-height: 88vh; overflow-y: auto;">
                 <div class="modal-header" style="margin-bottom: 8px;">
                     <div style="display: flex; align-items: center; gap: 8px;">
-                        <h3 style="margin: 0; font-size: 17px; font-weight: 800; color: var(--bottom-sheet-text);">✨ 7-Day AI Prediction</h3>
+                        <h3 style="margin: 0; font-size: 17px; font-weight: 800; color: var(--bottom-sheet-text);">✨ 10-Day AI Prediction</h3>
                         <span class="forecast-accuracy-badge" id="forecastModelPill">95% High Precision</span>
                     </div>
                     <button class="modal-close" onclick="closeAIPredictionModal()">&times;</button>
@@ -1708,8 +1721,8 @@
                     Multi-variable meteorological intelligence & calibrated probability ensemble
                 </div>
                 
-                <!-- 7-Day Daily Strip -->
-                <div class="forecast-scroll" id="forecast7DayScroll">
+                <!-- 10-Day Daily Strip -->
+                <div class="forecast-scroll" id="forecast10DayScroll">
                     <!-- Populated dynamically by AI engine -->
                 </div>
 
@@ -1751,10 +1764,10 @@
                     </div>
                 </div>
 
-                <!-- 7-Day Ensemble Intelligence Card -->
+                <!-- 10-Day Ensemble Intelligence Card -->
                 <div class="weekly-ai-card">
                     <div class="weekly-ai-header">
-                        <span class="weekly-ai-tag">✨ 7-Day Ensemble Intelligence</span>
+                        <span class="weekly-ai-tag">✨ 10-Day Ensemble Intelligence</span>
                         <span id="weeklyConfidenceBadge" class="confidence-badge">94.6% Accuracy</span>
                     </div>
                     <div class="weekly-highlights">
@@ -1774,7 +1787,7 @@
                         </div>
                     </div>
                     <div class="weekly-trend-text" id="weeklyTrendAnalysisText">
-                        Synthesizing 7-day atmospheric trajectories and monsoon moisture convergence...
+                        Synthesizing 10-day atmospheric trajectories and monsoon moisture convergence...
                     </div>
                 </div>
 
@@ -2187,9 +2200,9 @@
             // Populate Today's 24-Hour Weather Progression (Horizontally Scrollable)
             renderToday24Hours(data);
 
-            // Render 7-Day AI Weather Prediction inside Modal
+            // Render 10-Day AI Weather Prediction inside Modal
             if (data.ai_7day_prediction) {
-                render7DayPrediction(data.ai_7day_prediction);
+                render10DayPrediction(data.ai_7day_prediction);
             }
             
             document.getElementById('humidityValueScreen3').textContent = `${data.metrics.humidity}%`;
@@ -2497,7 +2510,7 @@
             goToScreen2();
         }
 
-        // --- 7-Day AI Prediction Controller ---
+        // --- 10-Day AI Prediction Controller ---
         let currentForecastDays = [];
         let selectedDayIndex = 0;
 
@@ -2535,7 +2548,7 @@
             return '☀️';
         }
 
-        function render7DayPrediction(ai7Day) {
+        function render10DayPrediction(ai7Day) {
             if (!ai7Day || !ai7Day.daily_predictions || ai7Day.daily_predictions.length === 0) return;
             currentForecastDays = ai7Day.daily_predictions;
 
@@ -2561,31 +2574,45 @@
             const trendText = document.getElementById('weeklyTrendAnalysisText');
             if (trendText) trendText.textContent = ai7Day.trend_analysis;
 
-            // Render 7-day cards strip
-            const container = document.getElementById('forecast7DayScroll');
+            // Render 10-day vertical list
+            const container = document.getElementById('forecast10DayScroll');
             if (container) {
-                container.innerHTML = currentForecastDays.map((d, idx) => {
-                    let rainClass = 'rain-low';
-                    if (d.rain_probability >= 70) rainClass = 'rain-high';
-                    else if (d.rain_probability >= 40) rainClass = 'rain-mid';
+                // Calculate temp range across all days for the bar
+                const allMin = Math.min(...currentForecastDays.map(d => d.temp_min));
+                const allMax = Math.max(...currentForecastDays.map(d => d.temp_max));
+                const tempRange = allMax - allMin || 1;
 
+                container.innerHTML = currentForecastDays.map((d, idx) => {
                     const activeClass = idx === selectedDayIndex ? ' active' : '';
-                    const dateParts = d.date.split('-');
-                    const dateFmt = dateParts.length === 3 ? `${dateParts[1]}/${dateParts[2]}` : d.date;
+                    // Short day label
+                    let dayLabel = d.day_short || d.day_name;
+                    if (idx === 0) dayLabel = 'Today';
+
+                    // Temperature bar position
+                    const barLeft = ((d.temp_min - allMin) / tempRange) * 100;
+                    const barRight = ((allMax - d.temp_max) / tempRange) * 100;
+
+                    // Bar gradient color based on temp
+                    const avgTemp = (d.temp_min + d.temp_max) / 2;
+                    let barGradient;
+                    if (avgTemp >= 32) barGradient = 'linear-gradient(90deg, #f59e0b, #ef4444)';
+                    else if (avgTemp >= 28) barGradient = 'linear-gradient(90deg, #fbbf24, #f97316)';
+                    else if (avgTemp >= 24) barGradient = 'linear-gradient(90deg, #34d399, #fbbf24)';
+                    else barGradient = 'linear-gradient(90deg, #60a5fa, #34d399)';
+
+                    // Rain probability display
+                    const rainPct = d.rain_probability > 0 ? `${d.rain_probability}%` : '';
 
                     return `
                         <div class="forecast-day-card${activeClass}" onclick="selectForecastDay(${idx})" id="dayCard-${idx}" title="Tap for ${d.day_name} AI analysis">
-                            <span class="day-title">${d.day_name}</span>
-                            <span class="day-subdate">${dateFmt}</span>
+                            <span class="day-title">${dayLabel}</span>
                             <span class="forecast-glyph">${d.glyph}</span>
-                            <div class="day-temps">
-                                <span class="day-temp-high">${d.temp_max}°</span>
-                                <span class="day-temp-low">${d.temp_min}°</span>
+                            <span class="day-rain-pct">${rainPct}</span>
+                            <span class="day-temp-low-val">${d.temp_min}°</span>
+                            <div class="day-temp-bar-wrapper">
+                                <div class="day-temp-bar-fill" style="left:${barLeft}%; right:${barRight}%; background:${barGradient};"></div>
                             </div>
-                            <span class="rain-prob-badge ${rainClass}">
-                                <span>💧</span> ${d.rain_probability}%
-                            </span>
-                            <span class="conf-dot" title="Confidence: ${d.confidence_score}%">${d.confidence_score}%</span>
+                            <span class="day-temp-high-val">${d.temp_max}°</span>
                         </div>
                     `;
                 }).join('');

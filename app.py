@@ -232,13 +232,13 @@ def api_weather():
         },
         "hourly": hourly_payload,
         "forecast": {
-            "time": daily.get("time", [])[:7],
-            "temp_max": daily.get("temperature_2m_max", [])[:7],
-            "temp_min": daily.get("temperature_2m_min", [])[:7],
-            "precipitation": daily.get("precipitation_sum", [])[:7],
-            "precipitation_probability": daily.get("precipitation_probability_max", [])[:7],
-            "weather_code": daily.get("weather_code", [])[:7],
-            "wind_speed_max": daily.get("wind_speed_10m_max", [])[:7]
+            "time": daily.get("time", [])[:10],
+            "temp_max": daily.get("temperature_2m_max", [])[:10],
+            "temp_min": daily.get("temperature_2m_min", [])[:10],
+            "precipitation": daily.get("precipitation_sum", [])[:10],
+            "precipitation_probability": daily.get("precipitation_probability_max", [])[:10],
+            "weather_code": daily.get("weather_code", [])[:10],
+            "wind_speed_max": daily.get("wind_speed_10m_max", [])[:10]
         },
         "dmc_alert": dmc_alert,
         "ai_insights": ai_context,

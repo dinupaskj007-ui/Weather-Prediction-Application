@@ -153,6 +153,7 @@ def fetch_weather_data(lat: float, lon: float) -> dict:
         "&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m"
         "&hourly=temperature_2m,weather_code,precipitation_probability"
         "&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,weather_code,uv_index_max,wind_speed_10m_max"
+        "&forecast_days=10"
         "&timezone=Asia/Colombo"
     )
     response = requests.get(url, timeout=5)

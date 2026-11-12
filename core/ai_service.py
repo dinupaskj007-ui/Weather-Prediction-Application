@@ -92,7 +92,7 @@ _prediction_cache = {}
 
 def generate_7day_ai_prediction(province: str, district: str, weather_data: dict, dmc_alert: dict) -> dict:
     """
-    Synthesize high-precision 7-day weather predictions using meteorological intelligence.
+    Synthesize high-precision 10-day weather predictions using meteorological intelligence.
     Produces calibrated rain probabilities, confidence scores, and day-by-day advisories.
     """
     cache_key = f"{district.lower()}_7day_{datetime.now().strftime('%Y%m%d%H')}"
@@ -104,9 +104,9 @@ def generate_7day_ai_prediction(province: str, district: str, weather_data: dict
     if not times:
         # Fallback if daily is empty
         now = datetime.now()
-        times = [(now + timedelta(days=d)).strftime("%Y-%m-%d") for d in range(7)]
+        times = [(now + timedelta(days=d)).strftime("%Y-%m-%d") for d in range(10)]
 
-    num_days = min(len(times), 7)
+    num_days = min(len(times), 10)
     temp_max_list = daily.get("temperature_2m_max", [30.0] * num_days)
     temp_min_list = daily.get("temperature_2m_min", [24.0] * num_days)
     precip_sum_list = daily.get("precipitation_sum", [0.0] * num_days)
@@ -194,7 +194,7 @@ def generate_7day_ai_prediction(province: str, district: str, weather_data: dict
         "status": "success",
         "district": district,
         "province": province,
-        "headline": f"7-Day AI Meteorological Intelligence for {district}",
+        "headline": f"10-Day AI Meteorological Intelligence for {district}",
         "overall_confidence": overall_conf,
         "monsoon_context": monsoon_ctx,
         "peak_rain_day": {
