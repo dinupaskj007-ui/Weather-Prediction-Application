@@ -1726,44 +1726,6 @@
                     <!-- Populated dynamically by AI engine -->
                 </div>
 
-                <!-- Interactive Day Detail Inspector -->
-                <div class="day-detail-panel" id="selectedDayDetailCard">
-                    <div class="day-detail-header">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <span id="detailDayGlyph" style="font-size: 24px;">🌤️</span>
-                            <div>
-                                <h4 id="detailDayTitle" style="margin: 0; font-size: 14px; font-weight: 700; color: var(--bottom-sheet-text);">Today's AI Meteorological Intelligence</h4>
-                                <div id="detailDaySub" style="font-size: 11px; color: var(--bottom-sheet-muted); font-weight: 600;">Partly Cloudy • 98% AI Confidence</div>
-                            </div>
-                        </div>
-                        <div id="detailRainPill" class="rain-prob-badge rain-low">💧 --% Rain</div>
-                    </div>
-                    
-                    <div class="detail-metrics-grid">
-                        <div class="detail-stat">
-                            <span class="label">PRECIPITATION</span>
-                            <span class="value" id="detailPrecipMm">-- mm</span>
-                        </div>
-                        <div class="detail-stat">
-                            <span class="label">MAX WIND</span>
-                            <span class="value" id="detailWindSpeed">-- km/h</span>
-                        </div>
-                        <div class="detail-stat">
-                            <span class="label">UV INDEX</span>
-                            <span class="value" id="detailUvIndex">-- Max</span>
-                        </div>
-                        <div class="detail-stat">
-                            <span class="label">CONFIDENCE</span>
-                            <span class="value" id="detailConfidence">--% High</span>
-                        </div>
-                    </div>
-                    
-                    <div class="detail-advisory-box">
-                        <span class="advisory-tag">🎯 AI METEOROLOGY ADVISORY</span>
-                        <div id="detailAdvisoryText">Syncing hyper-local microclimate prediction...</div>
-                    </div>
-                </div>
-
                 <!-- 10-Day Ensemble Intelligence Card -->
                 <div class="weekly-ai-card">
                     <div class="weekly-ai-header">
@@ -1793,6 +1755,53 @@
 
                 <button class="btn-primary" onclick="closeAIPredictionModal()" style="width: 100%; margin: 15px 0 5px; padding: 14px 0; background: var(--btn-gradient); border: none; border-radius: 20px; font-size: 14px; font-weight: 700; color: #fff; cursor: pointer;">
                     Done
+                </button>
+            </div>
+        </div>
+
+        <!-- DAY DETAIL POPUP MODAL (Opens on 10-day item click) -->
+        <div id="dayDetailModal" class="modal-overlay" style="z-index: 110;" onclick="if(event.target === this) closeDayDetailModal()">
+            <div class="modal-sheet" style="max-height: 85vh; overflow-y: auto;">
+                <div class="modal-header" style="margin-bottom: 12px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span id="detailDayGlyph" style="font-size: 26px;">🌤️</span>
+                        <div>
+                            <h3 id="detailDayTitle" style="margin: 0; font-size: 16px; font-weight: 800; color: var(--bottom-sheet-text);">Tomorrow: Overcast Clouds</h3>
+                            <div id="detailDaySub" style="font-size: 12px; color: var(--bottom-sheet-muted); font-weight: 600;">2026-11-13 • High: 30°C / Low: 24°C</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div id="detailRainPill" class="rain-prob-badge rain-low">💧 14% Rain</div>
+                        <button class="modal-close" onclick="closeDayDetailModal()">&times;</button>
+                    </div>
+                </div>
+
+                <div class="detail-metrics-grid" style="margin-top: 14px; margin-bottom: 14px;">
+                    <div class="detail-stat">
+                        <span class="label">PRECIPITATION</span>
+                        <span class="value" id="detailPrecipMm">0 mm</span>
+                    </div>
+                    <div class="detail-stat">
+                        <span class="label">MAX WIND</span>
+                        <span class="value" id="detailWindSpeed">17.6 km/h</span>
+                    </div>
+                    <div class="detail-stat">
+                        <span class="label">UV INDEX</span>
+                        <span class="value" id="detailUvIndex">7.2 Max</span>
+                    </div>
+                    <div class="detail-stat">
+                        <span class="label">CONFIDENCE</span>
+                        <span class="value" id="detailConfidence">96% High</span>
+                    </div>
+                </div>
+
+                <div class="detail-advisory-box" style="margin-bottom: 16px;">
+                    <span class="advisory-tag">🎯 AI METEOROLOGY ADVISORY</span>
+                    <div id="detailAdvisoryText">Pleasant and stable with gentle winds. Optimal conditions for outdoor travel.</div>
+                </div>
+
+                <button class="btn-primary" onclick="closeDayDetailModal()" style="width: 100%; margin: 10px 0 5px; padding: 13px 0; background: var(--btn-gradient); border: none; border-radius: 20px; font-size: 14px; font-weight: 700; color: #fff; cursor: pointer;">
+                    Close
                 </button>
             </div>
         </div>
@@ -2604,7 +2613,7 @@
                     const rainPct = d.rain_probability > 0 ? `${d.rain_probability}%` : '';
 
                     return `
-                        <div class="forecast-day-card${activeClass}" onclick="selectForecastDay(${idx})" id="dayCard-${idx}" title="Tap for ${d.day_name} AI analysis">
+                        <div class="forecast-day-card${activeClass}" onclick="openDayDetailModal(${idx})" id="dayCard-${idx}" title="Tap for ${d.day_name} AI analysis">
                             <span class="day-title">${dayLabel}</span>
                             <span class="forecast-glyph">${d.glyph}</span>
                             <span class="day-rain-pct">${rainPct}</span>
@@ -2618,10 +2627,11 @@
                 }).join('');
             }
 
-            selectForecastDay(selectedDayIndex);
+            // Sync initial data without auto-opening popup
+            selectForecastDay(selectedDayIndex, false);
         }
 
-        function selectForecastDay(idx) {
+        function selectForecastDay(idx, shouldOpenModal = false) {
             selectedDayIndex = idx;
             if (!currentForecastDays || !currentForecastDays[idx]) return;
             const d = currentForecastDays[idx];
@@ -2655,6 +2665,51 @@
             if (uvEl) uvEl.textContent = `${d.uv_index} Max`;
             if (confEl) confEl.textContent = `${d.confidence_score}% High`;
             if (advisoryEl) advisoryEl.textContent = d.ai_advisory;
+
+            if (shouldOpenModal) {
+                openDayDetailModal(idx);
+            }
+        }
+
+        function openDayDetailModal(idx) {
+            if (typeof idx === 'number') {
+                selectedDayIndex = idx;
+                if (currentForecastDays && currentForecastDays[idx]) {
+                    const d = currentForecastDays[idx];
+                    document.querySelectorAll('.forecast-day-card').forEach((el, i) => {
+                        el.classList.toggle('active', i === idx);
+                    });
+                    const glyphEl = document.getElementById('detailDayGlyph');
+                    const titleEl = document.getElementById('detailDayTitle');
+                    const subEl = document.getElementById('detailDaySub');
+                    const rainPill = document.getElementById('detailRainPill');
+                    const precipEl = document.getElementById('detailPrecipMm');
+                    const windEl = document.getElementById('detailWindSpeed');
+                    const uvEl = document.getElementById('detailUvIndex');
+                    const confEl = document.getElementById('detailConfidence');
+                    const advisoryEl = document.getElementById('detailAdvisoryText');
+
+                    if (glyphEl) glyphEl.textContent = d.glyph;
+                    if (titleEl) titleEl.textContent = `${d.day_name}: ${d.condition}`;
+                    if (subEl) subEl.textContent = `${d.date} • High: ${d.temp_max}°C / Low: ${d.temp_min}°C`;
+                    if (rainPill) {
+                        rainPill.innerHTML = `💧 ${d.rain_probability}% Rain`;
+                        rainPill.className = 'rain-prob-badge ' + (d.rain_probability >= 70 ? 'rain-high' : (d.rain_probability >= 40 ? 'rain-mid' : 'rain-low'));
+                    }
+                    if (precipEl) precipEl.textContent = `${d.precipitation_mm} mm`;
+                    if (windEl) windEl.textContent = `${d.wind_max_kmh} km/h`;
+                    if (uvEl) uvEl.textContent = `${d.uv_index} Max`;
+                    if (confEl) confEl.textContent = `${d.confidence_score}% High`;
+                    if (advisoryEl) advisoryEl.textContent = d.ai_advisory;
+                }
+            }
+            const modal = document.getElementById('dayDetailModal');
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function closeDayDetailModal() {
+            const modal = document.getElementById('dayDetailModal');
+            if (modal) modal.style.display = 'none';
         }
 
         function goToScreen1() {
