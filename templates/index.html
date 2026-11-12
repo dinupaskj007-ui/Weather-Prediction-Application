@@ -1553,11 +1553,6 @@
                         </div>
                         <span style="font-size: 16px; color: #8b5cf6; font-weight: 700;">➔</span>
                     </button>
-                    
-                    <div class="ai-summary-card">
-                        <div class="ai-summary-title">✨ AI Summary</div>
-                        <span id="aiSummaryText">Syncing local meteorological data...</span>
-                    </div>
 
                     <button class="btn-view-stats" onclick="goToScreen3()">View Full Risk Report</button>
                 </div>
@@ -2042,7 +2037,8 @@
             } catch (error) {
                 console.error("Failed to fetch weather:", error);
                 document.getElementById('mainCondition').textContent = "Offline or Syncing...";
-                document.getElementById('aiSummaryText').textContent = "Live telemetry synced. Meteorological readings active.";
+                const aiSumEl = document.getElementById('aiSummaryText');
+                if (aiSumEl) aiSumEl.textContent = "Live telemetry synced. Meteorological readings active.";
             } finally {
                 loader.style.display = 'none';
             }
@@ -2221,7 +2217,8 @@
             const ai = data.ai_insights;
             const dmc = data.dmc_alert;
             
-            document.getElementById('aiSummaryText').textContent = `Hi ${name}, ${ai.synthetic_impact_statement}`;
+            const aiSumEl = document.getElementById('aiSummaryText');
+            if (aiSumEl) aiSumEl.textContent = `Hi ${name}, ${ai.synthetic_impact_statement}`;
             document.getElementById('dmcAlertText').textContent = dmc.message;
             document.getElementById('dmcSeverityHeader').textContent = `[${dmc.source}] ${dmc.severity}:`;
             
