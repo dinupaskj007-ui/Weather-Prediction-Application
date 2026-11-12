@@ -162,7 +162,7 @@ def test_api_weather_7day_prediction(client):
     pred = data["ai_7day_prediction"]
     assert pred["status"] == "success"
     assert "daily_predictions" in pred
-    assert len(pred["daily_predictions"]) == 7
+    assert len(pred["daily_predictions"]) == 10
     assert "peak_rain_day" in pred
     assert "best_outdoor_day" in pred
     assert pred["overall_confidence"] >= 80.0
@@ -179,7 +179,7 @@ def test_api_7day_forecast_endpoint(client):
     data = res.get_json()
     assert data["status"] == "success"
     assert data["district"] == "Kandy"
-    assert len(data["daily_predictions"]) == 7
+    assert len(data["daily_predictions"]) == 10
     assert data["overall_confidence"] >= 80.0
 
 
@@ -222,4 +222,4 @@ def test_api_forecast_7day_city(client):
     assert res.status_code == 200
     data = res.get_json()
     assert data["status"] == "success"
-    assert len(data["daily_predictions"]) == 7
+    assert len(data["daily_predictions"]) == 10

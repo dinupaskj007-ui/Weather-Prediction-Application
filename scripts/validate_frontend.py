@@ -61,7 +61,7 @@ def validate_index_html(html_path: Path):
         "aiPredictionModal",
         "emergencyBeaconBtn",
         "communityReportsModal",
-        "forecast7DayScroll",
+        "forecast10DayScroll",
         "forecastModelPill",
         "weeklyTrendAnalysisText",
         "detailDayTitle",
