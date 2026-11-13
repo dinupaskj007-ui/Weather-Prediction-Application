@@ -1,0 +1,29 @@
+{
+  "name": "wt",
+  "version": "1.0.0",
+  "description": "This project is a localized weather intelligence platform engineered specifically for Sri Lanka's microclimates and monsoonal patterns, shifting the paradigm from passive data display to proactive risk management and decision support.",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dinupaskj007-ui/Weather-Prediction-Application.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/dinupaskj007-ui/Weather-Prediction-Application/issues"
+  },
+  "homepage": "https://github.com/dinupaskj007-ui/Weather-Prediction-Application#readme",
+  "devDependencies": {
+    "@capacitor/android": "^8.6.2",
+    "@capacitor/cli": "^8.6.2",
+    "@capacitor/core": "^8.6.2"
+  }
+}

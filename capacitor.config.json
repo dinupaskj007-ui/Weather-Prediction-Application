@@ -1,0 +1,12 @@
+{
+  "appId": "com.slweather.app",
+  "appName": "SL Weather",
+  "webDir": "static",
+  "server": {
+    "url": "https://wpa-jwtm.onrender.com",
+    "cleartext": false
+  },
+  "android": {
+    "allowMixedContent": true
+  }
+}

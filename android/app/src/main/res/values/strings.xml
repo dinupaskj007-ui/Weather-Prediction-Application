@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">SL Weather</string>
+    <string name="title_activity_main">SL Weather</string>
+    <string name="package_name">com.slweather.app</string>
+    <string name="custom_url_scheme">com.slweather.app</string>
+</resources>
