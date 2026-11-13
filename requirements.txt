@@ -5,3 +5,4 @@ pydantic
 tenacity
 pybreaker
 google-genai
+gunicorn
