@@ -126,7 +126,8 @@ def resolve_coordinates(district_or_city: str) -> CityGeo:
 def fetch_coordinates_from_api(city: str) -> CityGeo:
     """Remote geocoding fallback."""
     url = f"https://geocoding-api.open-meteo.com/v1/search?name={city}&count=1"
-    response = requests.get(url, timeout=5)
+    headers = {"User-Agent": "SL-Weather-Prediction-App/1.0 (https://github.com/dinupaskj007-ui/Weather-Prediction-Application)"}
+    response = requests.get(url, headers=headers, timeout=8)
     response.raise_for_status()
     
     data = response.json()
@@ -156,7 +157,8 @@ def fetch_weather_data(lat: float, lon: float) -> dict:
         "&forecast_days=10"
         "&timezone=Asia/Colombo"
     )
-    response = requests.get(url, timeout=5)
+    headers = {"User-Agent": "SL-Weather-Prediction-App/1.0 (https://github.com/dinupaskj007-ui/Weather-Prediction-Application)"}
+    response = requests.get(url, headers=headers, timeout=8)
     response.raise_for_status()
     
     try:
