@@ -1,0 +1,7 @@
+Flask
+flask-cors
+requests
+pydantic
+tenacity
+pybreaker
+google-genai
