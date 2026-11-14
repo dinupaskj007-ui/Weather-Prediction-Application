@@ -839,6 +839,8 @@
             cursor: pointer;
             transition: background 0.2s;
             user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
             border-bottom: 1px solid rgba(255,255,255,0.06);
             gap: 0;
         }
@@ -1142,8 +1144,8 @@
         .gps-pill-btn:active { transform: scale(0.95); background: rgba(34, 211, 238, 0.3); }
 
         /* Mobile Report Modal */
-        .modal-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.65); backdrop-filter: blur(12px); z-index: 100; display: none; justify-content: center; align-items: flex-end; }
-        .modal-sheet { background: var(--bottom-sheet-bg); color: var(--bottom-sheet-text); width: 100%; border-top-left-radius: 30px; border-top-right-radius: 30px; padding: 25px; box-sizing: border-box; animation: slideUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); max-height: 85vh; overflow-y: auto; }
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.65); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 999; display: none; justify-content: center; align-items: flex-end; }
+        .modal-sheet { background: var(--bottom-sheet-bg); color: var(--bottom-sheet-text); width: 100%; max-width: 500px; border-top-left-radius: 30px; border-top-right-radius: 30px; padding: 25px; box-sizing: border-box; animation: slideUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); max-height: 85vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .modal-header h3 { margin: 0; font-size: 18px; font-weight: 700; color: var(--bottom-sheet-text); }
         .modal-close { font-size: 22px; cursor: pointer; color: var(--bottom-sheet-muted); background: none; border: none; padding: 0; }
@@ -1755,7 +1757,7 @@
         </div>
 
         <!-- DAY DETAIL POPUP MODAL (Opens on 10-day item click) -->
-        <div id="dayDetailModal" class="modal-overlay" style="z-index: 110;" onclick="if(event.target === this) closeDayDetailModal()">
+        <div id="dayDetailModal" class="modal-overlay" style="z-index: 1005;" onclick="if(event.target === this) closeDayDetailModal()">
             <div class="modal-sheet" style="max-height: 85vh; overflow-y: auto;">
                 <div class="modal-header" style="margin-bottom: 12px;">
                     <div style="display: flex; align-items: center; gap: 8px;">
