@@ -1,10 +1,58 @@
+from datetime import datetime, timedelta
+from unittest.mock import Mock
+
 import pytest
-from app import app
+import requests
+
+from core import cache
 from core.locations import find_nearest_district, search_locations, get_city_info
 
+
 @pytest.fixture
-def client():
-    app.config["TESTING"] = True
+def weather_provider(monkeypatch):
+    start = datetime(2025, 1, 1)
+    response = Mock(spec=requests.Response)
+    response.json.return_value = {
+        "timezone": "Asia/Colombo",
+        "current": {
+            "temperature_2m": 28.0,
+            "relative_humidity_2m": 80,
+            "weather_code": 3,
+            "wind_speed_10m": 10.0,
+        },
+        "daily": {
+            "time": [(start + timedelta(days=day)).date().isoformat() for day in range(10)],
+            "temperature_2m_max": [30.0] * 10,
+            "temperature_2m_min": [24.0] * 10,
+            "precipitation_sum": [1.0] * 10,
+            "precipitation_probability_max": [50] * 10,
+            "weather_code": [51] * 10,
+            "uv_index_max": [8.0] * 10,
+            "wind_speed_10m_max": [12.0] * 10,
+        },
+        "hourly": {
+            "time": [(start + timedelta(hours=hour)).isoformat(timespec="minutes") for hour in range(24)],
+            "temperature_2m": [28.0] * 24,
+            "weather_code": [3] * 24,
+            "precipitation_probability": [50] * 24,
+        },
+    }
+
+    def get_forecast(url, **kwargs):
+        if not url.startswith("https://api.open-meteo.com/v1/forecast?"):
+            pytest.fail(f"Unexpected weather provider request: {url}")
+        return response
+
+    monkeypatch.setattr(requests, "get", get_forecast)
+
+
+@pytest.fixture
+def client(tmp_path, monkeypatch, weather_provider):
+    monkeypatch.setattr(cache, "DB_PATH", tmp_path / "weather_cache.db")
+    from app import app
+
+    cache.init_db()
+    monkeypatch.setitem(app.config, "TESTING", True)
     with app.test_client() as client:
         yield client
 
@@ -17,8 +65,9 @@ def test_index_page(client):
     assert "Today's Weather" in html
     assert "todayHourlyScroll" in html
     assert "btn-ai-prediction" in html
-    assert "aiPredictionModal" in html
-    assert "openAIPredictionModal" in html
+    assert '<section id="aiPredictionScreen" class="screen"' in html
+    assert "showScreen('aiPredictionScreen')" in html
+    assert '<dialog id="dayDetailModal"' in html
     assert "emergencyBeaconBtn" in html
     assert "communityReportsModal" in html
     assert "openCommunityReportsModal" in html
