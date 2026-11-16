@@ -820,6 +820,12 @@
             display: flex;
             flex-direction: row;
             align-items: center;
+            width: 100%;
+            background: transparent;
+            border: 0;
+            color: inherit;
+            font: inherit;
+            text-align: left;
             padding: 14px 4px;
             cursor: pointer;
             transition: background 0.2s;
@@ -929,27 +935,85 @@
             opacity: 0.85;
         }
 
-        /* Day Detail Inspector Panel */
-        .day-detail-panel {
-            background: var(--bottom-sheet-card);
-            border-radius: 20px;
-            padding: 18px 16px;
-            margin-top: 10px;
-            margin-bottom: 16px;
-            border: 1px solid rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
+        /* Forecast day popup */
+        .day-detail-dialog {
+            box-sizing: border-box;
+            width: min(625px, calc(100% - 32px));
+            max-width: none;
+            max-height: calc(100% - 32px);
+            max-height: calc(100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+            padding: 0;
+            border: 0;
+            border-radius: clamp(20px, 5vw, 36px);
+            background: var(--bottom-sheet-bg);
+            color: var(--bottom-sheet-text);
+            overscroll-behavior: contain;
+        }
+        .day-detail-dialog::backdrop {
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(10px);
+        }
+        .day-detail-content {
+            padding: clamp(16px, 5vw, 32px);
         }
         .day-detail-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 14px;
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr) auto auto;
+            align-items: start;
+            gap: 10px;
+        }
+        .day-detail-header h3 {
+            margin: 0;
+            font-size: clamp(16px, 4vw, 20px);
+        }
+        .day-detail-subtitle {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--bottom-sheet-muted);
+        }
+        .day-detail-header .modal-close {
+            width: 32px;
+            min-height: 32px;
+        }
+        .day-detail-rain {
+            align-self: center;
         }
         .detail-metrics-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(4, minmax(0, 1fr));
             gap: 8px;
-            margin-bottom: 12px;
+            margin: 16px 0;
+        }
+        .day-detail-close {
+            width: 100%;
+            min-height: 44px;
+            margin-top: 24px;
+            padding: 12px;
+            border: 0;
+            border-radius: 24px;
+            background: var(--btn-gradient);
+            color: #fff;
+            font: inherit;
+            font-weight: 800;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+        @media (max-width: 480px) {
+            .detail-metrics-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+            .day-detail-header {
+                grid-template-columns: auto minmax(0, 1fr) auto;
+            }
+            .day-detail-rain {
+                grid-column: 2;
+                grid-row: 2;
+                justify-self: start;
+            }
+            .day-detail-header .modal-close {
+                grid-column: 3;
+                grid-row: 1;
+            }
         }
         .detail-stat {
             background: rgba(255, 255, 255, 0.6);
@@ -1712,51 +1776,49 @@
         </section>
 
         <!-- DAY DETAIL POPUP MODAL (Opens on 10-day item click) -->
-        <div id="dayDetailModal" class="modal-overlay" style="z-index: 1005;" onclick="if(event.target === this) closeDayDetailModal()">
-            <div class="modal-sheet" style="max-height: 85vh; overflow-y: auto;">
-                <div class="modal-header" style="margin-bottom: 12px;">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <span id="detailDayGlyph" style="font-size: 26px;">🌤️</span>
-                        <div>
-                            <h3 id="detailDayTitle" style="margin: 0; font-size: 16px; font-weight: 800; color: var(--bottom-sheet-text);">Tomorrow: Overcast Clouds</h3>
-                            <div id="detailDaySub" style="font-size: 12px; color: var(--bottom-sheet-muted); font-weight: 600;">2026-11-13 • High: 30°C / Low: 24°C</div>
-                        </div>
+        <dialog id="dayDetailModal" class="day-detail-dialog" aria-labelledby="detailDayTitle" aria-describedby="detailDaySub" onclick="if (event.target === this) this.close()">
+            <div class="day-detail-content">
+                <div class="day-detail-header">
+                    <span id="detailDayGlyph" style="font-size: 26px;" aria-hidden="true"></span>
+                    <div>
+                        <h3 id="detailDayTitle"></h3>
+                        <div id="detailDaySub" class="day-detail-subtitle"></div>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <div id="detailRainPill" class="rain-prob-badge rain-low">💧 14% Rain</div>
-                        <button class="modal-close" onclick="closeDayDetailModal()">&times;</button>
+                    <div class="day-detail-rain">
+                        <span id="detailRainPill" class="rain-prob-badge"></span>
                     </div>
+                    <button type="button" class="modal-close" aria-label="Close forecast details" onclick="this.closest('dialog').close()">&times;</button>
                 </div>
 
-                <div class="detail-metrics-grid" style="margin-top: 14px; margin-bottom: 14px;">
+                <div class="detail-metrics-grid">
                     <div class="detail-stat">
                         <span class="label">PRECIPITATION</span>
-                        <span class="value" id="detailPrecipMm">0 mm</span>
+                        <span class="value" id="detailPrecipMm"></span>
                     </div>
                     <div class="detail-stat">
                         <span class="label">MAX WIND</span>
-                        <span class="value" id="detailWindSpeed">17.6 km/h</span>
+                        <span class="value" id="detailWindSpeed"></span>
                     </div>
                     <div class="detail-stat">
                         <span class="label">UV INDEX</span>
-                        <span class="value" id="detailUvIndex">7.2 Max</span>
+                        <span class="value" id="detailUvIndex"></span>
                     </div>
                     <div class="detail-stat">
                         <span class="label">CONFIDENCE</span>
-                        <span class="value" id="detailConfidence">96% High</span>
+                        <span class="value" id="detailConfidence"></span>
                     </div>
                 </div>
 
-                <div class="detail-advisory-box" style="margin-bottom: 16px;">
+                <div class="detail-advisory-box">
                     <span class="advisory-tag">🎯 AI METEOROLOGY ADVISORY</span>
-                    <div id="detailAdvisoryText">Pleasant and stable with gentle winds. Optimal conditions for outdoor travel.</div>
+                    <div id="detailAdvisoryText"></div>
                 </div>
 
-                <button class="btn-primary" onclick="closeDayDetailModal()" style="width: 100%; margin: 10px 0 5px; padding: 13px 0; background: var(--btn-gradient); border: none; border-radius: 20px; font-size: 14px; font-weight: 700; color: #fff; cursor: pointer;">
-                    Close
-                </button>
+                <form method="dialog">
+                    <button class="day-detail-close">Close</button>
+                </form>
             </div>
-        </div>
+        </dialog>
 
     </div>
 
@@ -2557,25 +2619,25 @@
                     const rainPct = d.rain_probability > 0 ? `${d.rain_probability}%` : '';
 
                     return `
-                        <div class="forecast-day-card${activeClass}" onclick="openDayDetailModal(${idx})" id="dayCard-${idx}" title="Tap for ${d.day_name} AI analysis">
+                        <button type="button" class="forecast-day-card${activeClass}" onclick="openDayDetailModal(${idx})" id="dayCard-${idx}" title="View ${d.day_name} AI analysis" aria-haspopup="dialog">
                             <span class="day-title">${dayLabel}</span>
                             <span class="forecast-glyph">${d.glyph}</span>
                             <span class="day-rain-pct">${rainPct}</span>
                             <span class="day-temp-low-val">${d.temp_min}°</span>
-                            <div class="day-temp-bar-wrapper">
-                                <div class="day-temp-bar-fill" style="left:${barLeft}%; right:${barRight}%; background:${barGradient};"></div>
-                            </div>
+                            <span class="day-temp-bar-wrapper">
+                                <span class="day-temp-bar-fill" style="left:${barLeft}%; right:${barRight}%; background:${barGradient};"></span>
+                            </span>
                             <span class="day-temp-high-val">${d.temp_max}°</span>
-                        </div>
+                        </button>
                     `;
                 }).join('');
             }
 
-            // Sync initial data without auto-opening popup
-            selectForecastDay(selectedDayIndex, false);
+            // Keep the selected day's details current when weather data refreshes.
+            selectForecastDay(selectedDayIndex);
         }
 
-        function selectForecastDay(idx, shouldOpenModal = false) {
+        function selectForecastDay(idx) {
             selectedDayIndex = idx;
             if (!currentForecastDays || !currentForecastDays[idx]) return;
             const d = currentForecastDays[idx];
@@ -2600,7 +2662,7 @@
             if (subEl) subEl.textContent = `${d.date} • High: ${d.temp_max}°C / Low: ${d.temp_min}°C`;
             
             if (rainPill) {
-                rainPill.innerHTML = `💧 ${d.rain_probability}% Rain`;
+                rainPill.textContent = `💧 ${d.rain_probability}% Rain`;
                 rainPill.className = 'rain-prob-badge ' + (d.rain_probability >= 70 ? 'rain-high' : (d.rain_probability >= 40 ? 'rain-mid' : 'rain-low'));
             }
 
@@ -2609,51 +2671,12 @@
             if (uvEl) uvEl.textContent = `${d.uv_index} Max`;
             if (confEl) confEl.textContent = `${d.confidence_score}% High`;
             if (advisoryEl) advisoryEl.textContent = d.ai_advisory;
-
-            if (shouldOpenModal) {
-                openDayDetailModal(idx);
-            }
         }
 
         function openDayDetailModal(idx) {
-            if (typeof idx === 'number') {
-                selectedDayIndex = idx;
-                if (currentForecastDays && currentForecastDays[idx]) {
-                    const d = currentForecastDays[idx];
-                    document.querySelectorAll('.forecast-day-card').forEach((el, i) => {
-                        el.classList.toggle('active', i === idx);
-                    });
-                    const glyphEl = document.getElementById('detailDayGlyph');
-                    const titleEl = document.getElementById('detailDayTitle');
-                    const subEl = document.getElementById('detailDaySub');
-                    const rainPill = document.getElementById('detailRainPill');
-                    const precipEl = document.getElementById('detailPrecipMm');
-                    const windEl = document.getElementById('detailWindSpeed');
-                    const uvEl = document.getElementById('detailUvIndex');
-                    const confEl = document.getElementById('detailConfidence');
-                    const advisoryEl = document.getElementById('detailAdvisoryText');
-
-                    if (glyphEl) glyphEl.textContent = d.glyph;
-                    if (titleEl) titleEl.textContent = `${d.day_name}: ${d.condition}`;
-                    if (subEl) subEl.textContent = `${d.date} • High: ${d.temp_max}°C / Low: ${d.temp_min}°C`;
-                    if (rainPill) {
-                        rainPill.innerHTML = `💧 ${d.rain_probability}% Rain`;
-                        rainPill.className = 'rain-prob-badge ' + (d.rain_probability >= 70 ? 'rain-high' : (d.rain_probability >= 40 ? 'rain-mid' : 'rain-low'));
-                    }
-                    if (precipEl) precipEl.textContent = `${d.precipitation_mm} mm`;
-                    if (windEl) windEl.textContent = `${d.wind_max_kmh} km/h`;
-                    if (uvEl) uvEl.textContent = `${d.uv_index} Max`;
-                    if (confEl) confEl.textContent = `${d.confidence_score}% High`;
-                    if (advisoryEl) advisoryEl.textContent = d.ai_advisory;
-                }
-            }
-            const modal = document.getElementById('dayDetailModal');
-            if (modal) modal.style.display = 'flex';
-        }
-
-        function closeDayDetailModal() {
-            const modal = document.getElementById('dayDetailModal');
-            if (modal) modal.style.display = 'none';
+            if (!currentForecastDays[idx]) return;
+            selectForecastDay(idx);
+            document.getElementById('dayDetailModal').showModal();
         }
 
         function goToScreen1() {
