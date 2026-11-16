@@ -751,21 +751,51 @@
             border: 1px solid rgba(139, 92, 246, 0.3);
         }
 
-        /* --- 10-DAY AI WEATHER PREDICTION ENGINE STYLES (INSIDE MODAL) --- */
+        /* --- 10-DAY AI WEATHER PREDICTION SCREEN --- */
+        #aiPredictionScreen {
+            background: var(--bottom-sheet-bg);
+            color: var(--bottom-sheet-text);
+        }
+
         .forecast-header {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 14px;
+            gap: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            padding: max(12px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
+                     12px max(16px, env(safe-area-inset-left));
+            background: var(--bottom-sheet-bg);
         }
-        .forecast-header h3 {
+        .forecast-header h2 {
             margin: 0;
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 800;
+        }
+        .forecast-header .back-btn {
+            flex: 0 0 44px;
+            height: 44px;
+            margin: 0;
             color: var(--bottom-sheet-text);
+            background: var(--bottom-sheet-card);
+        }
+        .forecast-content {
+            width: 100%;
+            max-width: 640px;
+            box-sizing: border-box;
+            margin: 0 auto;
+            padding: 0 max(16px, env(safe-area-inset-right))
+                     max(24px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+        }
+        .forecast-description {
             display: flex;
+            flex-wrap: wrap;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
+            margin: 0 0 12px;
+            font-size: 12px;
+            color: var(--bottom-sheet-muted);
         }
         .forecast-accuracy-badge {
             font-size: 10px;
@@ -1400,7 +1430,7 @@
                     <div class="menu-action-item" onclick="goToScreen1(); closeAppMenu();" style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600; color: #fff; transition: background 0.2s;">
                         <span style="font-size: 16px;">🏠</span> Welcome Screen
                     </div>
-                    <div class="menu-action-item" onclick="openAIPredictionModal(); closeAppMenu();" style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600; color: #fff; transition: background 0.2s;">
+                    <div class="menu-action-item" onclick="closeAppMenu(); showScreen('aiPredictionScreen');" style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600; color: #fff; transition: background 0.2s;">
                         <span style="font-size: 16px;">📅</span> 10-Day AI Prediction
                     </div>
                     <div class="menu-action-item" onclick="openCommunityReportsModal(); closeAppMenu();" style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600; color: #fff; transition: background 0.2s;">
@@ -1479,7 +1509,7 @@
                     </div>
 
                     <!-- AI PREDICTION TRIGGER BUTTON (Shows AI Work in Modal Sheet) -->
-                    <button class="btn-ai-prediction" onclick="openAIPredictionModal()" title="Tap to inspect full 10-day AI prediction & meteorological intelligence">
+                    <button class="btn-ai-prediction" onclick="showScreen('aiPredictionScreen')" title="Tap to inspect full 10-day AI prediction & meteorological intelligence">
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <span class="ai-btn-sparkle">✨</span>
                             <span class="ai-btn-title">10-Day AI Weather Prediction</span>
@@ -1596,7 +1626,6 @@
             </div>
         </div>
 
-        <!-- 10-DAY AI PREDICTION MODAL SHEET -->
         <!-- DEDICATED COMMUNITY REPORTS & EMERGENCY RADAR MODAL -->
         <div id="communityReportsModal" class="modal-overlay" onclick="if(event.target === this) closeCommunityReportsModal()">
             <div class="modal-sheet" style="max-height: 86vh; overflow-y: auto;">
@@ -1635,19 +1664,17 @@
             </div>
         </div>
 
-        <div id="aiPredictionModal" class="modal-overlay" onclick="if(event.target === this) closeAIPredictionModal()">
-            <div class="modal-sheet" style="max-height: 88vh; overflow-y: auto;">
-                <div class="modal-header" style="margin-bottom: 8px;">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <h3 style="margin: 0; font-size: 17px; font-weight: 800; color: var(--bottom-sheet-text);">✨ 10-Day AI Prediction</h3>
-                        <span class="forecast-accuracy-badge" id="forecastModelPill">95% High Precision</span>
-                    </div>
-                    <button class="modal-close" onclick="closeAIPredictionModal()">&times;</button>
-                </div>
-                
-                <div style="font-size: 12px; color: var(--bottom-sheet-muted); margin-bottom: 16px; font-weight: 500;">
+        <section id="aiPredictionScreen" class="screen" aria-labelledby="aiPredictionTitle">
+            <header class="forecast-header">
+                <button type="button" class="back-btn" onclick="showScreen('screen2')" aria-label="Back to weather dashboard">‹</button>
+                <h2 id="aiPredictionTitle">10-Day AI Prediction</h2>
+            </header>
+
+            <div class="forecast-content">
+                <p class="forecast-description">
                     Multi-variable meteorological intelligence & calibrated probability ensemble
-                </div>
+                    <span class="forecast-accuracy-badge" id="forecastModelPill">95% High Precision</span>
+                </p>
                 
                 <!-- 10-Day Daily Strip -->
                 <div class="forecast-scroll" id="forecast10DayScroll">
@@ -1681,11 +1708,8 @@
                     </div>
                 </div>
 
-                <button class="btn-primary" onclick="closeAIPredictionModal()" style="width: 100%; margin: 15px 0 5px; padding: 14px 0; background: var(--btn-gradient); border: none; border-radius: 20px; font-size: 14px; font-weight: 700; color: #fff; cursor: pointer;">
-                    Done
-                </button>
             </div>
-        </div>
+        </section>
 
         <!-- DAY DETAIL POPUP MODAL (Opens on 10-day item click) -->
         <div id="dayDetailModal" class="modal-overlay" style="z-index: 1005;" onclick="if(event.target === this) closeDayDetailModal()">
@@ -2138,7 +2162,7 @@
             // Populate Today's 24-Hour Weather Progression (Horizontally Scrollable)
             renderToday24Hours(data);
 
-            // Render 10-Day AI Weather Prediction inside Modal
+            // Populate the 10-day forecast screen.
             if (data.ai_7day_prediction) {
                 render10DayPrediction(data.ai_7day_prediction);
             }
@@ -2464,16 +2488,6 @@
 
         function closeCommunityReportsModal() {
             const modal = document.getElementById('communityReportsModal');
-            if (modal) modal.style.display = 'none';
-        }
-
-        function openAIPredictionModal() {
-            const modal = document.getElementById('aiPredictionModal');
-            if (modal) modal.style.display = 'flex';
-        }
-
-        function closeAIPredictionModal() {
-            const modal = document.getElementById('aiPredictionModal');
             if (modal) modal.style.display = 'none';
         }
 
