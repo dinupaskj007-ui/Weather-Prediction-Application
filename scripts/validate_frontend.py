@@ -58,7 +58,7 @@ def validate_index_html(html_path: Path):
         "userNameInput",
         "todayHourlyScroll",
         "btn-ai-prediction",
-        "aiPredictionModal",
+        "aiPredictionScreen",
         "emergencyBeaconBtn",
         "communityReportsModal",
         "forecast10DayScroll",
