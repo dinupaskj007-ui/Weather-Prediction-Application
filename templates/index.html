@@ -1249,6 +1249,8 @@
         .tray-toggle-btn, .location-pill, .gps-sync-btn, .btn-report, .btn-view-stats { min-height: 44px; }
         .location-pill, .gps-sync-btn { font-family: inherit; cursor: pointer; }
         .location-pill { max-width: 100%; border: 0; }
+        #weatherRetryBtn[hidden] { display: none; }
+        #weatherConnectionStatus { font-size: 13px; }
         .gps-sync-btn {
             color: var(--bottom-sheet-muted);
             background: none;
@@ -1580,6 +1582,8 @@
                     
                     <div class="main-temp" id="mainTemp">+--<span class="main-temp-unit">°</span></div>
                     <div class="main-condition" id="mainCondition">Loading...</div>
+                    <p id="weatherConnectionStatus" role="status" hidden></p>
+                    <button type="button" id="weatherRetryBtn" class="location-pill" onclick="goToScreen2()" hidden>Retry weather</button>
                     
                     <!-- Basic Info First -->
                     <button type="button" class="location-pill" onclick="useCurrentGpsLocation()" title="Refresh with device GPS">
@@ -2086,37 +2090,51 @@
         }
 
         // --- API Integration (Mobile Ready) ---
+        async function requestApi(path, options = {}) {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), 25000);
+            try {
+                const response = await fetch(path, { ...options, signal: controller.signal });
+                const data = await response.json().catch(error => {
+                    if (error.name === 'SyntaxError') return null;
+                    throw error;
+                });
+                if (!response.ok || !data || data.error) {
+                    throw new Error(data?.error || 'The weather service is temporarily unavailable.');
+                }
+                return data;
+            } catch (error) {
+                if (error.name === 'AbortError') throw new Error('The request timed out. Please try again.');
+                if (error instanceof TypeError) throw new Error('Could not reach the weather service. Check your connection.');
+                throw error;
+            } finally {
+                clearTimeout(timer);
+            }
+        }
+
         async function fetchWeatherData(province, district, city) {
             const loader = document.getElementById('loadingOverlay');
             document.getElementById('loadingText').textContent = "Syncing with Meteorological Data...";
             loader.style.display = 'flex';
             
             try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 20000);
                 let url = `/api/weather?province=${encodeURIComponent(province)}&district=${encodeURIComponent(district)}`;
                 if (city) {
                     url += `&city=${encodeURIComponent(city)}`;
                 }
-                const response = await fetch(url, {
-                    signal: controller.signal
-                });
-                clearTimeout(timeoutId);
-                const data = await response.json();
-                
-                if (data.error && !data.metrics) {
-                    console.warn("Backend weather message:", data.error);
-                    document.getElementById('mainCondition').textContent = data.error;
-                } else {
-                    applyDataToUI(data);
-                    fetchCommunityReports(data.location.district);
-                }
+                const data = await requestApi(url);
+                applyDataToUI(data);
+                fetchCommunityReports(data.location.district);
                 
             } catch (error) {
                 console.error("Failed to fetch weather:", error);
-                document.getElementById('mainCondition').textContent = "Offline or Syncing...";
-                const aiSumEl = document.getElementById('aiSummaryText');
-                if (aiSumEl) aiSumEl.textContent = "Live telemetry synced. Meteorological readings active.";
+                const status = document.getElementById('weatherConnectionStatus');
+                status.textContent = `${city || district}: ${error.message}`;
+                status.hidden = false;
+                document.getElementById('weatherRetryBtn').hidden = false;
+                if (document.getElementById('mainCondition').textContent === 'Loading...') {
+                    document.getElementById('mainCondition').textContent = 'Weather unavailable';
+                }
             } finally {
                 loader.style.display = 'none';
             }
@@ -2128,13 +2146,7 @@
             loader.style.display = 'flex';
             
             try {
-                const response = await fetch(`/api/weather?lat=${lat}&lon=${lon}`);
-                const data = await response.json();
-                
-                if(data.error) {
-                    alert("GPS Weather Error: " + data.error);
-                    return;
-                }
+                const data = await requestApi(`/api/weather?lat=${lat}&lon=${lon}`);
                 
                 localStorage.setItem('sl_weather_province', data.location.province);
                 localStorage.setItem('sl_weather_district', data.location.district);
@@ -2146,7 +2158,7 @@
                 
             } catch (error) {
                 console.error("Failed to fetch GPS weather:", error);
-                alert("Failed to reach server. Please check internet connection.");
+                alert(error.message);
             } finally {
                 loader.style.display = 'none';
             }
@@ -2251,6 +2263,10 @@
         }
 
         function applyDataToUI(data) {
+            const status = document.getElementById('weatherConnectionStatus');
+            status.textContent = data.source === 'cache' ? 'Showing the last available forecast.' : '';
+            status.hidden = !status.textContent;
+            document.getElementById('weatherRetryBtn').hidden = true;
             const name = localStorage.getItem('sl_weather_username') || "User";
             const dist = data.location.district;
             const prov = data.location.province;
@@ -2333,8 +2349,7 @@
             const feed = document.getElementById('communityReportsFeed');
             try {
                 const url = district ? `/api/reports?district=${encodeURIComponent(district)}` : '/api/reports';
-                const res = await fetch(url);
-                const data = await res.json();
+                const data = await requestApi(url);
 
                 // Update Emergency Beacon Badge
                 const badge = document.getElementById('emergencyReportsBadge');
@@ -2398,7 +2413,7 @@
             }
 
             try {
-                const res = await fetch('/api/reports', {
+                await requestApi('/api/reports', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -2408,18 +2423,13 @@
                         message: message
                     })
                 });
-                const data = await res.json();
-                if (res.ok) {
-                    closeReportModal();
-                    document.getElementById('reportMessage').value = '';
-                    fetchCommunityReports(district);
-                    alert("Thank you! Your emergency update has been broadcast to nearby users.");
-                } else {
-                    alert("Submission error: " + (data.error || "Unable to submit report."));
-                }
+                closeReportModal();
+                document.getElementById('reportMessage').value = '';
+                fetchCommunityReports(district);
+                alert("Thank you! Your emergency update has been broadcast to nearby users.");
             } catch (err) {
                 console.error("Submission failed:", err);
-                alert("Network error. Please try again.");
+                alert(err.message);
             }
         }
 
@@ -2545,8 +2555,8 @@
 
             searchTimeout = setTimeout(async () => {
                 try {
-                    const res = await fetch(`/api/locations/search?q=${encodeURIComponent(query)}`);
-                    const data = await res.json();
+                    const data = await requestApi(`/api/locations/search?q=${encodeURIComponent(query)}`);
+                    if (document.getElementById('searchInput').value.trim() !== query) return;
                     if (data.results && data.results.length > 0) {
                         container.innerHTML = data.results.map(loc => {
                             const isCity = loc.type === 'city' && loc.city && loc.city.toLowerCase() !== loc.district.toLowerCase();
@@ -2570,6 +2580,9 @@
                     }
                 } catch (e) {
                     console.error("Location search failed:", e);
+                    if (document.getElementById('searchInput').value.trim() === query) {
+                        container.textContent = e.message;
+                    }
                 }
             }, 250);
         }
@@ -3014,8 +3027,7 @@
             try {
                 const dist = localStorage.getItem('sl_weather_district') || "Colombo";
                 const prov = localStorage.getItem('sl_weather_province') || "Western";
-                const res = await fetch(`/api/weather?province=${encodeURIComponent(prov)}&district=${encodeURIComponent(dist)}`);
-                const data = await res.json();
+                const data = await requestApi(`/api/weather?province=${encodeURIComponent(prov)}&district=${encodeURIComponent(dist)}`);
                 if (data && data.metrics) {
                     const temp = Math.round(data.metrics.temperature);
                     const cond = mapCodeToText(data.metrics.weather_code);

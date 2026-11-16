@@ -52,11 +52,15 @@ def init_db():
     conn.commit()
     conn.close()
 
-def get_cached_weather(city: str) -> Optional[dict]:
+def get_cached_weather(city: str, *, max_age_seconds: Optional[int] = None) -> Optional[dict]:
     """Retrieve the last known good weather state for a city/district."""
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    cursor.execute('SELECT data FROM weather_cache WHERE city = ?', (city.lower(),))
+    cursor.execute(
+        """SELECT data FROM weather_cache
+           WHERE city = ? AND (? IS NULL OR timestamp >= datetime('now', ?))""",
+        (city.lower(), max_age_seconds, f"-{max_age_seconds or 0} seconds"),
+    )
     row = cursor.fetchone()
     conn.close()
     if row:

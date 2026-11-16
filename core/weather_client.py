@@ -7,6 +7,7 @@ from typing import List, Optional
 from core.locations import get_district_info
 
 weather_breaker = pybreaker.CircuitBreaker(fail_max=3, reset_timeout=60)
+geocoding_breaker = pybreaker.CircuitBreaker(fail_max=3, reset_timeout=60)
 logger = logging.getLogger(__name__)
 
 # --- Pydantic Schemas ---
@@ -115,14 +116,18 @@ def resolve_coordinates(district_or_city: str) -> CityGeo:
             longitude=local["lon"],
             country="Sri Lanka"
         )
-    return fetch_coordinates_from_api(district_or_city)
+    try:
+        return fetch_coordinates_from_api(district_or_city)
+    except (requests.exceptions.RequestException, pybreaker.CircuitBreakerError) as error:
+        raise RuntimeError("Location lookup is temporarily unavailable.") from error
 
 @retry(
     stop=stop_after_attempt(3),
     wait=wait_exponential(multiplier=1, min=2, max=10),
-    retry=retry_if_exception_type((requests.exceptions.RequestException, requests.exceptions.Timeout))
+    retry=retry_if_exception_type(requests.exceptions.RequestException),
+    reraise=True,
 )
-@weather_breaker
+@geocoding_breaker
 def fetch_coordinates_from_api(city: str) -> CityGeo:
     """Remote geocoding fallback."""
     url = f"https://geocoding-api.open-meteo.com/v1/search?name={city}&count=1"
@@ -142,9 +147,10 @@ def fetch_coordinates_from_api(city: str) -> CityGeo:
         raise ValueError("Invalid geocoding response format.")
 
 @retry(
-    stop=stop_after_attempt(3),
-    wait=wait_exponential(multiplier=1, min=2, max=10),
-    retry=retry_if_exception_type((requests.exceptions.RequestException, requests.exceptions.Timeout))
+    stop=stop_after_attempt(2),
+    wait=wait_exponential(multiplier=1),
+    retry=retry_if_exception_type((requests.exceptions.ConnectionError, requests.exceptions.Timeout)),
+    reraise=True,
 )
 @weather_breaker
 def fetch_weather_data(lat: float, lon: float) -> dict:
@@ -158,7 +164,7 @@ def fetch_weather_data(lat: float, lon: float) -> dict:
         "&timezone=Asia/Colombo"
     )
     headers = {"User-Agent": "SL-Weather-Prediction-App/1.0 (https://github.com/dinupaskj007-ui/Weather-Prediction-Application)"}
-    response = requests.get(url, headers=headers, timeout=8)
+    response = requests.get(url, headers=headers, timeout=(3, 5))
     response.raise_for_status()
     
     try:

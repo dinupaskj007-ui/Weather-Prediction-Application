@@ -88,17 +88,11 @@ def calibrate_rain_probability(raw_prob: Optional[int], code: int, precip_mm: fl
     return max(5, min(99, round(calibrated)))
 
 # In-memory prediction cache
-_prediction_cache = {}
-
 def generate_7day_ai_prediction(province: str, district: str, weather_data: dict, dmc_alert: dict) -> dict:
     """
     Synthesize high-precision 10-day weather predictions using meteorological intelligence.
     Produces calibrated rain probabilities, confidence scores, and day-by-day advisories.
     """
-    cache_key = f"{district.lower()}_7day_{datetime.now().strftime('%Y%m%d%H')}"
-    if cache_key in _prediction_cache:
-        return _prediction_cache[cache_key]
-
     daily = weather_data.get("daily", {})
     times = daily.get("time", [])
     if not times:
@@ -214,7 +208,6 @@ def generate_7day_ai_prediction(province: str, district: str, weather_data: dict
         "daily_predictions": days_predictions
     }
 
-    _prediction_cache[cache_key] = result
     return result
 
 def generate_deterministic_meteorological_insight(province: str, district: str, weather_data: dict, dmc_alert: dict) -> dict:
@@ -297,17 +290,9 @@ def generate_deterministic_meteorological_insight(province: str, district: str, 
     }
 
 # In-memory LRU cache for synthesized insights
-_ai_cache = {}
-
 def synthesize_weather_context(province: str, district: str, weather_data: dict, dmc_alert: dict) -> dict:
     """
     Synthesizes meteorological context with sub-second performance.
     Guarantees the meteorological API responds in under 1 second under any network condition.
     """
-    cache_key = f"{district.lower()}_{datetime.now().hour}"
-    if cache_key in _ai_cache:
-        return _ai_cache[cache_key]
-
-    insight = generate_deterministic_meteorological_insight(province, district, weather_data, dmc_alert)
-    _ai_cache[cache_key] = insight
-    return insight
+    return generate_deterministic_meteorological_insight(province, district, weather_data, dmc_alert)

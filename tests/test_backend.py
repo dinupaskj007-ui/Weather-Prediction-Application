@@ -156,6 +156,34 @@ def test_api_weather_gps_coordinates(client):
     assert data["location"]["district"] == "Colombo"
     assert "gps_distance_km" in data["location"]
 
+
+def test_forecast_reuses_recent_weather_for_the_same_city(client, monkeypatch):
+    first = client.get("/api/weather?city=Negombo").get_json()
+    assert first["source"] == "live"
+
+    def unexpected_fetch(*args, **kwargs):
+        pytest.fail("A recent forecast should be reused for the same city")
+
+    monkeypatch.setattr(requests, "get", unexpected_fetch)
+    forecast = client.get("/api/forecast/7day?city=Negombo")
+    assert forecast.status_code == 200
+    assert forecast.get_json()["source"] == "cache"
+    assert len(forecast.get_json()["daily_predictions"]) == 10
+
+
+def test_provider_failure_does_not_return_other_location_weather(client, monkeypatch):
+    import app as weather_app
+
+    assert client.get("/api/weather?district=Colombo").status_code == 200
+
+    def unavailable(*args, **kwargs):
+        raise requests.exceptions.ConnectionError("Forecast provider unavailable")
+
+    monkeypatch.setattr(weather_app, "fetch_weather_data", unavailable)
+    response = client.get("/api/weather?lat=6.9344&lon=79.8428")
+    assert response.status_code == 503
+    assert "unavailable" in response.get_json()["error"]
+
 def test_api_weather_disaster_alert(client):
     """Test /api/weather for high-risk district (Ratnapura - landslide warning)."""
     res = client.get("/api/weather?district=Ratnapura&province=Sabaragamuwa")
