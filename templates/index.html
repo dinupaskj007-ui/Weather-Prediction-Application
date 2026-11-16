@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#12132e">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -57,7 +57,11 @@
         body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background-color: var(--body-bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; color: var(--text-main); transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
 
         .app-container { width: 100%; height: 100vh; max-width: 100%; background: var(--bg-gradient); position: relative; overflow: hidden; display: flex; flex-direction: column; transition: background 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-        @media (min-width: 500px) { .app-container { max-width: 393px; height: 852px; max-height: 90vh; border-radius: 45px; border: 12px solid #000; box-shadow: 0 0 50px rgba(0,0,0,0.5); } }
+        body { min-height: 100dvh; }
+        .app-container { height: 100dvh; }
+        @media (min-width: 500px) and (min-height: 500px) and (hover: hover) and (pointer: fine) {
+            .app-container { max-width: 393px; height: 852px; max-height: 90vh; max-height: 90dvh; border-radius: 45px; border: 12px solid #000; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
+        }
 
 
         /* Smooth Screen Transitions */
@@ -362,26 +366,30 @@
 
         
         /* --- SCREEN 1 & WELCOME REDESIGN (Reference UI Match) --- */
+        #screen1 {
+            min-height: 0;
+            overflow: clip;
+        }
+
         .welcome-screen-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
+            display: grid;
+            grid-template-areas: "heading" "art" "description" "action";
+            grid-template-rows: auto minmax(0, 1fr) auto auto;
             align-items: center;
-            text-align: center;
-            padding: 24px 22px 32px;
+            justify-items: center;
+            gap: clamp(8px, 2vh, 20px);
+            padding: 16px;
+            padding: max(clamp(12px, 4dvh, 36px), env(safe-area-inset-top))
+                     max(clamp(14px, 5vw, 24px), env(safe-area-inset-right))
+                     max(clamp(12px, 4dvh, 36px), env(safe-area-inset-bottom))
+                     max(clamp(14px, 5vw, 24px), env(safe-area-inset-left));
             margin-top: 0;
-            position: relative;
-            z-index: 10;
-            width: 100%;
-            min-height: 100%;
-            box-sizing: border-box;
+            min-height: 0;
         }
 
         .welcome-header-wrap {
+            grid-area: heading;
             width: 100%;
-            margin-top: 10px;
-            margin-bottom: 5px;
         }
 
         .welcome-heading {
@@ -396,13 +404,11 @@
         }
 
         .weather-art-stage {
+            grid-area: art;
             position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            align-self: stretch;
             width: 100%;
             max-width: 320px;
-            margin: 10px auto;
             animation: floatWeatherArt 5s ease-in-out infinite;
         }
 
@@ -428,33 +434,51 @@
         }
 
         .weather-art-svg {
-            position: relative;
+            position: absolute;
+            inset: 0;
             z-index: 2;
             width: 100%;
             max-width: 290px;
-            height: auto;
+            height: 100%;
             display: block;
             margin: 0 auto;
             filter: drop-shadow(0 14px 26px rgba(0, 0, 0, 0.5));
         }
 
         .welcome-subheading {
+            grid-area: description;
             font-size: 14.5px;
             font-weight: 400;
             line-height: 1.45;
             color: rgba(255, 255, 255, 0.7);
             text-align: center;
             max-width: 295px;
-            margin: 0 auto 24px;
+            margin: 0;
             letter-spacing: 0.1px;
             text-shadow: 0 1px 6px rgba(0, 0, 0, 0.4);
         }
 
+        .welcome-actions-wrap {
+            grid-area: action;
+            width: 100%;
+        }
+
+        @media (orientation: landscape) and (max-height: 499px) {
+            .welcome-screen-content {
+                grid-template-areas: "art heading" "art description" "art action";
+                grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+                grid-template-rows: repeat(3, auto);
+                align-content: center;
+            }
+        }
+
         .btn-get-started {
             display: block;
+            box-sizing: border-box;
             width: 100%;
             max-width: 340px;
-            padding: 17px 20px;
+            min-height: 44px;
+            padding: clamp(10px, 2.5vh, 17px) 12px;
             margin: 0 auto;
             background: linear-gradient(180deg, #F5A623 0%, #D97706 100%);
             border: 1px solid rgba(255, 225, 130, 0.45);
@@ -1276,7 +1300,7 @@
                 </p>
 
                 <!-- Action button matching reference -->
-                <div class="welcome-actions-wrap" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+                <div class="welcome-actions-wrap">
                     <button class="btn-get-started" onclick="handleInitialCheck()">GET STARTED</button>
                 </div>
             </div>
