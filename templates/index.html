@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
     <meta name="theme-color" content="#12132e">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -54,20 +54,17 @@
         }
         
 
-        body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background-color: var(--body-bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; color: var(--text-main); transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        body { margin: 0; font-family: 'Inter', sans-serif; background-color: var(--body-bg); color: var(--text-main); transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
 
         .app-container { width: 100%; height: 100vh; max-width: 100%; background: var(--bg-gradient); position: relative; overflow: hidden; display: flex; flex-direction: column; transition: background 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-        body { min-height: 100dvh; }
         .app-container { height: 100dvh; }
-        @media (min-width: 500px) and (min-height: 500px) and (hover: hover) and (pointer: fine) {
-            .app-container { max-width: 393px; height: 852px; max-height: 90vh; max-height: 90dvh; border-radius: 45px; border: 12px solid #000; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
-        }
 
 
         /* Smooth Screen Transitions */
         .screen { 
             display: none; 
             flex: 1; 
+            min-height: 0;
             flex-direction: column; 
             overflow-y: auto; 
             overflow-x: hidden; 
@@ -510,12 +507,27 @@
         /* --- SCREEN 2: REFERENCE UI DASHBOARD --- */
         .s2-content { flex: 1; display: flex; flex-direction: column; width: 100%; position: relative; }
         
-        .top-nav-row { display: flex; justify-content: space-between; align-items: center; padding: max(20px, env(safe-area-inset-top, 20px)) 25px 20px; }
-        .nav-icon { font-size: 24px; font-weight: bold; cursor: pointer; color: var(--text-main); display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; transition: background 0.2s; }
+        .top-nav-row { display: flex; justify-content: space-between; align-items: center; padding: max(12px, env(safe-area-inset-top)) 0 8px; }
+        .nav-icon { font-size: 24px; font-weight: bold; cursor: pointer; color: var(--text-main); background: none; border: 0; padding: 0; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; transition: background 0.2s; }
         .nav-icon:active { background: rgba(255,255,255,0.1); }
+        #appDropdownMenu {
+            display: none;
+            position: absolute;
+            inset-block-start: calc(max(12px, env(safe-area-inset-top)) + 44px);
+            inset-inline-start: max(12px, env(safe-area-inset-left));
+            width: min(270px, calc(100% - max(12px, env(safe-area-inset-left)) - max(12px, env(safe-area-inset-right))));
+            max-height: calc(100vh - 76px);
+            max-height: calc(100dvh - max(12px, env(safe-area-inset-top)) - 44px - max(12px, env(safe-area-inset-bottom)));
+            box-sizing: border-box;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            z-index: 50;
+            padding: 10px;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+        }
         
         /* Main Glass Card (Reference Style) */
-        .main-glass-card { margin: 15px 25px 25px; position: relative; padding: 32px 20px 22px; text-align: center; }
+        .main-glass-card { margin: 8px 0 18px; position: relative; padding: 22px clamp(10px, 4vw, 20px) 16px; text-align: center; }
         
         .main-temp { font-size: 80px; font-weight: 600; line-height: 1; letter-spacing: -3px; color: var(--text-main); margin-bottom: 10px; display: flex; justify-content: center; align-items: flex-start; }
         .main-temp-unit { font-size: 30px; font-weight: 500; margin-top: 10px; margin-left: 2px; }
@@ -592,8 +604,8 @@
             transform: translateY(0) scale(1);
         }
 
-        .stats-grid-small { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 4px; }
-        .stat-pill-small { display: flex; align-items: center; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 12px; padding: 10px 12px; gap: 12px; text-align: left; }
+        .stats-grid-small { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-bottom: 4px; }
+        .stat-pill-small { display: flex; align-items: center; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 12px; padding: 8px; gap: 8px; text-align: left; }
         .stat-pill-small .icon { font-size: 18px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
         .stat-pill-small .stat-text { display: flex; flex-direction: column; }
         .stat-pill-small .label { font-size: 10px; font-weight: 500; color: var(--text-muted); margin-bottom: 2px; }
@@ -820,6 +832,12 @@
             display: flex;
             flex-direction: row;
             align-items: center;
+            width: 100%;
+            background: transparent;
+            border: 0;
+            color: inherit;
+            font: inherit;
+            text-align: left;
             padding: 14px 4px;
             cursor: pointer;
             transition: background 0.2s;
@@ -929,27 +947,85 @@
             opacity: 0.85;
         }
 
-        /* Day Detail Inspector Panel */
-        .day-detail-panel {
-            background: var(--bottom-sheet-card);
-            border-radius: 20px;
-            padding: 18px 16px;
-            margin-top: 10px;
-            margin-bottom: 16px;
-            border: 1px solid rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
+        /* Forecast day popup */
+        .day-detail-dialog {
+            box-sizing: border-box;
+            width: min(625px, calc(100% - 32px));
+            max-width: none;
+            max-height: calc(100% - 32px);
+            max-height: calc(100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+            padding: 0;
+            border: 0;
+            border-radius: clamp(20px, 5vw, 36px);
+            background: var(--bottom-sheet-bg);
+            color: var(--bottom-sheet-text);
+            overscroll-behavior: contain;
+        }
+        .day-detail-dialog::backdrop {
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(10px);
+        }
+        .day-detail-content {
+            padding: clamp(16px, 5vw, 32px);
         }
         .day-detail-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 14px;
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr) auto auto;
+            align-items: start;
+            gap: 10px;
+        }
+        .day-detail-header h3 {
+            margin: 0;
+            font-size: clamp(16px, 4vw, 20px);
+        }
+        .day-detail-subtitle {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--bottom-sheet-muted);
+        }
+        .day-detail-header .modal-close {
+            width: 32px;
+            min-height: 32px;
+        }
+        .day-detail-rain {
+            align-self: center;
         }
         .detail-metrics-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(4, minmax(0, 1fr));
             gap: 8px;
-            margin-bottom: 12px;
+            margin: 16px 0;
+        }
+        .day-detail-close {
+            width: 100%;
+            min-height: 44px;
+            margin-top: 24px;
+            padding: 12px;
+            border: 0;
+            border-radius: 24px;
+            background: var(--btn-gradient);
+            color: #fff;
+            font: inherit;
+            font-weight: 800;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+        @media (max-width: 480px) {
+            .detail-metrics-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+            .day-detail-header {
+                grid-template-columns: auto minmax(0, 1fr) auto;
+            }
+            .day-detail-rain {
+                grid-column: 2;
+                grid-row: 2;
+                justify-self: start;
+            }
+            .day-detail-header .modal-close {
+                grid-column: 3;
+                grid-row: 1;
+            }
         }
         .detail-stat {
             background: rgba(255, 255, 255, 0.6);
@@ -1139,6 +1215,53 @@
         .modal-input { width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.1); background: var(--bottom-sheet-card); color: var(--bottom-sheet-text); font-family: 'Inter', sans-serif; font-size: 14px; box-sizing: border-box; outline: none; }
         body.disaster-mode .modal-input { border-color: rgba(255,255,255,0.15); }
         .modal-textarea { resize: vertical; min-height: 80px; }
+
+        /* Touch targets and safe areas shared by the mobile screens. */
+        .top-nav-row, .bottom-sheet, .s3-content, .s4-content, .modal-sheet, .login-screen-content {
+            padding-inline: max(16px, env(safe-area-inset-left)) max(16px, env(safe-area-inset-right));
+        }
+        .main-glass-card {
+            margin-inline: max(16px, env(safe-area-inset-left)) max(16px, env(safe-area-inset-right));
+        }
+        .bottom-sheet, .s3-content, .s4-content, .modal-sheet, .login-screen-content {
+            padding-bottom: max(24px, env(safe-area-inset-bottom));
+        }
+        .login-screen-content {
+            justify-content: flex-start;
+            margin-top: 0;
+            padding-top: max(16px, env(safe-area-inset-top));
+        }
+        .search-input { box-sizing: border-box; }
+        .form-input, .search-input, .modal-input { font-size: 16px; }
+        .search-input:focus-visible, .modal-input:focus-visible {
+            outline: 2px solid #38bdf8;
+            outline-offset: 2px;
+        }
+        .back-btn, .modal-close {
+            min-width: 44px;
+            min-height: 44px;
+        }
+        .menu-action-item {
+            box-sizing: border-box;
+            min-height: 44px;
+        }
+        .emergency-light-btn { height: 44px; }
+        .tray-toggle-btn, .location-pill, .gps-sync-btn, .btn-report, .btn-view-stats { min-height: 44px; }
+        .location-pill, .gps-sync-btn { font-family: inherit; cursor: pointer; }
+        .location-pill { max-width: 100%; border: 0; }
+        .gps-sync-btn {
+            color: var(--bottom-sheet-muted);
+            background: none;
+            border: 0;
+            padding: 0 4px;
+            font-size: 13px;
+        }
+        .modal-overlay { width: auto; height: auto; }
+        .modal-sheet {
+            max-height: calc(100% - 16px);
+            max-height: calc(100% - max(16px, env(safe-area-inset-top)));
+            overscroll-behavior: contain;
+        }
         .btn-modal-submit { width: 100%; padding: 14px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none; border-radius: 25px; font-weight: 700; font-size: 15px; cursor: pointer; margin-top: 10px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4); }
         .btn-modal-submit:active { transform: scale(0.97); }
 
@@ -1338,7 +1461,7 @@
 
         <!-- SCREEN 1.5: FIRST-TIME LOGIN & SETUP -->
         <div id="loginScreen" class="screen">
-            <div class="s1-content login-screen-content" style="max-height: 92vh; overflow-y: auto; padding: 25px 20px 40px; box-sizing: border-box;">
+            <div class="s1-content login-screen-content">
                 <div class="login-nav-header" style="width: 100%; max-width: 380px; margin: 0 auto 14px; display: flex; align-items: center; justify-content: space-between;">
                     <button id="loginBackBtn" onclick="handleLoginBack()" class="back-btn" style="font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; color: #ffffff; cursor: pointer; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 20px; padding: 7px 16px; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.16)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">
                         <span style="font-size: 20px; line-height: 1; font-weight: 300;">‹</span>
@@ -1395,8 +1518,8 @@
                 
                 <div class="top-nav-row" style="position: relative; z-index: 30;">
                     <div style="display: flex; align-items: center; gap: 6px;">
-                        <div class="nav-icon" onclick="goToScreen1()" title="Back to Welcome Screen" style="font-size: 26px; line-height: 1;">‹</div>
-                        <div class="nav-icon" onclick="toggleAppMenu()" id="menuToggleBtn" title="Menu">⋮</div>
+                        <button type="button" class="nav-icon" onclick="goToScreen1()" aria-label="Back to welcome screen" style="font-size: 26px; line-height: 1;">‹</button>
+                        <button type="button" class="nav-icon" onclick="toggleAppMenu()" id="menuToggleBtn" aria-label="Menu">⋮</button>
                     </div>
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <!-- EMERGENCY LIGHT BUTTON FOR COMMUNITY HAZARD REPORTS -->
@@ -1404,17 +1527,17 @@
                             <span class="beacon-icon">🚨</span>
                             <span class="beacon-badge" id="emergencyReportsBadge">Live</span>
                         </button>
-                        <div class="nav-icon" onclick="goToScreen4()" title="Search Weather by District or City" aria-label="Search Location">
+                        <button type="button" class="nav-icon" onclick="goToScreen4()" aria-label="Search location">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: block;">
                                 <circle cx="11" cy="11" r="7.5"></circle>
                                 <line x1="21" y1="21" x2="16.5" y2="16.5"></line>
                             </svg>
-                        </div>
+                        </button>
                     </div>
                 </div>
 
                 <!-- Sleek Glass App Menu Dropdown -->
-                <div id="appDropdownMenu" class="glacier-panel" style="display: none; position: absolute; top: 65px; left: 25px; width: 250px; z-index: 50; padding: 10px; box-shadow: 0 16px 40px rgba(0,0,0,0.5);">
+                <div id="appDropdownMenu" class="glacier-panel">
                     <!-- User Profile Card -->
                     <div id="menuUserProfileCard" style="padding: 10px 12px; margin-bottom: 8px; border-radius: 12px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);">
                         <div style="font-size: 13px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 6px;">
@@ -1459,9 +1582,9 @@
                     <div class="main-condition" id="mainCondition">Loading...</div>
                     
                     <!-- Basic Info First -->
-                    <div class="location-pill" style="cursor: pointer;" onclick="useCurrentGpsLocation()" title="Tap to refresh with device GPS">
+                    <button type="button" class="location-pill" onclick="useCurrentGpsLocation()" title="Refresh with device GPS">
                         <span class="pin">📍</span> <span id="dashboardLocationHeader">Colombo, Sri Lanka</span>
-                    </div>
+                    </button>
 
                     <!-- Collapsible Tray for Extra Details -->
                     <div class="collapsible-tray-wrapper">
@@ -1497,7 +1620,7 @@
                     <!-- TODAY'S AHEAD WEATHER SECTION -->
                     <div class="hourly-header">
                         <h3>Today's Weather</h3>
-                        <span style="font-size: 13px; color: var(--bottom-sheet-muted); cursor: pointer;" onclick="useCurrentGpsLocation()">📍 Sync GPS</span>
+                        <button type="button" class="gps-sync-btn" onclick="useCurrentGpsLocation()">📍 Sync GPS</button>
                     </div>
                     
                     <div class="hourly-scroll" id="todayHourlyScroll">
@@ -1526,7 +1649,7 @@
         <div id="screen3" class="screen">
             <div class="s3-content">
                 <div class="nav-header">
-                    <button onclick="goToScreen2()" class="back-btn">‹</button>
+                    <button type="button" onclick="goToScreen2()" class="back-btn" aria-label="Back to weather dashboard">‹</button>
                     <h2>Risk Analysis</h2>
                 </div>
 
@@ -1570,11 +1693,11 @@
         <div id="screen4" class="screen">
             <div class="s4-content">
                 <div class="nav-header">
-                    <button onclick="goToScreen2()" class="back-btn">‹</button>
+                    <button type="button" onclick="goToScreen2()" class="back-btn" aria-label="Back to weather dashboard">‹</button>
                     <h2>Locations</h2>
                 </div>
                 
-                <input type="text" id="searchInput" class="search-input" placeholder="Search city or district..." oninput="handleLocationSearch()">
+                <input type="search" id="searchInput" class="search-input" aria-label="Search city or district" placeholder="Search city or district..." oninput="handleLocationSearch()">
 
                 <div class="city-list" id="cityListContainer">
                     <!-- Populated dynamically with Recent Searches only -->
@@ -1628,7 +1751,7 @@
 
         <!-- DEDICATED COMMUNITY REPORTS & EMERGENCY RADAR MODAL -->
         <div id="communityReportsModal" class="modal-overlay" onclick="if(event.target === this) closeCommunityReportsModal()">
-            <div class="modal-sheet" style="max-height: 86vh; overflow-y: auto;">
+            <div class="modal-sheet">
                 <div class="modal-header" style="margin-bottom: 6px;">
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <span style="font-size: 22px;">🚨</span>
@@ -1712,51 +1835,49 @@
         </section>
 
         <!-- DAY DETAIL POPUP MODAL (Opens on 10-day item click) -->
-        <div id="dayDetailModal" class="modal-overlay" style="z-index: 1005;" onclick="if(event.target === this) closeDayDetailModal()">
-            <div class="modal-sheet" style="max-height: 85vh; overflow-y: auto;">
-                <div class="modal-header" style="margin-bottom: 12px;">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <span id="detailDayGlyph" style="font-size: 26px;">🌤️</span>
-                        <div>
-                            <h3 id="detailDayTitle" style="margin: 0; font-size: 16px; font-weight: 800; color: var(--bottom-sheet-text);">Tomorrow: Overcast Clouds</h3>
-                            <div id="detailDaySub" style="font-size: 12px; color: var(--bottom-sheet-muted); font-weight: 600;">2026-11-13 • High: 30°C / Low: 24°C</div>
-                        </div>
+        <dialog id="dayDetailModal" class="day-detail-dialog" aria-labelledby="detailDayTitle" aria-describedby="detailDaySub" onclick="if (event.target === this) this.close()">
+            <div class="day-detail-content">
+                <div class="day-detail-header">
+                    <span id="detailDayGlyph" style="font-size: 26px;" aria-hidden="true"></span>
+                    <div>
+                        <h3 id="detailDayTitle"></h3>
+                        <div id="detailDaySub" class="day-detail-subtitle"></div>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <div id="detailRainPill" class="rain-prob-badge rain-low">💧 14% Rain</div>
-                        <button class="modal-close" onclick="closeDayDetailModal()">&times;</button>
+                    <div class="day-detail-rain">
+                        <span id="detailRainPill" class="rain-prob-badge"></span>
                     </div>
+                    <button type="button" class="modal-close" aria-label="Close forecast details" onclick="this.closest('dialog').close()">&times;</button>
                 </div>
 
-                <div class="detail-metrics-grid" style="margin-top: 14px; margin-bottom: 14px;">
+                <div class="detail-metrics-grid">
                     <div class="detail-stat">
                         <span class="label">PRECIPITATION</span>
-                        <span class="value" id="detailPrecipMm">0 mm</span>
+                        <span class="value" id="detailPrecipMm"></span>
                     </div>
                     <div class="detail-stat">
                         <span class="label">MAX WIND</span>
-                        <span class="value" id="detailWindSpeed">17.6 km/h</span>
+                        <span class="value" id="detailWindSpeed"></span>
                     </div>
                     <div class="detail-stat">
                         <span class="label">UV INDEX</span>
-                        <span class="value" id="detailUvIndex">7.2 Max</span>
+                        <span class="value" id="detailUvIndex"></span>
                     </div>
                     <div class="detail-stat">
                         <span class="label">CONFIDENCE</span>
-                        <span class="value" id="detailConfidence">96% High</span>
+                        <span class="value" id="detailConfidence"></span>
                     </div>
                 </div>
 
-                <div class="detail-advisory-box" style="margin-bottom: 16px;">
+                <div class="detail-advisory-box">
                     <span class="advisory-tag">🎯 AI METEOROLOGY ADVISORY</span>
-                    <div id="detailAdvisoryText">Pleasant and stable with gentle winds. Optimal conditions for outdoor travel.</div>
+                    <div id="detailAdvisoryText"></div>
                 </div>
 
-                <button class="btn-primary" onclick="closeDayDetailModal()" style="width: 100%; margin: 10px 0 5px; padding: 13px 0; background: var(--btn-gradient); border: none; border-radius: 20px; font-size: 14px; font-weight: 700; color: #fff; cursor: pointer;">
-                    Close
-                </button>
+                <form method="dialog">
+                    <button class="day-detail-close">Close</button>
+                </form>
             </div>
-        </div>
+        </dialog>
 
     </div>
 
@@ -2557,25 +2678,25 @@
                     const rainPct = d.rain_probability > 0 ? `${d.rain_probability}%` : '';
 
                     return `
-                        <div class="forecast-day-card${activeClass}" onclick="openDayDetailModal(${idx})" id="dayCard-${idx}" title="Tap for ${d.day_name} AI analysis">
+                        <button type="button" class="forecast-day-card${activeClass}" onclick="openDayDetailModal(${idx})" id="dayCard-${idx}" title="View ${d.day_name} AI analysis" aria-haspopup="dialog">
                             <span class="day-title">${dayLabel}</span>
                             <span class="forecast-glyph">${d.glyph}</span>
                             <span class="day-rain-pct">${rainPct}</span>
                             <span class="day-temp-low-val">${d.temp_min}°</span>
-                            <div class="day-temp-bar-wrapper">
-                                <div class="day-temp-bar-fill" style="left:${barLeft}%; right:${barRight}%; background:${barGradient};"></div>
-                            </div>
+                            <span class="day-temp-bar-wrapper">
+                                <span class="day-temp-bar-fill" style="left:${barLeft}%; right:${barRight}%; background:${barGradient};"></span>
+                            </span>
                             <span class="day-temp-high-val">${d.temp_max}°</span>
-                        </div>
+                        </button>
                     `;
                 }).join('');
             }
 
-            // Sync initial data without auto-opening popup
-            selectForecastDay(selectedDayIndex, false);
+            // Keep the selected day's details current when weather data refreshes.
+            selectForecastDay(selectedDayIndex);
         }
 
-        function selectForecastDay(idx, shouldOpenModal = false) {
+        function selectForecastDay(idx) {
             selectedDayIndex = idx;
             if (!currentForecastDays || !currentForecastDays[idx]) return;
             const d = currentForecastDays[idx];
@@ -2600,7 +2721,7 @@
             if (subEl) subEl.textContent = `${d.date} • High: ${d.temp_max}°C / Low: ${d.temp_min}°C`;
             
             if (rainPill) {
-                rainPill.innerHTML = `💧 ${d.rain_probability}% Rain`;
+                rainPill.textContent = `💧 ${d.rain_probability}% Rain`;
                 rainPill.className = 'rain-prob-badge ' + (d.rain_probability >= 70 ? 'rain-high' : (d.rain_probability >= 40 ? 'rain-mid' : 'rain-low'));
             }
 
@@ -2609,51 +2730,12 @@
             if (uvEl) uvEl.textContent = `${d.uv_index} Max`;
             if (confEl) confEl.textContent = `${d.confidence_score}% High`;
             if (advisoryEl) advisoryEl.textContent = d.ai_advisory;
-
-            if (shouldOpenModal) {
-                openDayDetailModal(idx);
-            }
         }
 
         function openDayDetailModal(idx) {
-            if (typeof idx === 'number') {
-                selectedDayIndex = idx;
-                if (currentForecastDays && currentForecastDays[idx]) {
-                    const d = currentForecastDays[idx];
-                    document.querySelectorAll('.forecast-day-card').forEach((el, i) => {
-                        el.classList.toggle('active', i === idx);
-                    });
-                    const glyphEl = document.getElementById('detailDayGlyph');
-                    const titleEl = document.getElementById('detailDayTitle');
-                    const subEl = document.getElementById('detailDaySub');
-                    const rainPill = document.getElementById('detailRainPill');
-                    const precipEl = document.getElementById('detailPrecipMm');
-                    const windEl = document.getElementById('detailWindSpeed');
-                    const uvEl = document.getElementById('detailUvIndex');
-                    const confEl = document.getElementById('detailConfidence');
-                    const advisoryEl = document.getElementById('detailAdvisoryText');
-
-                    if (glyphEl) glyphEl.textContent = d.glyph;
-                    if (titleEl) titleEl.textContent = `${d.day_name}: ${d.condition}`;
-                    if (subEl) subEl.textContent = `${d.date} • High: ${d.temp_max}°C / Low: ${d.temp_min}°C`;
-                    if (rainPill) {
-                        rainPill.innerHTML = `💧 ${d.rain_probability}% Rain`;
-                        rainPill.className = 'rain-prob-badge ' + (d.rain_probability >= 70 ? 'rain-high' : (d.rain_probability >= 40 ? 'rain-mid' : 'rain-low'));
-                    }
-                    if (precipEl) precipEl.textContent = `${d.precipitation_mm} mm`;
-                    if (windEl) windEl.textContent = `${d.wind_max_kmh} km/h`;
-                    if (uvEl) uvEl.textContent = `${d.uv_index} Max`;
-                    if (confEl) confEl.textContent = `${d.confidence_score}% High`;
-                    if (advisoryEl) advisoryEl.textContent = d.ai_advisory;
-                }
-            }
-            const modal = document.getElementById('dayDetailModal');
-            if (modal) modal.style.display = 'flex';
-        }
-
-        function closeDayDetailModal() {
-            const modal = document.getElementById('dayDetailModal');
-            if (modal) modal.style.display = 'none';
+            if (!currentForecastDays[idx]) return;
+            selectForecastDay(idx);
+            document.getElementById('dayDetailModal').showModal();
         }
 
         function goToScreen1() {
