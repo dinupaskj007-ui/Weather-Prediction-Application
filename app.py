@@ -1,7 +1,9 @@
 import logging
+import sqlite3
 from flask import Flask, request, jsonify, render_template, send_from_directory
 from flask_cors import CORS
 import pybreaker
+import requests
 
 from core.locations import (
     SL_DISTRICTS, SL_DISTRICT_CITIES, get_district_info, get_city_info, get_location_info,
@@ -61,6 +63,38 @@ def api_health():
     })
 
 # --- Mobile Weather & Geolocation API ---
+
+def load_location_weather(district, city, province, lat, lon, *, gps=False):
+    if gps:
+        cache_key = f"gps:{lat:.3f},{lon:.3f}"
+    else:
+        cache_key = f"{city}_{district}" if city else district
+
+    cached = get_cached_weather(cache_key, max_age_seconds=300)
+    if cached:
+        return cached, "cache"
+
+    try:
+        raw_weather = fetch_weather_data(lat, lon)
+    except (requests.exceptions.RequestException, pybreaker.CircuitBreakerError, ValueError) as error:
+        logger.warning("Live weather fetch failed for %s: %s", district, error)
+        return get_cached_weather(cache_key), "cache"
+
+    weather_data = {
+        "city": district,
+        "province": province,
+        "latitude": lat,
+        "longitude": lon,
+        "current": raw_weather["current"],
+        "daily": raw_weather["daily"],
+        "hourly": raw_weather.get("hourly"),
+    }
+    try:
+        set_cached_weather(cache_key, weather_data)
+    except sqlite3.Error:
+        logger.exception("Could not cache weather for %s", district)
+    return weather_data, "live"
+
 
 @app.route("/api/weather")
 def api_weather():
@@ -132,39 +166,17 @@ def api_weather():
                     target_lon = geo.longitude
                 except ValueError as e:
                     return jsonify({"error": str(e)}), 404
+                except RuntimeError as e:
+                    return jsonify({"error": str(e)}), 503
 
-    # Fetch weather data with Circuit Breaker & Offline SQLite Fallback
-    weather_data = None
-    is_cached = False
-    cache_key = (
-        f"{target_city.lower()}_{target_district.lower()}"
-        if target_city
-        else f"{target_district.lower()}"
+    weather_data, source = load_location_weather(
+        target_district, target_city, target_province, target_lat, target_lon, gps=bool(lat_str and lon_str)
     )
-
-    try:
-        raw_weather = fetch_weather_data(target_lat, target_lon)
-        weather_data = {
-            "city": target_district,
-            "province": target_province,
-            "latitude": target_lat,
-            "longitude": target_lon,
-            "current": raw_weather["current"],
-            "daily": raw_weather["daily"],
-            "hourly": raw_weather.get("hourly")
-        }
-        # Persist to offline cache
-        set_cached_weather(cache_key, weather_data)
-
-    except (pybreaker.CircuitBreakerError, Exception) as e:
-        logger.warning(f"Live weather fetch failed ({e}). Attempting offline cache for {target_district}")
-        weather_data = get_cached_weather(cache_key)
-        is_cached = True
 
     if not weather_data:
         return jsonify({
             "error": "Weather data currently unavailable. No offline cache stored for this location.",
-            "suggestion": "Check mobile internet connectivity or try again shortly."
+            "suggestion": "Try again shortly."
         }), 503
 
     # Fetch ground-truth DMC disaster warnings & emergency hotlines
@@ -211,7 +223,7 @@ def api_weather():
 
     response_payload = {
         "status": "success",
-        "source": "cache" if is_cached else "live",
+        "source": source,
         "location": {
             "city": target_city,
             "district": target_district,
@@ -303,28 +315,19 @@ def api_7day_forecast():
                     target_lon = geo.longitude
                 except ValueError as e:
                     return jsonify({"error": str(e)}), 404
+                except RuntimeError as e:
+                    return jsonify({"error": str(e)}), 503
 
-    cache_key = f"{target_district.lower()}"
-    try:
-        raw_weather = fetch_weather_data(target_lat, target_lon)
-        weather_data = {
-            "city": target_district,
-            "province": target_province,
-            "latitude": target_lat,
-            "longitude": target_lon,
-            "current": raw_weather["current"],
-            "daily": raw_weather["daily"]
-        }
-        set_cached_weather(cache_key, weather_data)
-    except Exception as e:
-        weather_data = get_cached_weather(cache_key)
+    weather_data, source = load_location_weather(
+        target_district, target_city, target_province, target_lat, target_lon, gps=bool(lat_str and lon_str)
+    )
 
     if not weather_data:
         return jsonify({"error": "7-day forecast data currently unavailable."}), 503
 
     dmc_alert = fetch_local_dmc_alerts(target_province, target_district)
     prediction = generate_7day_ai_prediction(target_province, target_district, weather_data, dmc_alert)
-    return jsonify(prediction)
+    return jsonify({**prediction, "source": source})
 
 # --- Mobile Disaster Alerts Endpoint ---
 
