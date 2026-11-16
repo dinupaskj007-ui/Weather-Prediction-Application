@@ -7,10 +7,18 @@ on:
     branches: [ "main", "working" ]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     name: Test & Lint (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
@@ -18,40 +26,46 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        persist-credentials: false
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
-        cache: 'pip'
+        cache: pip
+        cache-dependency-path: requirements.txt
 
     - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install flake8 pytest
+      env:
+        LINT_DEPENDENCY: ${{ matrix.python-version == '3.13' && 'flake8' || '' }}
+      run: python -m pip install -r requirements.txt pytest ${LINT_DEPENDENCY:+"$LINT_DEPENDENCY"}
 
     - name: Lint with flake8 (syntax & undefined names)
+      if: matrix.python-version == '3.13'
       run: |
-        # Stop the build if there are Python syntax errors or undefined variables/names
-        flake8 . --exclude=.git,__pycache__,venv,.venv,.pytest_cache,scratch,node_modules,android --count --select=E9,F63,F7,F82 --show-source --statistics
+        python -m flake8 app.py core scripts tests --count --select=E9,F63,F7,F82 --show-source --statistics
 
     - name: Lint with flake8 (style & complexity warnings)
+      if: matrix.python-version == '3.13'
       run: |
-        # Informational check: treat warnings as non-fatal exit-zero
-        flake8 . --exclude=.git,__pycache__,venv,.venv,.pytest_cache,scratch,node_modules,android --count --exit-zero --max-complexity=15 --max-line-length=127 --statistics
+        python -m flake8 app.py core scripts tests --count --exit-zero --max-complexity=15 --max-line-length=127 --statistics
+
+    - name: Set up Node.js for frontend validation
+      if: matrix.python-version == '3.13'
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
 
     - name: Validate Service Worker Syntax
-      run: |
-        node --check static/sw.js
+      if: matrix.python-version == '3.13'
+      run: node --check static/sw.js
 
     - name: Validate Frontend Assets & Template Integrity
-      run: |
-        python scripts/validate_frontend.py
+      if: matrix.python-version == '3.13'
+      run: python scripts/validate_frontend.py
 
     - name: Test with pytest
       env:
-        FLASK_ENV: testing
-        TESTING: "True"
-      run: |
-        python -m pytest -v --tb=short
+        PYTHONDONTWRITEBYTECODE: '1'
+      run: python -m pytest -v --tb=short
