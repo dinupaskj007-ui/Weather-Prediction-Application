@@ -2383,12 +2383,7 @@
                         `;
                     }).join('');
                 } else {
-                    feed.innerHTML = `
-                        <div class="report-card" style="border-left-color: #10b981;">
-                            <div class="report-meta">No active hazards reported</div>
-                            <div class="report-text">Roads and weather conditions are currently normal in ${district}.</div>
-                        </div>
-                    `;
+                    feed.textContent = 'No community reports yet.';
                 }
             } catch (err) {
                 console.error("Error fetching community reports:", err);
