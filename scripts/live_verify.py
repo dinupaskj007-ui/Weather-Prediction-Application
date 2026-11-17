@@ -47,7 +47,9 @@ print(f"   - Emergency Hotline: {alert_data['hotlines']['dmc_hotline']}")
 res_reports = requests.get(f"{BASE}/api/reports")
 rep_data = res_reports.json()
 print(f"7. /api/reports (Community Feed) -> Status: {res_reports.status_code}, Total Active Reports: {rep_data['count']}")
-print(f"   - Latest Report: [{rep_data['reports'][0]['threat_level']}] {rep_data['reports'][0]['user_name']} in {rep_data['reports'][0]['district']}: '{rep_data['reports'][0]['message'][:60]}...'")
+if rep_data["reports"]:
+    latest = rep_data["reports"][0]
+    print(f"   - Latest Report: [{latest['threat_level']}] {latest['user_name']} in {latest['district']}: '{latest['message'][:60]}...'")
 
 # 8. Locations Predictive Search
 res_search = requests.get(f"{BASE}/api/locations/search?q=Kandy")

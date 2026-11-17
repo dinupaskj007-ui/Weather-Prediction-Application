@@ -207,14 +207,15 @@ def test_community_reports_get_and_post(client):
     res = client.get("/api/reports")
     assert res.status_code == 200
     initial_data = res.get_json()
-    assert initial_data["count"] >= 1
+    assert initial_data["count"] == 0
+    assert initial_data["reports"] == []
 
     # 2. POST a new mobile report
     new_report = {
         "user_name": "Kasun Perera",
         "district": "Colombo",
         "province": "Western",
-        "message": "Water receding on Baseline Road, traffic moving smoothly now.",
+        "message": "Flooding reported near the junction.",
         "threat_level": "LOW"
     }
     post_res = client.post("/api/reports", json=new_report)
@@ -228,6 +229,23 @@ def test_community_reports_get_and_post(client):
     filtered_data = res_filtered.get_json()
     user_names = [r["user_name"] for r in filtered_data["reports"]]
     assert "Kasun Perera" in user_names
+
+
+def test_legacy_dummy_reports_are_removed_on_startup(client):
+    for _ in range(2):
+        cache.add_community_report(
+            "Kasun Perera", "Colombo", "Western",
+            "Water receding on Baseline Road, traffic moving smoothly now.", "LOW",
+        )
+    real_report = cache.add_community_report(
+        "Kasun Perera", "Colombo", "Western", "Flooding reported near the junction.", "LOW",
+    )
+
+    cache.init_db()
+    cache.init_db()
+
+    data = client.get("/api/reports").get_json()
+    assert [report["id"] for report in data["reports"]] == [real_report["id"]]
 
 
 def test_api_weather_7day_prediction(client):
