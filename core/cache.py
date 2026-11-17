@@ -33,21 +33,19 @@ def init_db():
         )
     ''')
     
-    # Check if reports table is empty, seed with initial reports
-    cursor.execute('SELECT COUNT(*) FROM community_reports')
-    count = cursor.fetchone()[0]
-    if count == 0:
-        initial_reports = [
-            ("Saman D.", "Colombo", "Western", "Severe flash flooding starting on Baseline Road near Dematagoda. Heavy traffic congestion, avoid low cars.", "SEVERE", 1),
-            ("Nimali P.", "Colombo", "Western", "Power lines down near Borella junction due to intense monsoonal wind gusts. Municipal crew en route.", "MODERATE", 1),
-            ("Ruwan K.", "Ratnapura", "Sabaragamuwa", "Continuous heavy rain since 4 AM. Kalu Ganga water level rising near warnings threshold.", "SEVERE", 1),
-            ("Dr. Thilak", "Kandy", "Central", "Dense mist on Kadugannawa pass. Visibility under 15 meters. Drive with hazard lights.", "MODERATE", 1),
-            ("Chaminda M.", "Galle", "Southern", "Strong rough swells washing over marine drive near Fort. Small boats moved inland.", "MODERATE", 1)
-        ]
-        cursor.executemany('''
-            INSERT INTO community_reports (user_name, district, province, message, threat_level, verified)
-            VALUES (?, ?, ?, ?, ?, ?)
-        ''', initial_reports)
+    # Remove exact matches for the old seed data and the test that used this database.
+    legacy_dummy_reports = [
+        ("Saman D.", "Colombo", "Western", "Severe flash flooding starting on Baseline Road near Dematagoda. Heavy traffic congestion, avoid low cars.", "SEVERE"),
+        ("Nimali P.", "Colombo", "Western", "Power lines down near Borella junction due to intense monsoonal wind gusts. Municipal crew en route.", "MODERATE"),
+        ("Ruwan K.", "Ratnapura", "Sabaragamuwa", "Continuous heavy rain since 4 AM. Kalu Ganga water level rising near warnings threshold.", "SEVERE"),
+        ("Dr. Thilak", "Kandy", "Central", "Dense mist on Kadugannawa pass. Visibility under 15 meters. Drive with hazard lights.", "MODERATE"),
+        ("Chaminda M.", "Galle", "Southern", "Strong rough swells washing over marine drive near Fort. Small boats moved inland.", "MODERATE"),
+        ("Kasun Perera", "Colombo", "Western", "Water receding on Baseline Road, traffic moving smoothly now.", "LOW"),
+    ]
+    cursor.executemany('''
+        DELETE FROM community_reports
+        WHERE user_name = ? AND district = ? AND province = ? AND message = ? AND threat_level = ?
+    ''', legacy_dummy_reports)
     
     conn.commit()
     conn.close()
