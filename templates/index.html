@@ -1507,7 +1507,7 @@
                         </select>
                     </div>
 
-                    <button class="btn-get-started" onclick="saveDataAndProceed()" style="width: 100%; font-size: 15px; padding: 16px 0; border-radius: 24px;">
+                    <button type="button" id="loginContinueBtn" class="btn-get-started" onclick="saveDataAndProceed()" style="width: 100%; font-size: 15px; padding: 16px 0; border-radius: 24px;">
                         CONTINUE
                     </button>
                 </div>
@@ -2006,14 +2006,14 @@
                 const screenTitle = document.getElementById('loginScreenTitle');
                 if (screenTitle) screenTitle.textContent = "Choose Your Nickname";
                 const screenSub = document.getElementById('loginScreenSubtitle');
-                if (screenSub) screenSub.textContent = "Enter a nickname and select your home location for personalized weather alerts.";
+                if (screenSub) screenSub.textContent = "Enter your nickname and home location. When you continue, you can allow location access to sync the weather where you are.";
                 showScreen('loginScreen');
             } else {
                 goToScreen2();
             }
         }
 
-        function saveDataAndProceed() {
+        async function saveDataAndProceed() {
             const name = document.getElementById('userNameInput').value.trim();
             const prov = provSelect.value;
             const dist = distSelect.value;
@@ -2035,6 +2035,8 @@
                 return;
             }
 
+            const isFirstLogin = !isEditProfileMode &&
+                (!localStorage.getItem('sl_weather_username') || !localStorage.getItem('sl_weather_district'));
             localStorage.setItem('sl_weather_username', name);
             localStorage.setItem('sl_weather_province', prov);
             localStorage.setItem('sl_weather_district', dist);
@@ -2051,7 +2053,17 @@
             if (menuLoc) menuLoc.textContent = (city && city.toLowerCase() !== dist.toLowerCase()) ? `${city}, ${dist}` : `${dist}, Sri Lanka`;
 
             saveRecentSearch({ province: prov, district: dist, city: city });
-            goToScreen2();
+            if (isFirstLogin) {
+                const button = document.getElementById('loginContinueBtn');
+                button.disabled = true;
+                try {
+                    await useCurrentGpsLocation({ firstLogin: true });
+                } finally {
+                    button.disabled = false;
+                }
+            } else {
+                goToScreen2();
+            }
         }
 
         function openProfileModal() {
@@ -2140,49 +2152,43 @@
             }
         }
 
-        async function fetchWeatherByCoords(lat, lon) {
+        async function useCurrentGpsLocation({ firstLogin = false } = {}) {
+            if (!navigator.geolocation) {
+                if (firstLogin) goToScreen2();
+                else alert("Geolocation is not supported on this mobile device.");
+                return;
+            }
+
             const loader = document.getElementById('loadingOverlay');
-            document.getElementById('loadingText').textContent = "Finding Local Microclimate for GPS Location...";
+            const loadingText = document.getElementById('loadingText');
+            loadingText.textContent = "Waiting for your location...";
             loader.style.display = 'flex';
-            
+
             try {
-                const data = await requestApi(`/api/weather?lat=${lat}&lon=${lon}`);
-                
-                localStorage.setItem('sl_weather_province', data.location.province);
-                localStorage.setItem('sl_weather_district', data.location.district);
-                localStorage.removeItem('sl_weather_city');
-                
+                const { coords } = await new Promise((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(resolve, reject, {
+                        enableHighAccuracy: true, timeout: 12000, maximumAge: 60000
+                    });
+                });
+                loadingText.textContent = "Syncing weather for your location...";
+                const data = await requestApi(`/api/weather?lat=${coords.latitude}&lon=${coords.longitude}`);
+
+                if (!firstLogin) {
+                    localStorage.setItem('sl_weather_province', data.location.province);
+                    localStorage.setItem('sl_weather_district', data.location.district);
+                    localStorage.removeItem('sl_weather_city');
+                }
+
                 showScreen('screen2');
                 applyDataToUI(data);
                 fetchCommunityReports(data.location.district);
-                
+                return;
             } catch (error) {
-                console.error("Failed to fetch GPS weather:", error);
-                alert(error.message);
+                if (!firstLogin) alert(error.message);
             } finally {
                 loader.style.display = 'none';
             }
-        }
-
-        function useCurrentGpsLocation() {
-            if (!navigator.geolocation) {
-                alert("Geolocation is not supported on this mobile device.");
-                return;
-            }
-            const loader = document.getElementById('loadingOverlay');
-            document.getElementById('loadingText').textContent = "Detecting High-Precision GPS Coordinates...";
-            loader.style.display = 'flex';
-            
-            navigator.geolocation.getCurrentPosition(
-                (pos) => {
-                    fetchWeatherByCoords(pos.coords.latitude, pos.coords.longitude);
-                },
-                (err) => {
-                    loader.style.display = 'none';
-                    alert("GPS Permission or Signal Error: " + err.message);
-                },
-                { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 }
-            );
+            if (firstLogin) goToScreen2();
         }
         
         function mapCodeToText(code) {
