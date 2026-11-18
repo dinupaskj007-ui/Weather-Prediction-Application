@@ -2165,11 +2165,37 @@
         }
         
         function mapCodeToText(code) {
-            if(code <= 3) return "Sunny with Cloud";
-            if(code <= 49) return "Very Cloudy / Fog";
-            if(code <= 69) return "It's Raining";
-            if(code <= 79) return "It's Snowing";
-            return "It's a Storm";
+            const conditions = {
+                0: "Clear Sky",
+                1: "Mainly Clear",
+                2: "Partly Cloudy",
+                3: "Overcast",
+                45: "Fog",
+                48: "Freezing Fog",
+                51: "Light Drizzle",
+                53: "Moderate Drizzle",
+                55: "Heavy Drizzle",
+                56: "Light Freezing Drizzle",
+                57: "Heavy Freezing Drizzle",
+                61: "Light Rain",
+                63: "Moderate Rain",
+                65: "Heavy Rain",
+                66: "Light Freezing Rain",
+                67: "Heavy Freezing Rain",
+                71: "Light Snow",
+                73: "Moderate Snow",
+                75: "Heavy Snow",
+                77: "Snow Grains",
+                80: "Light Rain Showers",
+                81: "Moderate Rain Showers",
+                82: "Heavy Rain Showers",
+                85: "Light Snow Showers",
+                86: "Heavy Snow Showers",
+                95: "Thunderstorm",
+                96: "Thunderstorm with Light Hail",
+                99: "Thunderstorm with Heavy Hail"
+            };
+            return conditions[code] || "Weather Unavailable";
         }
 
         function renderToday24Hours(data) {
@@ -2243,8 +2269,8 @@
 
         function applyDataToUI(data) {
             const status = document.getElementById('weatherConnectionStatus');
-            status.textContent = data.source === 'cache' ? 'Showing the last available forecast.' : '';
-            status.hidden = !status.textContent;
+            status.textContent = '';
+            status.hidden = true;
             document.getElementById('weatherRetryBtn').hidden = true;
             const name = localStorage.getItem('sl_weather_username') || "User";
             const dist = data.location.district;
