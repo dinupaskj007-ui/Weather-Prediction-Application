@@ -514,7 +514,7 @@
             display: none;
             position: absolute;
             inset-block-start: calc(max(12px, env(safe-area-inset-top)) + 44px);
-            inset-inline-start: max(12px, env(safe-area-inset-left));
+            inset-inline-end: max(16px, env(safe-area-inset-right));
             width: min(270px, calc(100% - max(12px, env(safe-area-inset-left)) - max(12px, env(safe-area-inset-right))));
             max-height: calc(100vh - 76px);
             max-height: calc(100dvh - max(12px, env(safe-area-inset-top)) - 44px - max(12px, env(safe-area-inset-bottom)));
@@ -1522,7 +1522,6 @@
                 <div class="top-nav-row" style="position: relative; z-index: 30;">
                     <div style="display: flex; align-items: center; gap: 6px;">
                         <button type="button" class="nav-icon" onclick="goToScreen1()" aria-label="Back to welcome screen" style="font-size: 26px; line-height: 1;">‹</button>
-                        <button type="button" class="nav-icon" onclick="toggleAppMenu()" id="menuToggleBtn" aria-label="Menu">⋮</button>
                     </div>
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <!-- EMERGENCY LIGHT BUTTON FOR COMMUNITY HAZARD REPORTS -->
@@ -1536,6 +1535,7 @@
                                 <line x1="21" y1="21" x2="16.5" y2="16.5"></line>
                             </svg>
                         </button>
+                        <button type="button" class="nav-icon" onclick="toggleAppMenu()" id="menuToggleBtn" aria-label="Menu">⋮</button>
                     </div>
                 </div>
 
