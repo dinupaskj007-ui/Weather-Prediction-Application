@@ -1259,6 +1259,7 @@
             font-size: 13px;
         }
         .modal-overlay { width: auto; height: auto; }
+        #reportModal { z-index: 1000; }
         .modal-sheet {
             max-height: calc(100% - 16px);
             max-height: calc(100% - max(16px, env(safe-area-inset-top)));
@@ -2006,14 +2007,14 @@
                 const screenTitle = document.getElementById('loginScreenTitle');
                 if (screenTitle) screenTitle.textContent = "Choose Your Nickname";
                 const screenSub = document.getElementById('loginScreenSubtitle');
-                if (screenSub) screenSub.textContent = "Enter your nickname and home location. When you continue, you can allow location access to sync the weather where you are.";
+                if (screenSub) screenSub.textContent = "Enter your nickname and home location to see your district's weather. Tap Sync GPS on the dashboard for weather at your current location.";
                 showScreen('loginScreen');
             } else {
                 goToScreen2();
             }
         }
 
-        async function saveDataAndProceed() {
+        function saveDataAndProceed() {
             const name = document.getElementById('userNameInput').value.trim();
             const prov = provSelect.value;
             const dist = distSelect.value;
@@ -2035,8 +2036,6 @@
                 return;
             }
 
-            const isFirstLogin = !isEditProfileMode &&
-                (!localStorage.getItem('sl_weather_username') || !localStorage.getItem('sl_weather_district'));
             localStorage.setItem('sl_weather_username', name);
             localStorage.setItem('sl_weather_province', prov);
             localStorage.setItem('sl_weather_district', dist);
@@ -2053,17 +2052,7 @@
             if (menuLoc) menuLoc.textContent = (city && city.toLowerCase() !== dist.toLowerCase()) ? `${city}, ${dist}` : `${dist}, Sri Lanka`;
 
             saveRecentSearch({ province: prov, district: dist, city: city });
-            if (isFirstLogin) {
-                const button = document.getElementById('loginContinueBtn');
-                button.disabled = true;
-                try {
-                    await useCurrentGpsLocation({ firstLogin: true });
-                } finally {
-                    button.disabled = false;
-                }
-            } else {
-                goToScreen2();
-            }
+            goToScreen2();
         }
 
         function openProfileModal() {
@@ -2152,10 +2141,9 @@
             }
         }
 
-        async function useCurrentGpsLocation({ firstLogin = false } = {}) {
+        async function useCurrentGpsLocation() {
             if (!navigator.geolocation) {
-                if (firstLogin) goToScreen2();
-                else alert("Geolocation is not supported on this mobile device.");
+                alert("Geolocation is not supported on this mobile device.");
                 return;
             }
 
@@ -2167,28 +2155,25 @@
             try {
                 const { coords } = await new Promise((resolve, reject) => {
                     navigator.geolocation.getCurrentPosition(resolve, reject, {
-                        enableHighAccuracy: true, timeout: 12000, maximumAge: 60000
+                        enableHighAccuracy: true, timeout: 12000, maximumAge: 0
                     });
                 });
                 loadingText.textContent = "Syncing weather for your location...";
                 const data = await requestApi(`/api/weather?lat=${coords.latitude}&lon=${coords.longitude}`);
 
-                if (!firstLogin) {
-                    localStorage.setItem('sl_weather_province', data.location.province);
-                    localStorage.setItem('sl_weather_district', data.location.district);
-                    localStorage.removeItem('sl_weather_city');
-                }
+                localStorage.setItem('sl_weather_province', data.location.province);
+                localStorage.setItem('sl_weather_district', data.location.district);
+                localStorage.removeItem('sl_weather_city');
 
                 showScreen('screen2');
                 applyDataToUI(data);
                 fetchCommunityReports(data.location.district);
                 return;
             } catch (error) {
-                if (!firstLogin) alert(error.message);
+                alert(error.message);
             } finally {
                 loader.style.display = 'none';
             }
-            if (firstLogin) goToScreen2();
         }
         
         function mapCodeToText(code) {
